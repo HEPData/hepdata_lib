@@ -1,2 +1,2 @@
-# hepdata_lib_project
-Discussion and tasks for improving hepdata_lib
+# hepdata_lib
+Library for getting your data into HEPData
