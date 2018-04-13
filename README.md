@@ -1,5 +1,15 @@
 # hepdata_lib
+
+[![DOI](https://zenodo.org/badge/129248575.svg)](https://zenodo.org/badge/latestdoi/129248575)
+[![PyPI version](https://badge.fury.io/py/hepdata_lib.svg)](https://badge.fury.io/py/hepdata_lib)
+
 Library for getting your data into HEPData
+
+## Installation
+
+```
+pip install hepdata_lib
+```
 
 ## External dependencies
 
