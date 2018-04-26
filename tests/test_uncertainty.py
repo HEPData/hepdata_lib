@@ -9,7 +9,7 @@ from hepdata_lib import Variable, Uncertainty
 class TestUncertainty(TestCase):
     def test_scale_values(self):
         '''Test behavior of Uncertainty.scale_values function'''
-        values = range(0, 300, 1)
+        values = list(range(0, 300, 1))
         uncertainty = [x + random.uniform(0, 2) for x in values]
 
         testvar = Variable("testvar")
