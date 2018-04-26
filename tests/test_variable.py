@@ -9,7 +9,7 @@ from hepdata_lib import Variable
 class TestVariable(TestCase):
     def test_scale_values(self):
         '''Test behavior of Variable.scale_values function'''
-        values = zip(range(0, 5, 1), range(1, 6, 1))
+        values = list(zip(range(0, 5, 1), range(1, 6, 1)))
 
         testvar = Variable("testvar")
         testvar.is_binned = True
