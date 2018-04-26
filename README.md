@@ -2,6 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/129248575.svg)](https://zenodo.org/badge/latestdoi/129248575)
 [![PyPI version](https://badge.fury.io/py/hepdata_lib.svg)](https://badge.fury.io/py/hepdata_lib)
+[![Documentation Status](https://readthedocs.org/projects/hepdata-lib/badge/)](http://hepdata-lib.readthedocs.io/)
 
 Library for getting your data into HEPData
 
