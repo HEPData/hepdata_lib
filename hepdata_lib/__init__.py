@@ -214,8 +214,6 @@ class Table(object):
             for name, values in list(self.keywords.items()):
                 submission["keywords"].append({"name": name, "values": values})
 
-            if(len(submissionfile.read())):
-                submissionfile.write("---\n")
             yaml.dump(submission, submissionfile, default_flow_style=False, explicit_start=True)
         return os.path.basename(outfile_path)
 
