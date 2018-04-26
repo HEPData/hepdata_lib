@@ -4,7 +4,8 @@ from os import path
 
 deps = [
       'numpy',
-      'PyYAML'
+      'PyYAML',
+      'six'
 ]
 
 here = path.abspath(path.dirname(__file__))
@@ -18,7 +19,7 @@ setup(name='hepdata_lib',
       long_description=long_description,
       long_description_content_type='text/markdown',
       url='http://github.com/clelange/hepdata_lib',
-      author='Clemens Lange',
+      author='Andreas Albert, Clemens Lange',
       author_email='clemens.lange@cern.ch',
       classifiers=[
         'Development Status :: 3 - Alpha',
