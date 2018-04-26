@@ -35,6 +35,4 @@ setup(name='hepdata_lib',
         'Bug Reports': 'http://github.com/clelange/hepdata_lib/issues',
         'Source': 'http://github.com/clelange/hepdata_lib',
       },
-      test_suite='nose.collector',
-      tests_require=['nose']
       )
