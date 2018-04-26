@@ -10,11 +10,18 @@ from collections import defaultdict
 import math
 import numpy as np
 import subprocess
+import six
 
 
 # Register defalut dict so that yaml knows it is a dictionary type
 from yaml.representer import Representer
 yaml.add_representer(defaultdict, Representer.represent_dict)
+
+# Workaround to prevent the yaml dump from creating unneeded tags in the output
+def unicode_representer(dumper, uni):
+    node = yaml.ScalarNode(tag=u'tag:yaml.org,2002:str', value=uni)
+    return node
+yaml.add_representer(six.text_type, unicode_representer)
 
 
 def execute_command(command):
@@ -281,7 +288,7 @@ class Submission(object):
             submission["record_ids"] = self.record_ids
 
         with open(os.path.join(outdir, 'submission.yaml'), 'w') as outfile:
-            yaml.dump(submission, outfile, default_flow_style=False, explicit_start=True)
+            yaml.safe_dump(submission, outfile)
 
         # Write all the tables
         for table in self.tables:
