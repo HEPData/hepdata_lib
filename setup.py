@@ -13,7 +13,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='hepdata_lib',
-      version='0.1',
+      version='0.1.1',
       description='Library for getting your data into HEPData',
       long_description=long_description,
       long_description_content_type='text/markdown',
