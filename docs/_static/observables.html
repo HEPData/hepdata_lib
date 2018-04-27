@@ -1,0 +1,240 @@
+<html>
+<head>
+<title> HEPData Observables</title>
+<style type='text/css'>
+  td {font-size:small; font-family:Arial, sans-serif}
+</style>
+
+<script type='text/javascript' language='JavaScript'>
+function ReverseDisplay(d1,d2) {
+if(document.getElementById(d1).style.display == 'none') { document.getElementById(d1).style.display = 'block'; }
+else { document.getElementById(d1).style.display = 'none'; }
+if(document.getElementById(d2).style.display == 'none') { document.getElementById(d2).style.display = 'block'; }
+else { document.getElementById(d2).style.display = 'none'; }
+}
+</script>
+
+
+</head>
+<body>
+<h2> HEPData Observables </h2>
+Observables describe the quantity that is being measured.  They are used in searching and are a simplified form of the dependent variable name (yname).  Thus they do not have units and a fairly broad in their scope. The table below shows the most commonly used observable names together with a list of independent variables names (xnames) as used in HEPData. When necessary more detailed descriptions are given by clicking on the 'more'. 
+<br/>
+<br/>
+<table border='0' cellpadding='2'>
+<tr><th colspan='2'>Observables</th><th colspan='2'>xnames (to be used with differential distributions)</th><tr>
+<tr><td colspan='2'>-</td><td colspan='2'> an xname prefixed with 'D' signifies a difference in two variables (eg DYRAP)</td></tr>
+<tr><th>Observable</th><th>Description</th><th><i>xname</i></th><th>description</th></tr>
+<tr><td valign='top'>SIG</td>
+<td>
+<div id='id11' style='display:block;'>
+integrated cross section....<a href="javascript:ReverseDisplay('id11','id12')"><i><font size='-1'>more</font></i></a></a>
+</div>
+<div id='id12' style='display:none;'>
+integrated cross section....<a href="javascript:ReverseDisplay('id11','id12')"><i><font size='-1'>less</font></i></a></br>
+ SIG is the observable name for a cross section.<br/> On its own it signifies a total or integrated<br/> cross section. In combinations with D, or Dg etc.<br/> it is used in the differential cross section<br/> as shown below.<br/>
+</div>
+</td>
+<td rowspan='27' valign='top'>
+<div id='startxname'>
+M</br>
+MT</br>
+E</br>
+ET</br>
+EKIN</br>
+P</br>
+PT, PT**2</br>
+PL</br>
+XL</br>
+XT</br>
+X</br>
+THETA</br>
+OMEGA</br>
+PHI</br>
+T</br>
+TP</br>
+YRAP</br>
+ETARAP</br>
+S</br>
+W</br>
+Q, Q**2</br>
+Y</br>
+Z</br>
+CENTRALITY</br>
+</br>
+</br>
+THRUST</br>
+MINOR</br>
+MAJOR</br>
+SPHERICITY</br>
+PLANARITY</br>
+APLANARITY</br>
+OBLATENESS</br>
+HEAVY-JET-MASS</br>
+LIGHT-JET-MASS</br>
+WIDE-JET-BROADENING</br>
+TOTAL-JET-BROADENING</br>
+C-PARAMETER</br>
+D-PARAMETER</br>
+PTIN</br>
+PTOUT</br>
+</div>
+</td>
+<td rowspan='27' valign='top'>
+mass</br>
+transverse mass</br>
+energy</br>
+transverse energy </br>
+kinetic energy </br>
+momentum</br>
+transverse momentum (squared)</br>
+longitudinal momentum</br>
+Feynman X</br>
+transverse X</br>
+X (in DIS)</br>
+polar angle</br>
+solid angle</br>
+azimuthal angle</br>
+momentum transfer</br>
+momentum transfer prime</br>
+rapidity</br>
+pseudorapidity</br>
+invariant mass squared</br>
+energy of system of particles</br>
+virtual momentum transfer (squared)</br>
+inelasticity (in DIS)</br>
+energy/momentum fraction</br>
+centrality</br>
+</br>
+JET SHAPES</br>
+thrust</br>
+thrust minor</br>
+thrust major </br>
+sphericity</br>
+planarity</br>
+aplanarity</br>
+oblateness</br>
+heavy jet mass</br>
+light jet mass</br>
+wide jet broadening</br>
+total jet broadening</br>
+C-parameter</br>
+D-parameter</br>
+momentum projection in the event plane</br>
+momentum projection transverse to the event plane</br>
+</td>
+</tr>
+<tr><td valign='top'>SIG/SIG, RATIO, N/N</td>
+<td>
+<div id='id21' style='display:block;'>
+ratio of cross sections/distributions....<a href="javascript:ReverseDisplay('id21','id22')"><i><font size='-1'>more</font></i></a></a>
+</div>
+<div id='id22' style='display:none;'>
+ratio of cross sections/distributions....<a href="javascript:ReverseDisplay('id21','id22')"><i><font size='-1'>less</font></i></a></br>
+ These are used to signify the measurement is <br/> of a ratio of cross sections or other equvalent<br/> distributions.<br/>
+</div>
+</td>
+</tr>
+<tr><td valign='top'>DSIG/D<i>xname</i></td><td>single differential cross section</td>
+</tr>
+<tr><td valign='top'>D2SIG/D<i>xname</i>/D<i>xname</i></td><td>double differential cross section</td>
+</tr>
+<tr><td valign='top'>D3SIG/D<i>xname</i>/D<i>xname</i>/D<i>xname</i></td><td>triple differential cross section</td>
+</tr>
+<tr><td valign='top'>E*D3SIG/DP**3</td><td>invariant cross section</td>
+</tr>
+<tr><td valign='top'>N</td><td>number of events</td>
+</tr>
+<tr><td valign='top'>DN/D<i>xname</i></td><td>single differential distribution</td>
+</tr>
+<tr><td valign='top'>D2N/D<i>xname/</i>D<i>xname</i></td><td>double differential distribution</td>
+</tr>
+<tr><td valign='top'>D3N/D<i>xname</i>/D<i>xname</i>/D<i>xname</i></td><td>triple differential cross distribution</td>
+</tr>
+<tr><td valign='top'>MULT, DISPERSION, MULT2 etc..</td>
+<td>
+<div id='id141' style='display:block;'>
+multiplicity measurements....<a href="javascript:ReverseDisplay('id141','id142')"><i><font size='-1'>more</font></i></a></a>
+</div>
+<tr><td valign='top'>POL, POL.POL, POL.POL.POL</td><td>single, double and triple spin polarisations</td>
+</tr>
+<tr><td valign='top'>ASYM</td><td>asymmetry measurement</td>
+</tr>
+<tr><td valign='top'>F1, F2, XF3, FL</td><td>structure functions</td>
+</tr>
+<div id='id142' style='display:none;'>
+multiplicity measurements....<a href="javascript:ReverseDisplay('id141','id142')"><i><font size='-1'>less</font></i></a></br>
+ MULT2 etc.. are the second etc.. moments<br/> of the multiplicity distributions<br/>
+</div>
+</td>
+</tr>
+<tr><td valign='top'>A1, A2, G1, G2</td><td>spin asymmetries and structure functions</td>
+</tr>
+<tr><td valign='top'>V1, V2, V3, V4, V5, V6</td><td>azimuthal asymmetries (Fourier Coefficients)</td>
+</tr>
+<tr><td valign='top'>V11, V22, V33, V44, V55, V66 </td><td>azimuthal asymmetries (Fourier Coefficients)</td>
+</tr>
+<tr><td valign='top'>ACC, EFF</td><td>acceptance, efficiency measurements</td>
+</tr>
+<tr><td valign='top'>CLS</td><td>confidence limits</td>
+</tr>
+<tr><td valign='top'>WIDTH</td><td>Measurement of a width</td>
+</tr>
+<tr><td valign='top'>RCORR, CORR</td><td>(ratio of) correlation measurements</td>
+</tr>
+<tr><td valign='top'>EEC, AEEC</td><td>energy-energy correlation and its asymmetry</td>
+</tr>
+<tr><td valign='top'>PSI</td><td>Jet Shape (integrated)</td>
+</tr>
+<tr><td valign='top'>RHO</td>
+<td>
+<div id='id191' style='display:block;'>
+density matrix element....<a href="javascript:ReverseDisplay('id191','id192')"><i><font size='-1'>more</font></i></a></a>
+</div>
+<div id='id192' style='display:none;'>
+density matrix element....<a href="javascript:ReverseDisplay('id191','id192')"><i><font size='-1'>less</font></i></a></br>
+ also used for jet density distributions<br/>
+</div>
+</td>
+</tr>
+<tr><td valign='top'>POL.RHO</td>
+<td>
+<div id='id201' style='display:block;'>
+density matrix element with a ....<a href="javascript:ReverseDisplay('id201','id202')"><i><font size='-1'>more</font></i></a></a>
+</div>
+<div id='id202' style='display:none;'>
+density matrix element with a ....<a href="javascript:ReverseDisplay('id201','id202')"><i><font size='-1'>less</font></i></a></br>
+ polarized photon beam<br/>
+</div>
+</td>
+</tr>
+<tr><td valign='top'>SLOPE, POWER</td><td>exponential slope/power of a fit</td>
+</tr>
+<tr><td valign='top'>ALPHAS, SIN2TW</td><td>alpha-s, sin^2(theta-w)</td>
+</tr>
+<tr><td valign='top'>GA, GV</td><td>axial-vector couplings</td>
+</tr>
+<tr><td valign='top'>FORMFACTOR</td><td>Form Factor measurements</td>
+</tr>
+<tr><td valign='top'>CONST</td><td>Measurement of a physical constant</td>
+</tr>
+<tr><td valign='top'>RAA, RPA, RCP</td><td>nuclear modification factors</td>
+</tr>
+<tr><td valign='top'>LEG, LEGN, LEGP, LEGPN</td>
+<td>
+<div id='id251' style='display:block;'>
+Legendre Coefficients (somewhat historical)....<a href="javascript:ReverseDisplay('id251','id252')"><i><font size='-1'>more</font></i></a></a>
+</div>
+<div id='id252' style='display:none;'>
+Legendre Coefficients (somewhat historical)....<a href="javascript:ReverseDisplay('id251','id252')"><i><font size='-1'>less</font></i></a></br>
+  Legendre coefficients of fit to the DSIG/DOMEGA distributions<br/>  LEGN is normalised<br/>  LEGP is for  P*DSIG/DOMEGA<br/>
+</div>
+</td>
+</tr>
+<tr><td valign='top'>YLM</td><td>Ylm moment (somewhat historical)</td>
+</tr>
+<tr><td valign='top'>AMP, REAMP/IMAMP, PHASE</td><td>amplitude, real/imaginary ratio, phase (somewhat historical)</td>
+</tr>
+</table>
+</body>
+</html>
