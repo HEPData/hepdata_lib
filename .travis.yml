@@ -1,0 +1,20 @@
+language: python
+
+matrix:
+  include:
+    - os: linux
+      python: 2.7
+    - os: osx
+      language: generic
+
+
+before_install:
+  - ./.travis/setup.sh
+
+install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cd root; source bin/thisroot.sh; cd ..; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then . /usr/local/bin/thisroot.sh; fi
+
+script:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then python setup.py test; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then python3 setup.py test; fi
