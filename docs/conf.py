@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# pylint: skip-file
 #
 # Configuration file for the Sphinx documentation builder.
 #
