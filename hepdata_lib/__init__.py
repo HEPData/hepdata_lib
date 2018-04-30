@@ -1,25 +1,30 @@
+"""hepdata_lib main."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 import os
 import fnmatch
+import math
+from collections import defaultdict
+import subprocess
+import numpy as np
 import yaml
 import ROOT as r
-from collections import defaultdict
-import math
-import numpy as np
-import subprocess
 
 
 # Register defalut dict so that yaml knows it is a dictionary type
-from yaml.representer import Representer
-yaml.add_representer(defaultdict, Representer.represent_dict)
+yaml.add_representer(defaultdict, yaml.representer.Representer.represent_dict)
 
 
 def execute_command(command):
     """execute shell command using subprocess..."""
-    proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE, shell=True, universal_newlines=True)
+    proc = subprocess.Popen(
+        command,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=True,
+        universal_newlines=True)
     result = ""
     exit_code = proc.wait()
     if exit_code != 0:
@@ -33,7 +38,7 @@ def find_all_matching(path, pattern):
     if not os.path.exists(path):
         raise RuntimeError("Invalid path '{0}'".format(path))
     result = []
-    for root, dirs, files in os.walk(path):
+    for root, _, files in os.walk(path):
         for thisfile in files:
             if fnmatch.fnmatch(thisfile, pattern):
                 result.append(os.path.join(root, thisfile))
@@ -42,15 +47,15 @@ def find_all_matching(path, pattern):
 
 def relative_round(value, relative_digits):
     """Rounds to a given relative precision"""
-    if(value == 0):
+    if value == 0:
         return 0
-    if(type(value) == str) or np.isnan(value):
+    if isinstance(value, str) or np.isnan(value):
         return value
 
     value_precision = math.ceil(math.log10(abs(value)))
 
-    absolute_digits = - value_precision + relative_digits
-    if(absolute_digits < 0):
+    absolute_digits = -value_precision + relative_digits
+    if absolute_digits < 0:
         absolute_digits = 0
 
     return round(value, int(absolute_digits))
@@ -58,6 +63,7 @@ def relative_round(value, relative_digits):
 
 class Variable(object):
     """A Variable is a wrapper for a list of values + some meta data."""
+
     # pylint: disable=too-many-instance-attributes
     # Eight is reasonable in this case.
 
@@ -66,36 +72,39 @@ class Variable(object):
         self.is_independent = is_independent
         self.is_binned = is_binned
         self.qualifiers = []
-
         self.units = units
+        # needed to make pylint happy, see https://github.com/PyCQA/pylint/issues/409
+        self._values = None
         self.values = []
         self.uncertainties = []
         self.digits = 5
 
-    def set_values(self, values):
-        if(self.is_binned):
-            self._values = [(float(x[0]), float(x[1])) for x in values]
-        else:
-            self._values = [x if type(x) ==
-                            str else float(x) for x in values]
-
-    def get_values(self):
+    @property
+    def values(self):
+        """Value getter."""
         return self._values
 
-    values = property(get_values, set_values)
+    @values.setter
+    def values(self, value_list):
+        """Set values."""
+        if self.is_binned:
+            self._values = [(float(x[0]), float(x[1])) for x in value_list]
+        else:
+            self._values = [x if isinstance(x, str) else float(x) for x in value_list]
 
     def scale_values(self, factor):
         """Multiply each value by constant factor. Also applies to uncertainties."""
-        if(not self.is_binned):
-            self.set_values([factor * x for x in self.get_values()])
+        if not self.is_binned:
+            self.values = [factor * x for x in self.values]
         else:
-            self.set_values([(factor * x[0], factor * x[1])
-                             for x in self.get_values()])
+            self.values = [(factor * x[0], factor * x[1])
+                           for x in self.values]
 
         for unc in self.uncertainties:
             unc.scale_values(factor)
 
     def add_qualifier(self, name, value, units=""):
+        """Add a qualifier."""
         qualifier = {}
         qualifier["name"] = name
         qualifier["value"] = value  # if type(value) == str else float(value)
@@ -104,6 +113,7 @@ class Variable(object):
         self.qualifiers.append(qualifier)
 
     def make_dict(self):
+        """Create a dictionary."""
         tmp = {}
         tmp["header"] = {"name": self.name, "units": self.units}
 
@@ -112,26 +122,36 @@ class Variable(object):
 
         tmp["values"] = []
 
-        for i in range(len(self.values)):
+        for i in range(len(self._values)):
             valuedict = defaultdict(list)
 
             if self.is_binned:
-                valuedict["low"] = relative_round(
-                    self.values[i][0], self.digits)
-                valuedict["high"] = relative_round(
-                    self.values[i][1], self.digits)
+                valuedict["low"] = relative_round(self._values[i][0],
+                                                  self.digits)
+                valuedict["high"] = relative_round(self._values[i][1],
+                                                   self.digits)
             else:
-                valuedict["value"] = relative_round(
-                    self.values[i], self.digits)
+                valuedict["value"] = relative_round(self._values[i],
+                                                    self.digits)
 
             for unc in self.uncertainties:
                 if unc.is_symmetric:
-                    valuedict['errors'].append({"symerror": relative_round(unc.values[i], self.digits),
-                                                "label": unc.label})
+                    valuedict['errors'].append({
+                        "symerror":
+                        relative_round(unc.values[i], self.digits),
+                        "label":
+                        unc.label
+                    })
                 else:
-                    valuedict['errors'].append({"asymerror": {"minus": relative_round(unc.values[i][0], self.digits),
-                                                              "plus": relative_round(unc.values[i][1], self.digits)},
-                                                "label": unc.label})
+                    valuedict['errors'].append({
+                        "asymerror": {
+                            "minus":
+                            relative_round(unc.values[i][0], self.digits),
+                            "plus":
+                            relative_round(unc.values[i][1], self.digits)
+                        },
+                        "label": unc.label
+                    })
             tmp["values"].append(valuedict)
         return tmp
 
@@ -158,12 +178,15 @@ class Table(object):
             raise RuntimeError("File %s does not exist!" % file_name)
         if not os.path.exists(outdir):
             os.makedirs(outdir)
-        out_file_name = "{}.png".format(os.path.splitext(file_name)[0].rsplit("/", 1)[1])
-        thumb_out_file_name = "thumb_"+out_file_name
+        out_file_name = "{}.png".format(
+            os.path.splitext(file_name)[0].rsplit("/", 1)[1])
+        thumb_out_file_name = "thumb_" + out_file_name
         # first convert to png, then create thumbnail
-        command = "convert -flatten -fuzz 1% -trim +repage {} {}/{}".format(file_name, outdir, out_file_name)
+        command = "convert -flatten -fuzz 1% -trim +repage {} {}/{}".format(
+            file_name, outdir, out_file_name)
         execute_command(command)
-        command = "convert -thumbnail 240x179 {}/{} {}/{}".format(outdir, out_file_name, outdir, thumb_out_file_name)
+        command = "convert -thumbnail 240x179 {}/{} {}/{}".format(
+            outdir, out_file_name, outdir, thumb_out_file_name)
         execute_command(command)
         image = {}
         image["description"] = "Image file"
@@ -173,7 +196,6 @@ class Table(object):
         thumbnail["location"] = thumb_out_file_name
         self.additional_resources.append(image)
         self.additional_resources.append(thumbnail)
-
 
     def add_variable(self, variable):
         """Add a variable to the table"""
@@ -186,8 +208,8 @@ class Table(object):
         table["independent_variables"] = []
         table["dependent_variables"] = []
         for var in self.variables:
-            table["independent_variables" if var.is_independent else "dependent_variables"].append(
-                var.make_dict())
+            table["independent_variables" if var.is_independent else
+                  "dependent_variables"].append(var.make_dict())
 
         if not os.path.exists(outdir):
             os.makedirs(outdir)
@@ -214,7 +236,11 @@ class Table(object):
             for name, values in list(self.keywords.items()):
                 submission["keywords"].append({"name": name, "values": values})
 
-            yaml.dump(submission, submissionfile, default_flow_style=False, explicit_start=True)
+            yaml.dump(
+                submission,
+                submissionfile,
+                default_flow_style=False,
+                explicit_start=True)
         return os.path.basename(outfile_path)
 
 
@@ -231,17 +257,23 @@ class Submission(object):
         self.additional_resources = []
         self.record_ids = []
 
-    def get_license(self):
+    @staticmethod
+    def get_license():
+        """Return the default license."""
         data_license = {}
         data_license["name"] = "cc-by-4.0"
         data_license["url"] = "https://creativecommons.org/licenses/by/4.0/"
-        data_license["description"] = "The content can be shared and adapted but you must give appropriate credit and cannot restrict access to others."
+        data_license[
+            "description"] = "The content can be shared and adapted but you must\
+             give appropriate credit and cannot restrict access to others."
         return data_license
 
     def add_table(self, table):
+        """Append table to tables list."""
         self.tables.append(table)
 
     def add_link(self, description, location):
+        """Append link to additional_resources list."""
         # should check for working URL
         link = {}
         link["description"] = description
@@ -249,6 +281,7 @@ class Submission(object):
         self.additional_resources.append(link)
 
     def add_record_id(self, r_id, r_type):
+        """Append record_id to record_ids list."""
         # should add some type checks
         record_id = {}
         record_id["id"] = int(r_id)
@@ -256,6 +289,7 @@ class Submission(object):
         self.record_ids.append(record_id)
 
     def read_abstract(self, filepath):
+        """Read in the abstracts file."""
         with open(filepath) as afile:
             raw = str(afile.read())
         raw = raw.replace("\r\n", "")
@@ -264,6 +298,7 @@ class Submission(object):
         self.comment = raw
 
     def create_files(self, outdir="."):
+        """Create the output files."""
         if not os.path.exists(outdir):
             os.makedirs(outdir)
 
@@ -278,7 +313,11 @@ class Submission(object):
             submission["record_ids"] = self.record_ids
 
         with open(os.path.join(outdir, 'submission.yaml'), 'w') as outfile:
-            yaml.dump(submission, outfile, default_flow_style=False, explicit_start=True)
+            yaml.dump(
+                submission,
+                outfile,
+                default_flow_style=False,
+                explicit_start=True)
 
         # Write all the tables
         for table in self.tables:
@@ -287,10 +326,10 @@ class Submission(object):
         # Put everything into a tarfile
         import tarfile
         tar = tarfile.open("submission.tar.gz", "w:gz")
-        for f in find_all_matching(outdir, "*.yaml"):
-            tar.add(f)
-        for f in find_all_matching(outdir, "*.png"):
-            tar.add(f)
+        for yaml_file in find_all_matching(outdir, "*.yaml"):
+            tar.add(yaml_file)
+        for png_file in find_all_matching(outdir, "*.png"):
+            tar.add(png_file)
         tar.close()
 
 
@@ -306,43 +345,48 @@ class Uncertainty(object):
     def __init__(self, label, is_symmetric=True):
         self.label = label
         self.is_symmetric = is_symmetric
+        # needed to make pylint happy, see https://github.com/PyCQA/pylint/issues/409
+        self._values = None
         self.values = []
 
-    def set_values(self, values, nominal=None):
+    @property
+    def values(self):
+        """Value getter."""
+        return self._values
+
+    @values.setter
+    def values(self, values, nominal=None):
         """
         Setter method
 
         Can perform list subtraction relative to nominal value.
         """
-        if(nominal):
+        if nominal:
             tmp = []
-            for (down, up), nominal in zip(values, nominal):
-                tmp.append((float(down - nominal), float(up - nominal)))
+            for (down_val, up_val), nom_val in zip(values, nominal):
+                tmp.append((float(down_val - nom_val), float(up_val - nom_val)))
             self._values = tmp
         else:
-            if(not self.is_symmetric):
+            if not self.is_symmetric:
                 try:
-                    assert(all([x[1] >= 0 for x in values]))
-                    assert(all([x[0] <= 0 for x in values]))
+                    assert all([x[1] >= 0 for x in values])
+                    assert all([x[0] <= 0 for x in values])
                 except AssertionError:
                     raise ValueError(
-                        "Uncertainty::set_values: Wrong signs detected! First element of uncertainty tuple should be <=0, second >=0.")
+                        "Uncertainty::set_values: Wrong signs detected! First\
+                         element of uncertainty tuple should be <=0, second >=0."
+                    )
                 self._values = [(float(x[0]), float(x[1])) for x in values]
             else:
                 self._values = values
 
-
-    def get_values(self):
-        return self._values
-    values = property(get_values, set_values)
-
     def scale_values(self, factor):
         """Multiply each value by constant factor."""
-        if(self.is_symmetric):
-            self.set_values([factor * x for x in self.get_values()])
+        if self.is_symmetric:
+            self.values = [factor * x for x in self.values]
         else:
-            self.set_values([(factor * x[0], factor * x[1])
-                             for x in self.get_values()])
+            self.values = [(factor * x[0], factor * x[1])
+                           for x in self.values]
 
 
 class RootFileReader(object):
@@ -352,26 +396,27 @@ class RootFileReader(object):
         self.set_file(tfile)
 
     def __del__(self):
-        if(self.tfile):
+        if self.tfile:
             self.tfile.Close()
 
     def set_file(self, tfile):
         """Define the TFile we should read from."""
-        if(type(tfile) == str):
-            if(os.path.exists(tfile) and tfile.endswith(".root")):
+        if isinstance(tfile, str):
+            if (os.path.exists(tfile) and tfile.endswith(".root")):
                 self.tfile = r.TFile(tfile)
             else:
                 raise IOError("RootReader: File does not exist: " + tfile)
-        elif(type(tfile) == r.TFile):
+        elif isinstance(tfile, r.TFile):
             self.tfile = tfile
         else:
             raise ValueError(
-                "RootReader: Encountered unkonown type of variable passed as tfile argument: " + type(tfile))
+                "RootReader: Encountered unkonown type of variable passed as tfile argument: "
+                + type(tfile))
 
-        if(not self.tfile):
+        if not self.tfile:
             raise IOError("RootReader: File not opened properly.")
 
-    def retrieve_object(self,path_to_object):
+    def retrieve_object(self, path_to_object):
         """
         Generalized function to retrieve a TObject from a file.
 
@@ -387,7 +432,7 @@ class RootFileReader(object):
 
         # If the Get operation was successful, just return
         # Otherwise, try canvas approach
-        if(obj):
+        if obj:
             return obj
         else:
             parts = path_to_object.split("/")
@@ -396,31 +441,34 @@ class RootFileReader(object):
 
             try:
                 canv = self.tfile.Get(path_to_canvas)
-                assert(canv)
+                assert canv
                 for entry in list(canv.GetListOfPrimitives()):
-                    if(entry.GetName() == name):
+                    if entry.GetName() == name:
                         return entry
 
                 # Didn't find anything. Print available primitives to help user debug.
-                print("Available primitives in TCanvas '{0}':".format(path_to_canvas))
+                print("Available primitives in TCanvas '{0}':".format(
+                    path_to_canvas))
                 for entry in list(canv.GetListOfPrimitives()):
-                    print("Name: '{0}', Type: '{1}'.".format(entry.GetName(),type(entry)))
-                assert(False)
+                    print("Name: '{0}', Type: '{1}'.".format(
+                        entry.GetName(), type(entry)))
+                assert False
+                return entry
 
             except AssertionError:
-                raise IOError("Cannot find any object in file {0} with path {1}".format(self.tfile,path_to_object))
+                raise IOError(
+                    "Cannot find any object in file {0} with path {1}".format(
+                        self.tfile, path_to_object))
 
     def read_graph(self, path_to_graph):
         """Extract lists of X and Y values from a TGraph."""
         graph = self.retrieve_object(path_to_graph)
         return get_graph_points(graph)
 
-
-
-    def read_hist_2d(self,path_to_hist):
+    def read_hist_2d(self, path_to_hist):
+        """Read in a TH2."""
         hist = self.retrieve_object(path_to_hist)
         return get_hist_2d_points(hist)
-
 
     def read_tree(self, path_to_tree, branchname):
         """Extract a list of values from a tree branch."""
@@ -431,35 +479,41 @@ class RootFileReader(object):
             values.append(getattr(event, branchname))
         return values
 
-    def read_limit_tree(self, path_to_tree="limit", branchname_x="mh", branchname_y="limit"):
+    def read_limit_tree(self,
+                        path_to_tree="limit",
+                        branchname_x="mh",
+                        branchname_y="limit"):
+        """Read in CMS combine limit tree."""
         # store in multidimensional numpy array
         tree = self.tfile.Get(path_to_tree)
-        points = int(tree.GetEntries()/6)
-        values = np.empty((points,7))
+        points = int(tree.GetEntries() / 6)
+        values = np.empty((points, 7))
         limit_values = []
         actual_index = 0
         for index, event in enumerate(tree):
             limit_values.append(getattr(event, branchname_y))
             # every sixth event starts a new limit value
-            if (index % 6 == 5):
+            if index % 6 == 5:
                 x_value = getattr(event, branchname_x)
-                values[actual_index] = [x_value]+limit_values
+                values[actual_index] = [x_value] + limit_values
                 limit_values = []
                 actual_index += 1
         return values
 
 
 def get_hist_2d_points(hist):
+    """Get points from a TH2."""
     points = defaultdict(list)
-    for ix in range(1,hist.GetNbinsX()+1):
-        x = hist.GetXaxis().GetBinCenter(ix)
-        for iy in range(1,hist.GetNbinsY()+1):
-            y = hist.GetYaxis().GetBinCenter(iy)
-            z = hist.GetBinContent(ix,iy)
-            points["x"].append(x)
-            points["y"].append(y)
-            points["z"].append(z)
+    for x_bin in range(1, hist.GetNbinsX() + 1):
+        x_val = hist.GetXaxis().GetBinCenter(x_bin)
+        for y_bin in range(1, hist.GetNbinsY() + 1):
+            y_val = hist.GetYaxis().GetBinCenter(y_bin)
+            z_val = hist.GetBinContent(x_bin, y_bin)
+            points["x"].append(x_val)
+            points["y"].append(y_val)
+            points["z"].append(z_val)
     return points
+
 
 def get_graph_points(graph):
     """
@@ -479,23 +533,27 @@ def get_graph_points(graph):
     """
 
     # Check input
-    if( type(graph) not in [r.TGraph, r.TGraphErrors, r.TGraphAsymmErrors]):
-        raise TypeError("Expected to input to be TGraph or similar, instead got '{0}'".format(type(graph)))
+    if not isinstance(graph, (r.TGraph, r.TGraphErrors, r.TGraphAsymmErrors)):
+        raise TypeError(
+            "Expected to input to be TGraph or similar, instead got '{0}'".
+            format(type(graph)))
 
     # Extract points
     points = defaultdict(list)
 
     for i in range(graph.GetN()):
-        x = r.Double()
-        y = r.Double()
-        graph.GetPoint(i, x, y)
-        points["x"].append(float(x))
-        points["y"].append(float(y))
-        if(type(graph)==r.TGraphErrors):
+        x_val = r.Double()
+        y_val = r.Double()
+        graph.GetPoint(i, x_val, y_val)
+        points["x"].append(float(x_val))
+        points["y"].append(float(y_val))
+        if isinstance(graph, r.TGraphErrors):
             points["dx"].append(graph.GetErrorX(i))
             points["dy"].append(graph.GetErrorY(i))
-        elif(type(graph)==r.TGraphAsymmErrors):
-            points["dx"].append((-graph.GetErrorXlow(i),graph.GetErrorXhigh(i)))
-            points["dy"].append((-graph.GetErrorYlow(i),graph.GetErrorYhigh(i)))
+        elif isinstance(graph, r.TGraphAsymmErrors):
+            points["dx"].append((-graph.GetErrorXlow(i),
+                                 graph.GetErrorXhigh(i)))
+            points["dy"].append((-graph.GetErrorYlow(i),
+                                 graph.GetErrorYhigh(i)))
 
     return points
