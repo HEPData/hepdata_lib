@@ -38,9 +38,8 @@ sub.create_files(outdir)
 The `create_files` function writes all the YAML output files you need and packs them up in a `tar.gz` file ready to be uploaded.
 
 #### Tables and Variables
-The real data is stored in Variables and Tables. Variables come in two flavors: *independent* and *dependent*. Whether a variable is independent or dependent may change with context, but the general idea is that the independent variable is what you put in, the dependent variable is what comes out. If you have a typical one-dimensional plot, where you show a cross-section limit as a function of the mass of a hypothetical new particles, the mass would be independent, the limit dependent. The number of variables is not limited, e.g. if you have a scenario where you give N results as a function of M model parameters, you can also have M independent and N dependent variables. All the variables are then bundled up and added into a Table object.
-
-
+The real data is stored in Variables and Tables. Variables come in two flavors: *independent* and *dependent*. Whether a variable is independent or dependent may change with context, but the general idea is that the independent variable is what you put in, the dependent variable is what comes out. Example: if you calculate a cross-section limit as a function of the mass of a hypothetical new particles, the mass would be independent, the limit dependent. The number of either type of variables is not limited, so if you have a scenario where you give N results as a function of M model parameters, you can have N dependent and M independent variables.
+All the variables are then bundled up and added into a Table object.
 
 Let's see what this looks like in code:
 
@@ -51,15 +50,26 @@ mass = Variable("Graviton mass",
                 is_independent=True,
                 is_binned=False,
                 units="GeV")
+mass.values = [ 1, 2, 3, ...]
 
 limit = Variable("Cross-section limit",
                  is_independent=False,
                  is_binned=False,
                  units="fb")
 
+limit.values = [ 10, 5, 2, ...]
+
 table = Table("Graviton limits")
 table.add_variable(mass)
 table.add_variable(limit)
 ```
+
+That's it! We have successfully created the Table and Variables and stored our results in them. The only task left is to tell the Submission object about our new Table:
+
+```
+sub.add_table(table)
+```
+
+After we have done this, the table will be included in the output files the `Submission.create_files` function writes.
 
 
