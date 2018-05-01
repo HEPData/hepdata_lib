@@ -4,7 +4,7 @@
 import random
 from unittest import TestCase
 import test_utilities
-from hepdata_lib import Variable
+from hepdata_lib import Variable, Uncertainty
 
 
 class TestVariable(TestCase):
@@ -31,3 +31,33 @@ class TestVariable(TestCase):
             testvar.scale_values(1. / factor)
             self.assertTrue(all(test_utilities.tuple_compare(x, y)
                                 for x, y in zip(testvar.values, values)))
+
+    def test_add_uncertainty(self):
+        '''Test behavior of Variable.add_uncertainty function'''
+        var = Variable("testvar")
+        var.is_binned = False
+
+        var.values = range(5)
+
+        # Normal behavior
+        unc = Uncertainty("testunc")
+        unc.is_symmetric = True
+        unc.values = [x * 0.1 for x in var.values]
+
+        var.add_uncertainty(unc)
+
+        self.assertTrue(var.uncertainties[0] == unc)
+
+        # Exceptions
+        def wrong_input_type():
+            '''Call add_uncertainty with invalid input type.'''
+            var.add_uncertainty("this is not a proper input argument")
+        self.assertRaises(TypeError, wrong_input_type)
+
+        def wrong_input_properties():
+            '''Call add_uncertainty with invalid input properties.'''
+            unc2 = Uncertainty("testunc2")
+            unc2.is_symmetric = True
+            unc2.values = unc.values + [3]
+            var.add_uncertainty(unc2)
+        self.assertRaises(ValueError, wrong_input_properties)
