@@ -46,9 +46,20 @@ class TestVariable(TestCase):
 
         var.add_uncertainty(unc)
 
+        self.assertTrue(len(var.uncertainties) == 1)
         self.assertTrue(var.uncertainties[0] == unc)
 
-        # Exceptions
+        # Reset variable but leave uncertainty as is
+        var.uncertainties = []
+        var.values = []
+        var.add_uncertainty(unc)
+
+        self.assertTrue(len(var.uncertainties) == 1)
+        self.assertTrue(var.uncertainties[0] == unc)
+
+        # Exception testing
+        var.values = range(5)
+
         def wrong_input_type():
             '''Call add_uncertainty with invalid input type.'''
             var.add_uncertainty("this is not a proper input argument")
