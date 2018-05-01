@@ -112,6 +112,19 @@ class Variable(object):
             qualifier["units"] = units
         self.qualifiers.append(qualifier)
 
+    def add_uncertainty(self, uncertainty):
+        """Add an uncertainty."""
+        if not isinstance(uncertainty, Uncertainty):
+            raise TypeError("Expected 'Uncertainty', instead got '{0}'.".format(type(uncertainty)))
+
+        lenvar = len(self.values)
+        lenunc = len(uncertainty.values)
+        if(lenvar and (lenvar is not lenunc)):
+            raise ValueError("Length of uncertainty list ({0})" \
+            "is not the same as length of Variable" \
+            "values list ({1})!.".format(lenunc, lenvar))
+        self.uncertainties.append(uncertainty)
+
     def make_dict(self):
         """Create a dictionary."""
         tmp = {}
