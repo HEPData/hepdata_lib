@@ -6,7 +6,7 @@ Setup
 Setup for users
 -----------------
 
-The library is available for installation as a pypi package and can be installed with pip:
+The library is available for installation as a pypi package and can be installed from the terminal with pip:
 
 
 ::
@@ -30,7 +30,7 @@ The general comments about installing a python package (see :ref:`sec-setup-user
 If you would like to develop the code, you need to install the package from the up-to-date git repository rather than the stable release in pypi. To do this, you can use the pip `-e` syntax:
 
 ::
-    
+
     cd $SOMEPATH
     git clone git@github.com:clelange/hepdata_lib.git
 
@@ -45,4 +45,34 @@ Any changes you now make in your local copy of the repository (editing files, ch
 Setting up a virtual environment
 --------------------------------
 
-TODO
+The goal of a virtual environment is to have a clean python copy to work with for each of possibly many projects you work on. This makes it easy to keep track of which python packages you installed for what purpose and gives you a way of installing different versions of the package.
+
+For documentation on how to set up and work with virtual environments, please check out the virtualenv_ and virtualenvwrapper_ packages.
+
+.. _virtualenv: https://pypi.org/project/virtualenv/
+.. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.io/en/latest/
+
+Once you have both of them setup, you can create a virtual environment to work in:
+
+::
+
+   mkvirtualenv hepdata_pypi
+   pip install hepdata_lib
+
+You can then have a second virtual environment for installing the development branch:
+
+::
+
+    mkvirtualenv hepdata_git
+    pip install -e $SOMEPATH/hepdata_lib
+
+You can always activate the virtual environment in another shell by calling the workon command, which also allows you to easily switch between the two instances:
+
+::
+
+    workon hepdata_pypi
+    python myscript.py # Execute script using pypi package
+
+
+    workon hepdata_git
+    python myscript.py # Execute script using development branch

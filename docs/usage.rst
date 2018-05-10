@@ -1,4 +1,4 @@
-Using the hepdata_lib
+Usage
 =======================
 
 The library aims to offer tools for two main operations:
@@ -10,8 +10,8 @@ All of this happens in a user-friendly python interface. :ref:`sec-usage-reading
 
 In the following sections, there are
 
-HEPData and its format
-----------------------
+HEPData and its data format
+-----------------------------
 
 The HEPData data model revolves around **Tables** and **Variables**. At its core, a Variable is a one-dimensional array of numbers with some additional (meta-)data, such as uncertainties, units, etc. assigned to it. A Table is simply a set of multiple Variables. This definition will immediately make sense to you when you think of a general table, which has multiple columns representing different variables.
 
