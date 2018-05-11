@@ -15,12 +15,12 @@ Welcome to hepdata_lib's documentation!
    README
    setup
    usage
-
+   source/modules
    observables
    partlist
    phrases
 
-
+   
 
 
 
