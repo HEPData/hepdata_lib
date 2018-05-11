@@ -373,7 +373,12 @@ class Uncertainty(object):
 
     @property
     def values(self):
-        """Value getter."""
+        """
+        Value getter.
+
+        :returns: list -- values, either as a direct list of values if uncertainty is symmetric,
+            or list of tuples if it is asymmetric.
+        """
         return self._values
 
     @values.setter
@@ -382,6 +387,10 @@ class Uncertainty(object):
         Setter method
 
         Can perform list subtraction relative to nominal value.
+
+        :param values: New values to set.
+        :type values: list
+
         """
         if nominal:
             tmp = []
@@ -403,7 +412,12 @@ class Uncertainty(object):
                 self._values = values
 
     def scale_values(self, factor):
-        """Multiply each value by constant factor."""
+        """
+        Multiply each value by constant factor.
+
+        :param factor: Value to multiply by.
+        :type factor: float
+        """
         if self.is_symmetric:
             self.values = [factor * x for x in self.values]
         else:
@@ -415,27 +429,40 @@ class RootFileReader(object):
     """Easily extract information from ROOT histograms, graphs, etc"""
 
     def __init__(self, tfile):
-        self.set_file(tfile)
+        self._tfile = None
+        self.tfile = tfile
 
     def __del__(self):
-        if self.tfile:
-            self.tfile.Close()
+        if self._tfile:
+            self._tfile.Close()
 
-    def set_file(self, tfile):
-        """Define the TFile we should read from."""
+    @property
+    def tfile(self):
+        """The TFile this reader reads from."""
+        return self._tfile
+
+    @tfile.setter
+    def tfile(self, tfile):
+        """
+        Define the TFile to should read from.
+
+        :param tfile: ROOT file to read from.
+        Can either be an already open TFile or a path to the file on disk.
+        :type tfile: TFile or str
+        """
         if isinstance(tfile, str):
             if (os.path.exists(tfile) and tfile.endswith(".root")):
-                self.tfile = r.TFile(tfile)
+                self._tfile = r.TFile(tfile)
             else:
                 raise IOError("RootReader: File does not exist: " + tfile)
         elif isinstance(tfile, r.TFile):
-            self.tfile = tfile
+            self._tfile = tfile
         else:
             raise ValueError(
                 "RootReader: Encountered unkonown type of variable passed as tfile argument: "
-                + type(tfile))
+                + str(type(tfile)))
 
-        if not self.tfile:
+        if not self._tfile:
             raise IOError("RootReader: File not opened properly.")
 
     def retrieve_object(self, path_to_object):
@@ -444,11 +471,15 @@ class RootFileReader(object):
 
         There are two use cases:
         1)  The object is saved under the exact path given.
-            In this case, the function behaves identically to TFile::Get.
-
+        In this case, the function behaves identically to TFile.Get.
         2)  The object is saved as a primitive in a TCanvas.
-            In this case, the path has to be formatted as
-            PATH_TO_CANVAS/NAME_OF_PRIMITIVE
+        In this case, the path has to be formatted as
+        PATH_TO_CANVAS/NAME_OF_PRIMITIVE
+
+
+        :param path_to_object: Absolute path in current TFile.
+        :type path_to_object: str.
+        :returns: TObject -- The object corresponding to the given path.
         """
         obj = self.tfile.Get(path_to_object)
 
@@ -483,29 +514,72 @@ class RootFileReader(object):
                         self.tfile, path_to_object))
 
     def read_graph(self, path_to_graph):
-        """Extract lists of X and Y values from a TGraph."""
+        """Extract lists of X and Y values from a TGraph.
+
+        :param path_to_graph: Absolute path in the current TFile.
+        :type path_to_graph: str
+
+        :returns: dict -- For a description of the contents,
+            check the documentation of the get_graph_points function.
+
+        """
         graph = self.retrieve_object(path_to_graph)
         return get_graph_points(graph)
 
     def read_hist_2d(self, path_to_hist):
-        """Read in a TH2."""
+        """Read in a TH2.
+
+
+        :param path_to_hist: Absolute path in the current TFile.
+        :type path_to_hist: str
+
+        :returns: dict -- For a description of the contents,
+            check the documentation of the get_hist_2d_points function
+        """
         hist = self.retrieve_object(path_to_hist)
         return get_hist_2d_points(hist)
 
-    def read_tree(self, path_to_tree, branchname):
-        """Extract a list of values from a tree branch."""
+    def read_tree(self, path_to_tree, branch_name):
+        """Extract a list of values from a tree branch.
+
+        :param path_to_tree: Absolute path in the current TFile.
+        :type path_to_tree: str
+
+        :param branch_name: Name of branch to read.
+        :type branch_name: str
+
+        :returns: list -- The values saved in the tree branch.
+
+        """
         tree = self.tfile.Get(path_to_tree)
 
         values = []
         for event in tree:
-            values.append(getattr(event, branchname))
+            values.append(getattr(event, branch_name))
         return values
 
     def read_limit_tree(self,
                         path_to_tree="limit",
                         branchname_x="mh",
                         branchname_y="limit"):
-        """Read in CMS combine limit tree."""
+        """
+        Read in CMS combine limit tree.
+
+        :param path_to_tree: Absolute path in the current TFile
+        :type path_to_tree: str
+
+        :param branchname_x: Name of the branch that identifies each of the toys/parameter points.
+        :type branchname_x: str
+
+        :param branchname_y: Name of the branch that contains the limit values.
+        :type branchname_y: str
+
+        :returns: list -- Lists with 1+5 entries per
+            toy/parameter point in the file.
+            The entries correspond to the one number
+            in the x branch and the five numbers in the y branch.
+
+        """
         # store in multidimensional numpy array
         tree = self.tfile.Get(path_to_tree)
         points = int(tree.GetEntries() / 6)
@@ -524,7 +598,14 @@ class RootFileReader(object):
 
 
 def get_hist_2d_points(hist):
-    """Get points from a TH2."""
+    """
+    Get points from a TH2.
+
+    :param hist: Histogram to extract points from
+    :type hist: TH2D
+
+    :returns: dict -- Lists of x/y/z values saved in dictionary. Corresponding keys are "x"/"y"/"z"
+    """
     points = defaultdict(list)
     for x_bin in range(1, hist.GetNbinsX() + 1):
         x_val = hist.GetXaxis().GetBinCenter(x_bin)
@@ -541,16 +622,14 @@ def get_graph_points(graph):
     """
     Extract lists of X and Y values from a TGraph.
 
-    A dictionary is returned with the following key-value pairs:
+    :param graph: The graph to extract values from.
+    :type graph: TGraph, TGraphErrors, TGraphAsymmErrors
 
-    key "x" -> value list of x values
-    key "y" -> value list of y values
-
-    If the input graph is a TGraphErrors (TGraphAsymmErrors), the dictionary also contains
-
-
-    key "dx" -> value list of x uncertainties (tuple of lower, upper uncertainty)
-    key "dy" -> value list of y uncertainties (tuple of lower, upper uncertainty)
+    :returns: dict -- Lists of x, y values saved in dictionary (keys are "x" and "y").
+        If the input graph is a TGraphErrors (TGraphAsymmErrors),
+        the dictionary also contains the errors (keys "dx" and "dy").
+        For symmetric errors, the errors are simply given as a list of values.
+        For asymmetric errors, a list of tuples of (down,up) values is given.
 
     """
 

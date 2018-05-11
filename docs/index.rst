@@ -11,7 +11,18 @@ Welcome to hepdata_lib's documentation!
    :caption: Contents:
    :glob:
 
-   *
+
+   README
+   setup
+   usage
+   source/modules
+   observables
+   partlist
+   phrases
+
+   
+
+
 
 Indices and tables
 ==================
