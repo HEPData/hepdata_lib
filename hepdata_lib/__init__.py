@@ -377,7 +377,7 @@ class Uncertainty(object):
         Value getter.
 
         :returns: list -- values, either as a direct list of values if uncertainty is symmetric,
-        or list of tuples if it is asymmetric.
+            or list of tuples if it is asymmetric.
         """
         return self._values
 
@@ -516,12 +516,12 @@ class RootFileReader(object):
     def read_graph(self, path_to_graph):
         """Extract lists of X and Y values from a TGraph.
 
-
         :param path_to_graph: Absolute path in the current TFile.
         :type path_to_graph: str
 
         :returns: dict -- For a description of the contents,
-        check the documentation of the get_graph_points function
+            check the documentation of the get_graph_points function.
+
         """
         graph = self.retrieve_object(path_to_graph)
         return get_graph_points(graph)
@@ -534,7 +534,7 @@ class RootFileReader(object):
         :type path_to_hist: str
 
         :returns: dict -- For a description of the contents,
-        check the documentation of the get_hist_2d_points function
+            check the documentation of the get_hist_2d_points function
         """
         hist = self.retrieve_object(path_to_hist)
         return get_hist_2d_points(hist)
@@ -575,9 +575,9 @@ class RootFileReader(object):
         :type branchname_y: str
 
         :returns: list -- Lists with 1+5 entries per
-        toy/parameter point in the file.
-        The entries correspond to the one number
-        in the x branch and the five numbers in the y branch.
+            toy/parameter point in the file.
+            The entries correspond to the one number
+            in the x branch and the five numbers in the y branch.
 
         """
         # store in multidimensional numpy array
@@ -626,10 +626,10 @@ def get_graph_points(graph):
     :type graph: TGraph, TGraphErrors, TGraphAsymmErrors
 
     :returns: dict -- Lists of x, y values saved in dictionary (keys are "x" and "y").
-    If the input graph is a TGraphErrors (TGraphAsymmErrors),
-    the dictionary also contains the errors (keys "dx" and "dy").
-    For symmetric errors, the errors are simply given as a list of values.
-    For asymmetric errors, a list of tuples of (down,up) values is given.
+        If the input graph is a TGraphErrors (TGraphAsymmErrors),
+        the dictionary also contains the errors (keys "dx" and "dy").
+        For symmetric errors, the errors are simply given as a list of values.
+        For asymmetric errors, a list of tuples of (down,up) values is given.
 
     """
 
