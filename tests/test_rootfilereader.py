@@ -117,8 +117,8 @@ class TestRootFileReader(TestCase):
         self.assertTrue(all(data["y"] == y))
 
         # Downward error has a minus sign -> flip
-        self.assertTrue(data["dx"] == zip([-tmp for tmp in dx1],dx2))
-        self.assertTrue(data["dy"] == zip([-tmp for tmp in dy1],dy2))
+        self.assertTrue(data["dx"] == list(zip([-tmp for tmp in dx1],dx2)))
+        self.assertTrue(data["dy"] == list(zip([-tmp for tmp in dy1],dy2)))
 
         # Clean up
         os.remove(filepath)
