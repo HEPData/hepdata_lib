@@ -429,13 +429,20 @@ class RootFileReader(object):
     """Easily extract information from ROOT histograms, graphs, etc"""
 
     def __init__(self, tfile):
-        self.set_file(tfile)
+        self._tfile = None
+        self.tfile = tfile
 
     def __del__(self):
-        if self.tfile:
-            self.tfile.Close()
+        if self._tfile:
+            self._tfile.Close()
 
-    def set_file(self, tfile):
+    @property
+    def tfile(self):
+        """The TFile this reader reads from."""
+        return self._tfile
+
+    @tfile.setter
+    def tfile(self, tfile):
         """
         Define the TFile to should read from.
 
@@ -445,17 +452,17 @@ class RootFileReader(object):
         """
         if isinstance(tfile, str):
             if (os.path.exists(tfile) and tfile.endswith(".root")):
-                self.tfile = r.TFile(tfile)
+                self._tfile = r.TFile(tfile)
             else:
                 raise IOError("RootReader: File does not exist: " + tfile)
         elif isinstance(tfile, r.TFile):
-            self.tfile = tfile
+            self._tfile = tfile
         else:
             raise ValueError(
                 "RootReader: Encountered unkonown type of variable passed as tfile argument: "
-                + type(tfile))
+                + str(type(tfile)))
 
-        if not self.tfile:
+        if not self._tfile:
             raise IOError("RootReader: File not opened properly.")
 
     def retrieve_object(self, path_to_object):
