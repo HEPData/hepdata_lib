@@ -12,4 +12,5 @@ fi
 
 # Workaround for uggy PyYaml v 3.12 on pypi
 # Can be removed once PyYaml 3.13 is released
-easy_install git+https://github.com/yaml/pyyaml
+mkdir ./yaml
+easy_install git+https://github.com/yaml/pyyaml --prefix="./yaml"
