@@ -12,4 +12,4 @@ fi
 
 # Workaround for uggy PyYaml v 3.12 on pypi
 # Can be removed once PyYaml 3.13 is released
-pip install git+https://github.com/yaml/pyyaml
+easy_install git+https://github.com/yaml/pyyaml
