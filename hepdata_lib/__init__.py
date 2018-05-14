@@ -7,8 +7,8 @@ import fnmatch
 import math
 from collections import defaultdict
 import subprocess
-import numpy as np
 import yaml
+import numpy as np
 import ROOT as r
 
 
