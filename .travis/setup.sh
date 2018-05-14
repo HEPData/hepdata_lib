@@ -4,7 +4,7 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     brew update
     brew cask uninstall --force oclint
     brew upgrade python
-#    brew install root
+    brew install root
 
     # Workaround for buggy PyYaml v 3.12 on pypi
     # Can be removed once PyYaml 3.13 is released
