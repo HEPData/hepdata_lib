@@ -1,5 +1,4 @@
 """hepdata_lib main."""
-# pylint:disable=wrong-import-order
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -8,8 +7,8 @@ import fnmatch
 import math
 from collections import defaultdict
 import subprocess
-import numpy as np
 import yaml
+import numpy as np
 import ROOT as r
 
 
