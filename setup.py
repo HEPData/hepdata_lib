@@ -1,8 +1,33 @@
 """pypi package setup."""
+from __future__ import print_function
 import codecs
+import os
 from os import path
+import subprocess
 from setuptools import setup, find_packages
-import ROOT  # pylint: disable=W0611
+
+def root_install():
+    """Make sure ROOT is installed before import"""
+    try:
+        import ROOT # pylint: disable=W0611
+        print("setup.py: ROOT already installed.")
+    except ImportError:
+        print("setup.py: Installing ROOT.")
+        url = "https://root.cern.ch/download/root_v6.12.06.Linux-ubuntu14-x86_64-gcc4.8.tar.gz"
+        subprocess.call(["curl", "-O", url])
+        subprocess.call("tar", "xzvf", path.basename(url))
+
+        cmd = ["bash", "-c", "cd root && source bin/thisroot.sh && env"]
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+
+        for line in proc.stdout:
+            (key, _, value) = line.partition("=")
+            os.environ[key] = value
+
+        proc.communicate()
+        import ROOT # pylint: disable=W0611
+
+root_install()
 
 DEPS = ['numpy', 'PyYAML']
 
