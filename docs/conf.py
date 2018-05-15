@@ -160,3 +160,4 @@ texinfo_documents = [
 
 
 # -- Extension configuration -------------------------------------------------
+autodoc_mock_imports = ["ROOT"]
