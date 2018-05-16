@@ -1,10 +1,18 @@
 """pypi package setup."""
 import codecs
 from os import path
+import sys
 from setuptools import setup, find_packages
-import ROOT  # pylint: disable=W0611
 
-DEPS = ['numpy', 'PyYAML']
+
+try:
+    import ROOT  # pylint: disable=W0611
+except ImportError:
+    import mock
+    sys.modules["ROOT"] = mock.Mock()
+
+
+DEPS = ['numpy', 'PyYAML', 'mock']
 
 HERE = path.abspath(path.dirname(__file__))
 
