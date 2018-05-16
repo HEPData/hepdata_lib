@@ -128,7 +128,7 @@ class Variable(object):
 
         lenvar = len(self.values)
         lenunc = len(uncertainty.values)
-        if(lenvar and (lenvar is not lenunc)):
+        if lenvar and (lenvar is not lenunc):
             raise ValueError("Length of uncertainty list ({0})" \
             "is not the same as length of Variable" \
             "values list ({1})!.".format(lenunc, lenvar))
@@ -451,7 +451,7 @@ class RootFileReader(object):
         :type tfile: TFile or str
         """
         if isinstance(tfile, str):
-            if (os.path.exists(tfile) and tfile.endswith(".root")):
+            if os.path.exists(tfile) and tfile.endswith(".root"):
                 self._tfile = r.TFile(tfile)
             else:
                 raise IOError("RootReader: File does not exist: " + tfile)
