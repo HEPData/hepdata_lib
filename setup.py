@@ -9,6 +9,7 @@ try:
     import ROOT  # pylint: disable=W0611
 except ImportError:
     import mock
+    print("SETUP: Could not import ROOT. Fallback to mock.")
     sys.modules["ROOT"] = mock.Mock()
 
 
