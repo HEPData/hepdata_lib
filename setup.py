@@ -12,7 +12,7 @@ except ImportError:
     sys.modules["ROOT"] = mock.Mock()
 
 
-DEPS = ['numpy', 'PyYAML', 'mock']
+DEPS = ['numpy', 'PyYAML', 'enum34', 'mock']
 
 HERE = path.abspath(path.dirname(__file__))
 
