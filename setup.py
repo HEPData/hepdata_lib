@@ -1,4 +1,5 @@
 """pypi package setup."""
+from __future__ import print_function
 import codecs
 from os import path
 import sys
