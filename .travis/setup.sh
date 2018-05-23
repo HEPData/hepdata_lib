@@ -17,5 +17,5 @@ elif [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
     # Workaround for buggy PyYaml v 3.12 on pypi
     # Can be removed once PyYaml 3.13 is released
     pip install git+https://github.com/yaml/pyyaml@b6cbfeec35e019734263a8f4e6a3340e94fe0a4f
+    pip install --upgrade enum34 pytest_pylint configparser astroid
 fi
-
