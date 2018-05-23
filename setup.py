@@ -13,7 +13,7 @@ except ImportError:
     sys.modules["ROOT"] = mock.Mock()
 
 
-DEPS = ['numpy', 'PyYAML', 'enum34', 'mock']
+DEPS = ['numpy', 'PyYAML', 'pylint', 'enum34', 'mock']
 
 HERE = path.abspath(path.dirname(__file__))
 
@@ -40,7 +40,7 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     zip_safe=False,
     install_requires=DEPS,
-    setup_requires=['pytest-runner', 'pytest-pylint'],
+    setup_requires=['pytest-runner', 'pytest-pylint', 'pylint'],
     tests_require=['pytest', 'pylint'],
     project_urls={
         'Documentation': 'https://hepdata-lib.readthedocs.io',
