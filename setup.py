@@ -1,8 +1,12 @@
 """pypi package setup."""
+from __future__ import print_function
 import codecs
 from os import path
 from setuptools import setup, find_packages
-import ROOT  # pylint: disable=W0611
+try:
+    import ROOT  # pylint: disable=W0611
+except ImportError:
+    print("ROOT is required by this library.")
 
 DEPS = ['numpy', 'PyYAML']
 
