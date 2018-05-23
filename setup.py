@@ -1,20 +1,10 @@
 """pypi package setup."""
-from __future__ import print_function
 import codecs
 from os import path
-import sys
 from setuptools import setup, find_packages
+import ROOT  # pylint: disable=W0611
 
-
-try:
-    import ROOT  # pylint: disable=W0611
-except ImportError:
-    import mock
-    print("SETUP: Could not import ROOT. Fallback to mock.")
-    sys.modules["ROOT"] = mock.Mock()
-
-
-DEPS = ['numpy', 'PyYAML', 'pylint', 'enum34', 'mock']
+DEPS = ['numpy', 'PyYAML']
 
 HERE = path.abspath(path.dirname(__file__))
 
@@ -41,7 +31,7 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     zip_safe=False,
     install_requires=DEPS,
-    setup_requires=['pytest-runner', 'pytest-pylint', 'pylint'],
+    setup_requires=['pytest-runner', 'pytest-pylint'],
     tests_require=['pytest', 'pylint'],
     project_urls={
         'Documentation': 'https://hepdata-lib.readthedocs.io',
