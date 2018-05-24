@@ -9,7 +9,7 @@ matrix:
 
 
 before_install:
-  - ./.travis/setup.sh
+  - travis_retry ./.travis/setup.sh
 
 install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cd root; source bin/thisroot.sh; cd ..; fi

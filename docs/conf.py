@@ -17,6 +17,26 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../../hepdata_lib'))
 
+if (sys.version_info > (3, 3)):
+    # Python 3.3
+    from unittest.mock import MagicMock
+else:
+    # Python 2 and < 3.3
+    from mock import Mock as MagicMock
+
+
+class Mock(MagicMock):
+    """Mocking class for missing packages."""
+    @classmethod
+    def __getattr__(cls, name):
+        return MagicMock()
+
+try:
+    import ROOT  # pylint: disable=W0611
+except ImportError:
+    MOCK_MODULES = ['ROOT']
+    sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+
 
 # -- Project information -----------------------------------------------------
 
@@ -160,3 +180,4 @@ texinfo_documents = [
 
 
 # -- Extension configuration -------------------------------------------------
+autodoc_mock_imports = ["ROOT"]
