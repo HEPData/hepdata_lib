@@ -86,7 +86,7 @@ class Variable(object):
 
     @values.setter
     def values(self, value_list):
-        """Set values."""
+        """Value Setter."""
         if self.is_binned:
             self._values = [(float(x[0]), float(x[1])) for x in value_list]
         else:
@@ -135,7 +135,19 @@ class Variable(object):
         self.uncertainties.append(uncertainty)
 
     def make_dict(self):
-        """Create a dictionary."""
+        """
+        Return all data in this Variable as a dictionary.
+
+        The dictionary structure follows the hepdata conventions,
+        so that dumping this dictionary to YAML will give a file
+        that hepdata can read.
+
+        Uncertainties associated to this Variable are also written into
+        the dictionary.
+
+        This function is intended to be called internally by the Submission object.
+        Except for debugging purposes, no user should have to call this function.
+        """
         tmp = {}
         tmp["header"] = {"name": self.name, "units": self.units}
 
@@ -224,7 +236,12 @@ class Table(object):
         self.variables.append(variable)
 
     def write_yaml(self, outdir="."):
-        """Write the table (and all its variables) to a YAML file."""
+        """
+        Write the table (and all its variables) to a YAML file.
+
+        This function is intended to be called internally by the Submission object.
+        Except for debugging purposes, no user should have to call this function.
+        """
         # Put all variables together into a table and write
         table = {}
         table["independent_variables"] = []
@@ -320,7 +337,12 @@ class Submission(object):
         self.comment = raw
 
     def create_files(self, outdir="."):
-        """Create the output files."""
+        """
+        Create the output files.
+
+        Implicitly triggers file creation for all tables that have been added to the submission,
+        all variables associated to the tables and all uncertainties associated to the variables.
+        """
         if not os.path.exists(outdir):
             os.makedirs(outdir)
 
@@ -384,7 +406,7 @@ class Uncertainty(object):
     @values.setter
     def values(self, values, nominal=None):
         """
-        Setter method
+        Value setter.
 
         Can perform list subtraction relative to nominal value.
 
@@ -444,7 +466,7 @@ class RootFileReader(object):
     @tfile.setter
     def tfile(self, tfile):
         """
-        Define the TFile to should read from.
+        Define the TFile to read from.
 
         :param tfile: ROOT file to read from.
         Can either be an already open TFile or a path to the file on disk.
