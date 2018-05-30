@@ -403,34 +403,50 @@ class Uncertainty(object):
         return self._values
 
     @values.setter
-    def values(self, values, nominal=None):
+    def values(self, values):
         """
         Value setter.
-
-        Can perform list subtraction relative to nominal value.
 
         :param values: New values to set.
         :type values: list
 
         """
-        if nominal:
-            tmp = []
-            for (down_val, up_val), nom_val in zip(values, nominal):
-                tmp.append((float(down_val - nom_val), float(up_val - nom_val)))
-            self._values = tmp
+        if self.is_symmetric:
+            try:
+                assert all([x >= 0 for x in values])
+            except AssertionError:
+                raise ValueError(
+                    "Uncertainty::set_values: Wrong signs detected!\
+                     For symmetric uncertainty, all uncertainty values should be >=0."
+                )
+            self._values = values
         else:
-            if not self.is_symmetric:
-                try:
-                    assert all([x[1] >= 0 for x in values])
-                    assert all([x[0] <= 0 for x in values])
-                except AssertionError:
-                    raise ValueError(
-                        "Uncertainty::set_values: Wrong signs detected! First\
-                         element of uncertainty tuple should be <=0, second >=0."
-                    )
-                self._values = [(float(x[0]), float(x[1])) for x in values]
-            else:
-                self._values = values
+            try:
+                assert all([x[1] >= 0 for x in values])
+                assert all([x[0] <= 0 for x in values])
+            except AssertionError:
+                raise ValueError(
+                    "Uncertainty::set_values: Wrong signs detected!\
+                    For asymmetric uncertainty, first element of uncertainty tuple\
+                    should be <=0, second >=0."
+                )
+            self._values = [(float(x[0]), float(x[1])) for x in values]
+
+
+    def set_values_from_intervals(self, intervals, nominal):
+        """
+        Set values relative to set of nominal valuesself.
+        Useful if you do not have the actual uncertainty available,
+        but the upper and lower boundaries of an interval.
+
+        :param intervals: Lower and upper interval boundaries
+        :type intervals: List of tuples of two floats
+
+        :param nominal: Interval centers
+        :type nominal: List of floats
+        """
+        subtracted_values = [(x[0] - ref, x[1] - ref) for x, ref in zip(intervals, nominal)]
+        self.values = subtracted_values
 
     def scale_values(self, factor):
         """
