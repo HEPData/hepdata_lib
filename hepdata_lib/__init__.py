@@ -282,7 +282,6 @@ class Table(object):
                 explicit_start=True)
         return os.path.basename(outfile_path)
 
-
 class Submission(object):
     """
     Top-level object of a HEPData submission.
@@ -626,7 +625,11 @@ def get_hist_2d_points(hist):
     :param hist: Histogram to extract points from
     :type hist: TH2D
 
-    :returns: dict -- Lists of x/y/z values saved in dictionary. Corresponding keys are "x"/"y"/"z"
+    :returns: dict -- Lists of x/y/z values saved in dictionary.
+    Corresponding keys are "x"/"y" for the values of the bin center on the
+    respective axis. The bin edges may be found under "x_edges" and "y_edges"
+    as a list of tuples (lower_edge, upper_edge).
+    The bin contents are stored under the "z" key.
     """
     points = {}
     for key in ["x", "y", "x_edges", "y_edges", "z"]:
