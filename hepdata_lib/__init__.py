@@ -628,15 +628,26 @@ def get_hist_2d_points(hist):
 
     :returns: dict -- Lists of x/y/z values saved in dictionary. Corresponding keys are "x"/"y"/"z"
     """
-    points = defaultdict(list)
+    points = {}
+    for key in ["x", "y", "x_edges", "y_edges", "z"]:
+        points[key] = []
+
     for x_bin in range(1, hist.GetNbinsX() + 1):
         x_val = hist.GetXaxis().GetBinCenter(x_bin)
+        width_x = hist.GetXaxis().GetBinWidth(x_bin)
         for y_bin in range(1, hist.GetNbinsY() + 1):
             y_val = hist.GetYaxis().GetBinCenter(y_bin)
             z_val = hist.GetBinContent(x_bin, y_bin)
+            width_y = hist.GetXaxis().GetBinWidth(y_bin)
+
             points["x"].append(x_val)
+            points["x_edges"].append((x_val - width_x / 2, x_val + width_x / 2))
+
             points["y"].append(y_val)
+            points["y_edges"].append((y_val - width_y / 2, y_val + width_y / 2))
+
             points["z"].append(z_val)
+
     return points
 
 
