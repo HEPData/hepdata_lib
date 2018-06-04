@@ -653,10 +653,10 @@ def get_hist_2d_points(hist):
     :type hist: TH2D
 
     :returns: dict -- Lists of x/y/z values saved in dictionary.
-    Corresponding keys are "x"/"y" for the values of the bin center on the
-    respective axis. The bin edges may be found under "x_edges" and "y_edges"
-    as a list of tuples (lower_edge, upper_edge).
-    The bin contents and errors are stored under the "z" and "dz" keys.
+        Corresponding keys are "x"/"y" for the values of the bin center on the
+        respective axis. The bin edges may be found under "x_edges" and "y_edges"
+        as a list of tuples (lower_edge, upper_edge).
+        The bin contents and errors are stored under the "z" and "dz" keys.
     """
     points = {}
     for key in ["x", "y", "x_edges", "y_edges", "z", "dz"]:
@@ -693,9 +693,9 @@ def get_hist_1d_points(hist):
     :type hist: TH1D
 
     :returns: dict -- Lists of x/y values saved in dictionary.
-    Corresponding keys are "x" for the value of the bin centerself.
-    The bin edges may be found under "x_edges" as a list of tuples (lower_edge, upper_edge).
-    The bin contents are stored under the "y" key.
+        Corresponding keys are "x" for the value of the bin centerself.
+        The bin edges may be found under "x_edges" as a list of tuples (lower_edge, upper_edge).
+        The bin contents are stored under the "y" key.
     """
     points = {}
     for key in ["x", "y", "x_edges", "dy"]:
