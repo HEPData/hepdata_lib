@@ -123,4 +123,30 @@ class TestRootFileReader(TestCase):
         # Clean up
         os.remove(filepath)
 
+        def test_read_hist_1d(self):
+            """Test the read_hist_1d function."""
+            fpath = "testfile.root"
 
+            # Create test histogram
+            N = 100
+            y_values = list(np.random.uniform(-1e3,1e3,N))
+            dy_values = list(np.random.uniform(-1e3,1e3,N))
+
+            hist = r.TH1D("test","test",N,0,N)
+            for i in hist.GetNbinsX():
+                hist.SetBinContent(i,y_values[i])
+                hist.SetBinError(i,dy_values[i])
+
+            f = ROOT.TFile(fpath,"RECREATE")
+            hist.SetDirectory(f)
+            hist.Write("test")
+            f.Close()
+
+            reader = RootFileReader(fpath)
+            points = reader.read_hist_1d("test")
+
+            self.assertTrue(set(["x", "y", "x_edges", "dy"]) == set(points.keys()))
+
+            self.assertTrue(points["x"] == [0.5 + x for x in range(N)])
+            self.assertTrue(points["y"] == y_values)
+            self.assertTrue(points["dy"] == dy_values)
