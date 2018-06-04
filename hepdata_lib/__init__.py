@@ -656,10 +656,10 @@ def get_hist_2d_points(hist):
     Corresponding keys are "x"/"y" for the values of the bin center on the
     respective axis. The bin edges may be found under "x_edges" and "y_edges"
     as a list of tuples (lower_edge, upper_edge).
-    The bin contents are stored under the "z" key.
+    The bin contents and errors are stored under the "z" and "dz" keys.
     """
     points = {}
-    for key in ["x", "y", "x_edges", "y_edges", "z"]:
+    for key in ["x", "y", "x_edges", "y_edges", "z", "dz"]:
         points[key] = []
 
     for x_bin in range(1, hist.GetNbinsX() + 1):
@@ -668,6 +668,8 @@ def get_hist_2d_points(hist):
         for y_bin in range(1, hist.GetNbinsY() + 1):
             y_val = hist.GetYaxis().GetBinCenter(y_bin)
             z_val = hist.GetBinContent(x_bin, y_bin)
+            dz_val = hist.GetBinError(x_bin, y_bin)
+
             width_y = hist.GetXaxis().GetBinWidth(y_bin)
 
             points["x"].append(x_val)
@@ -677,6 +679,7 @@ def get_hist_2d_points(hist):
             points["y_edges"].append((y_val - width_y / 2, y_val + width_y / 2))
 
             points["z"].append(z_val)
+            points["dz"].append(dz_val)
 
     return points
 
