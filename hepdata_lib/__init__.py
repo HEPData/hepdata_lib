@@ -205,31 +205,65 @@ class Table(object):
         self.location = "Example location"
         self.keywords = {}
         self.additional_resources = []
+        self.image_files = set([])
 
-    def add_image(self, file_name, outdir):
-        """Add an image including thumbnail to the table."""
-        if not os.path.isfile(file_name):
-            raise RuntimeError("File %s does not exist!" % file_name)
-        if not os.path.exists(outdir):
-            os.makedirs(outdir)
-        out_file_name = "{}.png".format(
-            os.path.splitext(file_name)[0].rsplit("/", 1)[1])
-        thumb_out_file_name = "thumb_" + out_file_name
-        # first convert to png, then create thumbnail
-        command = "convert -flatten -fuzz 1% -trim +repage {} {}/{}".format(
-            file_name, outdir, out_file_name)
-        execute_command(command)
-        command = "convert -thumbnail 240x179 {}/{} {}/{}".format(
-            outdir, out_file_name, outdir, thumb_out_file_name)
-        execute_command(command)
-        image = {}
-        image["description"] = "Image file"
-        image["location"] = out_file_name
-        thumbnail = {}
-        thumbnail["description"] = "Thumbnail image file"
-        thumbnail["location"] = thumb_out_file_name
-        self.additional_resources.append(image)
-        self.additional_resources.append(thumbnail)
+    def add_image(self, file_path):
+        """
+        Add an image file to the table.
+
+        This function only stores the path to the image.
+        Any additional processing will be done later.
+
+        :param file_path: Path to the image file.
+        :type file_path: string
+        """
+        if os.path.exists(file_path):
+            self.image_files.add(file_path)
+        else:
+            raise IOError("Cannot find image file: {0}".format(file_path))
+
+    def write_output(self, outdir):
+        """
+        Write the table files into the output directory.
+
+        :param outdir: Path to output directory.
+                       Will be created if it doesn't exist.
+        :type outdir: string
+        """
+        self.write_images(outdir)
+        self.write_yaml(outdir)
+
+    def write_images(self, outdir):
+        """
+        Write image files and thumbnails into the output directory.
+
+        :param outdir: Path to output directory.
+                       Will be created if it doesn't exist.
+        :type outdir: string
+        """
+        for image_file in self.image_files:
+            if not os.path.isfile(image_file):
+                raise RuntimeError("File %s does not exist!" % image_file)
+            if not os.path.exists(outdir):
+                os.makedirs(outdir)
+            out_image_file = "{}.png".format(
+                os.path.splitext(image_file)[0].rsplit("/", 1)[1])
+            thumb_out_image_file = "thumb_" + out_image_file
+            # first convert to png, then create thumbnail
+            command = "convert -flatten -fuzz 1% -trim +repage {} {}/{}".format(
+                image_file, outdir, out_image_file)
+            execute_command(command)
+            command = "convert -thumbnail 240x179 {}/{} {}/{}".format(
+                outdir, out_image_file, outdir, thumb_out_image_file)
+            execute_command(command)
+            image = {}
+            image["description"] = "Image file"
+            image["location"] = out_image_file
+            thumbnail = {}
+            thumbnail["description"] = "Thumbnail image file"
+            thumbnail["location"] = thumb_out_image_file
+            self.additional_resources.append(image)
+            self.additional_resources.append(thumbnail)
 
     def add_variable(self, variable):
         """Add a variable to the table"""
@@ -364,7 +398,7 @@ class Submission(object):
 
         # Write all the tables
         for table in self.tables:
-            table.write_yaml(outdir)
+            table.write_output(outdir)
 
         # Put everything into a tarfile
         import tarfile
