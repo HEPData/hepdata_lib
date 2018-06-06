@@ -266,8 +266,16 @@ class Table(object):
             self.additional_resources.append(thumbnail)
 
     def add_variable(self, variable):
-        """Add a variable to the table"""
-        self.variables.append(variable)
+        """
+        Add a variable to the table
+
+        :param variable: Variable to add.
+        :type variable: Variable.
+        """
+        if isinstance(variable, Variable):
+            self.variables.append(variable)
+        else:
+            raise RuntimeError("Unknown object type: {0}".format(type(variable)))
 
     def write_yaml(self, outdir="."):
         """
@@ -341,11 +349,26 @@ class Submission(object):
         return data_license
 
     def add_table(self, table):
-        """Append table to tables list."""
-        self.tables.append(table)
+        """Append table to tables list.
+
+        :param table: The table to be added.
+        :type table: Table.
+        """
+        if(isinstance(table,Table)):
+            self.tables.append(table)
+        else:
+            raise RuntimeError("Unknown input type: {0}".format(type(table)))
 
     def add_link(self, description, location):
-        """Append link to additional_resources list."""
+        """
+        Append link to additional_resources list.
+
+        :param description: Description of what the link refers to.
+        :type description: string.
+
+        :param location: URL to link to.
+        :type location: string
+        """
         # should check for working URL
         link = {}
         link["description"] = description
@@ -361,7 +384,12 @@ class Submission(object):
         self.record_ids.append(record_id)
 
     def read_abstract(self, filepath):
-        """Read in the abstracts file."""
+        """
+        Read in the abstracts file.
+
+        :param filepath: Path to text file containing abstract.
+        :type filepath: string.
+        """
         with open(filepath) as afile:
             raw = str(afile.read())
         raw = raw.replace("\r\n", "")
