@@ -9,6 +9,7 @@ import numpy as np
 import ROOT
 import os
 import array
+import ctypes
 
 class TestRootFileReader(TestCase):
     """Test the RootFileReader class."""
@@ -199,12 +200,12 @@ class TestRootFileReader(TestCase):
         # Look up original bins and compare
         for x, y, z, dz in zip(points["x"], points["y"], points["z"], points["dz"]):
             ibin = backup_hist.Fill(x, y, 0)
-            ibinx = ROOT.Long()
-            ibiny = ROOT.Long()
-            ibinz = ROOT.Long()
+            ibinx = ctypes.c_int()
+            ibiny = ctypes.c_int()
+            ibinz = ctypes.c_int()
             backup_hist.GetBinXYZ(ibin, ibinx, ibiny, ibinz)
-            self.assertTrue(float_compare(backup_hist.GetXaxis().GetBinCenter(ibinx), x))
-            self.assertTrue(float_compare(backup_hist.GetYaxis().GetBinCenter(ibiny), y))
+            self.assertTrue(float_compare(backup_hist.GetXaxis().GetBinCenter(ibinx.value), x))
+            self.assertTrue(float_compare(backup_hist.GetYaxis().GetBinCenter(ibiny.value), y))
             self.assertTrue(float_compare(backup_hist.GetBinContent(ibin), z))
             self.assertTrue(float_compare(backup_hist.GetBinError(ibin), dz))
         # Clean up
