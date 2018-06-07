@@ -7,6 +7,7 @@ import fnmatch
 import math
 from collections import defaultdict
 import subprocess
+import warnings
 import yaml
 import numpy as np
 import ROOT as r
@@ -15,6 +16,9 @@ import ROOT as r
 # Register defalut dict so that yaml knows it is a dictionary type
 yaml.add_representer(defaultdict, yaml.representer.Representer.represent_dict)
 
+
+# Display deprecation warnings
+warnings.filterwarnings("always", category=DeprecationWarning, module="hepdata_lib")
 
 def execute_command(command):
     """execute shell command using subprocess..."""
@@ -207,20 +211,31 @@ class Table(object):
         self.additional_resources = []
         self.image_files = set([])
 
-    def add_image(self, file_path):
+    def add_image(self, file_path, outdir=None):
         """
         Add an image file to the table.
 
         This function only stores the path to the image.
-        Any additional processing will be done later.
+        Any additional processing will be done later
+        (see write_images function).
 
         :param file_path: Path to the image file.
         :type file_path: string
+
+        :param outdir: Deprecated.
         """
+        if outdir:
+            msg = """
+                  The 'outdir' argument to 'add_image' is deprecated.
+                  It is ignored for now, but will be removed in the future.
+                  """
+            warnings.warn(msg, DeprecationWarning)
+
         if os.path.exists(file_path):
             self.image_files.add(file_path)
         else:
-            raise IOError("Cannot find image file: {0}".format(file_path))
+            raise RuntimeError("Cannot find image file: {0}".format(file_path))
+
 
     def write_output(self, outdir):
         """
