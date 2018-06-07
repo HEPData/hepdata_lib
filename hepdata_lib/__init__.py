@@ -275,7 +275,7 @@ class Table(object):
         if isinstance(variable, Variable):
             self.variables.append(variable)
         else:
-            raise RuntimeError("Unknown object type: {0}".format(type(variable)))
+            raise TypeError("Unknown object type: {0}".format(str(type(variable))))
 
     def write_yaml(self, outdir="."):
         """
@@ -354,10 +354,10 @@ class Submission(object):
         :param table: The table to be added.
         :type table: Table.
         """
-        if(isinstance(table,Table)):
+        if isinstance(table, Table):
             self.tables.append(table)
         else:
-            raise RuntimeError("Unknown input type: {0}".format(type(table)))
+            raise TypeError("Unknown object type: {0}".format(str(type(table))))
 
     def add_link(self, description, location):
         """
