@@ -566,7 +566,6 @@ class RootFileReader(object):
     def read_hist_2d(self, path_to_hist):
         """Read in a TH2.
 
-
         :param path_to_hist: Absolute path in the current TFile.
         :type path_to_hist: str
 
@@ -575,6 +574,18 @@ class RootFileReader(object):
         """
         hist = self.retrieve_object(path_to_hist)
         return get_hist_2d_points(hist)
+
+    def read_hist_1d(self, path_to_hist):
+        """Read in a TH1.
+
+        :param path_to_hist: Absolute path in the current TFile.
+        :type path_to_hist: str
+
+        :returns: dict -- For a description of the contents,
+            check the documentation of the get_hist_1d_points function
+        """
+        hist = self.retrieve_object(path_to_hist)
+        return get_hist_1d_points(hist)
 
     def read_tree(self, path_to_tree, branch_name):
         """Extract a list of values from a tree branch.
@@ -642,13 +653,13 @@ def get_hist_2d_points(hist):
     :type hist: TH2D
 
     :returns: dict -- Lists of x/y/z values saved in dictionary.
-    Corresponding keys are "x"/"y" for the values of the bin center on the
-    respective axis. The bin edges may be found under "x_edges" and "y_edges"
-    as a list of tuples (lower_edge, upper_edge).
-    The bin contents are stored under the "z" key.
+        Corresponding keys are "x"/"y" for the values of the bin center on the
+        respective axis. The bin edges may be found under "x_edges" and "y_edges"
+        as a list of tuples (lower_edge, upper_edge).
+        The bin contents and errors are stored under the "z" and "dz" keys.
     """
     points = {}
-    for key in ["x", "y", "x_edges", "y_edges", "z"]:
+    for key in ["x", "y", "x_edges", "y_edges", "z", "dz"]:
         points[key] = []
 
     for x_bin in range(1, hist.GetNbinsX() + 1):
@@ -657,6 +668,8 @@ def get_hist_2d_points(hist):
         for y_bin in range(1, hist.GetNbinsY() + 1):
             y_val = hist.GetYaxis().GetBinCenter(y_bin)
             z_val = hist.GetBinContent(x_bin, y_bin)
+            dz_val = hist.GetBinError(x_bin, y_bin)
+
             width_y = hist.GetXaxis().GetBinWidth(y_bin)
 
             points["x"].append(x_val)
@@ -666,10 +679,50 @@ def get_hist_2d_points(hist):
             points["y_edges"].append((y_val - width_y / 2, y_val + width_y / 2))
 
             points["z"].append(z_val)
+            points["dz"].append(dz_val)
 
     return points
 
 
+
+def get_hist_1d_points(hist):
+    """
+    Get points from a TH1.
+
+    :param hist: Histogram to extract points from
+    :type hist: TH1D
+
+    :returns: dict -- Lists of x/y values saved in dictionary.
+        Corresponding keys are "x" for the value of the bin center.
+        The bin edges may be found under "x_edges" as a list of tuples (lower_edge, upper_edge).
+        The bin contents are stored under the "y" key.
+        Bin content errors are stored under the "dy" key as either a list of floats (symmetric case)
+        or a list of down/up tuples (asymmetric).
+        Symmetric errors are returned if the histogram error option
+        TH1::GetBinErrorOption() returns TH1::kNormal.
+    """
+    points = {}
+    for key in ["x", "y", "x_edges", "dy"]:
+        points[key] = []
+
+    symmetric = (hist.GetBinErrorOption() == r.TH1.kNormal)
+    for x_bin in range(1, hist.GetNbinsX() + 1):
+        x_val = hist.GetXaxis().GetBinCenter(x_bin)
+        width_x = hist.GetXaxis().GetBinWidth(x_bin)
+
+        y_val = hist.GetBinContent(x_bin)
+        if symmetric:
+            dy_val = hist.GetBinError(x_bin)
+        else:
+            dy_val = (-hist.GetBinErrorLow(x_bin), hist.GetBinErrorUp(x_bin))
+
+        points["x"].append(x_val)
+        points["x_edges"].append((x_val - width_x / 2, x_val + width_x / 2))
+
+        points["y"].append(y_val)
+        points["dy"].append(dy_val)
+
+    return points
 def get_graph_points(graph):
     """
     Extract lists of X and Y values from a TGraph.

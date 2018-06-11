@@ -14,4 +14,7 @@ def float_compare(x_val, y_val):
 
 def tuple_compare(x_tup, y_tup):
     '''Helper function to check that two tuples are equal within float precision.'''
-    return float_compare(x_tup[0], y_tup[0]) and float_compare(x_tup[1], y_tup[1])
+    same = True
+    for pair in zip(x_tup, y_tup):
+        same &= float_compare(pair[0], pair[1])
+    return same
