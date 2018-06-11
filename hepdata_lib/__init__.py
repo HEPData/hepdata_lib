@@ -733,19 +733,29 @@ def get_hist_2d_points(hist):
         Corresponding keys are "x"/"y" for the values of the bin center on the
         respective axis. The bin edges may be found under "x_edges" and "y_edges"
         as a list of tuples (lower_edge, upper_edge).
-        The bin contents and errors are stored under the "z" and "dz" keys.
+        The bin contents and errors are stored under the "z" key.
+        Bin content errors are stored under the "dz" key as either a list of floats (symmetric case)
+        or a list of down/up tuples (asymmetric).
+        Symmetric errors are returned if the histogram error option
+        TH1::GetBinErrorOption() returns TH1::kNormal.
     """
     points = {}
     for key in ["x", "y", "x_edges", "y_edges", "z", "dz"]:
         points[key] = []
 
+    symmetric = (hist.GetBinErrorOption() == r.TH1.kNormal)
     for x_bin in range(1, hist.GetNbinsX() + 1):
         x_val = hist.GetXaxis().GetBinCenter(x_bin)
         width_x = hist.GetXaxis().GetBinWidth(x_bin)
         for y_bin in range(1, hist.GetNbinsY() + 1):
             y_val = hist.GetYaxis().GetBinCenter(y_bin)
             z_val = hist.GetBinContent(x_bin, y_bin)
-            dz_val = hist.GetBinError(x_bin, y_bin)
+
+            if symmetric:
+                dz_val = hist.GetBinError(x_bin, y_bin)
+            else:
+                dz_val = (- hist.GetBinErrorLow(x_bin, y_bin), 
+                          hist.GetBinErrorUp(x_bin, y_bin))
 
             width_y = hist.GetXaxis().GetBinWidth(y_bin)
 
