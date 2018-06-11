@@ -693,20 +693,28 @@ def get_hist_1d_points(hist):
     :type hist: TH1D
 
     :returns: dict -- Lists of x/y values saved in dictionary.
-        Corresponding keys are "x" for the value of the bin centerself.
+        Corresponding keys are "x" for the value of the bin center.
         The bin edges may be found under "x_edges" as a list of tuples (lower_edge, upper_edge).
         The bin contents are stored under the "y" key.
+        Bin content errors are stored under the "dy" key as either a list of floats (symmetric case)
+        or a list of down/up tuples (asymmetric).
+        Symmetric errors are returned if the histogram error option
+        TH1::GetBinErrorOption() returns TH1::kNormal.
     """
     points = {}
     for key in ["x", "y", "x_edges", "dy"]:
         points[key] = []
 
+    symmetric = (hist.GetBinErrorOption() == r.TH1.kNormal)
     for x_bin in range(1, hist.GetNbinsX() + 1):
         x_val = hist.GetXaxis().GetBinCenter(x_bin)
         width_x = hist.GetXaxis().GetBinWidth(x_bin)
 
         y_val = hist.GetBinContent(x_bin)
-        dy_val = hist.GetBinError(x_bin)
+        if symmetric:
+            dy_val = hist.GetBinError(x_bin)
+        else:
+            dy_val = (-hist.GetBinErrorLow(x_bin), hist.GetBinErrorUp(x_bin))
 
         points["x"].append(x_val)
         points["x_edges"].append((x_val - width_x / 2, x_val + width_x / 2))
