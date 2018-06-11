@@ -3,7 +3,7 @@
 """Test RootFileReader."""
 import random
 from unittest import TestCase
-from test_utilities import *
+from test_utilities import float_compare, tuple_compare
 from hepdata_lib import RootFileReader
 import numpy as np
 import ROOT
@@ -125,7 +125,7 @@ class TestRootFileReader(TestCase):
         # Clean up
         os.remove(filepath)
 
-    def test_read_hist_1d(self):
+    def test_read_hist_1d_symmetric_errors(self):
         """Test the read_hist_1d function."""
         fpath = "testfile.root"
 
