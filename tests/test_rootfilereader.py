@@ -200,8 +200,8 @@ class TestRootFileReader(TestCase):
         # Clean up
         os.remove(fpath)
 
-    def test_read_hist_2d(self):
-        """Test the read_hist_2d function."""
+    def test_read_hist_2d_symmetric_errors(self):
+        """Test the read_hist_2d function with symmetric errors."""
         fpath = "testfile.root"
 
         # Create test histogram
@@ -251,5 +251,59 @@ class TestRootFileReader(TestCase):
             self.assertTrue(float_compare(backup_hist.GetYaxis().GetBinCenter(ibiny.value), y))
             self.assertTrue(float_compare(backup_hist.GetBinContent(ibin), z))
             self.assertTrue(float_compare(backup_hist.GetBinError(ibin), dz))
+        # Clean up
+        os.remove(fpath)
+
+    def test_read_hist_2d_asymmetric_errors(self):
+        """Test the read_hist_2d function with asymmetric errors."""
+        fpath = "testfile.root"
+
+        # Create test histogram
+        NX = 17
+        NY = 17
+        Nfill = 1000
+
+        hist = ROOT.TH2D("test2d", "test2d", NX, 0 , 1, NY, 0, 1)
+        hist.SetBinErrorOption(ROOT.TH1.kPoisson)
+        for val in np.random.normal(loc = 0.5, scale = 0.15, size = (Nfill, 2)):
+            hist.Fill(*val)
+
+        x_values = []
+        y_values = []
+        z_values = []
+
+
+        backup_hist = hist.Clone("backup")
+        
+        # Write to file
+        f = ROOT.TFile(fpath, "RECREATE")
+        hist.SetDirectory(f)
+        hist.Write("test")
+        f.Close()
+
+        # Read back
+        reader = RootFileReader(fpath)
+        points = reader.read_hist_2d("test")
+
+        # Check keys
+        self.assertTrue(set(["x", "y", "z", "x_edges", "y_edges", "dz"]) == set(points.keys()))
+
+        # Check length
+        for v in points.values():
+            self.assertTrue(len(v) == NX*NY)
+
+        # Look up original bins and compare
+        for x, y, z, dz in zip(points["x"], points["y"], points["z"], points["dz"]):
+            ibin = backup_hist.Fill(x, y, 0)
+            ibinx = ctypes.c_int()
+            ibiny = ctypes.c_int()
+            ibinz = ctypes.c_int()
+            backup_hist.GetBinXYZ(ibin, ibinx, ibiny, ibinz)
+            self.assertTrue(float_compare(backup_hist.GetXaxis().GetBinCenter(ibinx.value), x))
+            self.assertTrue(float_compare(backup_hist.GetYaxis().GetBinCenter(ibiny.value), y))
+            self.assertTrue(float_compare(backup_hist.GetBinContent(ibin), z))
+            self.assertTrue(tuple_compare(
+                            (-backup_hist.GetBinErrorLow(ibinx.value, ibiny.value), 
+                            backup_hist.GetBinErrorUp(ibinx.value, ibiny.value)), dz))
         # Clean up
         os.remove(fpath)
