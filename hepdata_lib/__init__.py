@@ -7,6 +7,7 @@ import fnmatch
 import math
 from collections import defaultdict
 import subprocess
+import warnings
 import yaml
 import numpy as np
 import ROOT as r
@@ -15,6 +16,9 @@ import ROOT as r
 # Register defalut dict so that yaml knows it is a dictionary type
 yaml.add_representer(defaultdict, yaml.representer.Representer.represent_dict)
 
+
+# Display deprecation warnings
+warnings.filterwarnings("always", category=DeprecationWarning, module="hepdata_lib")
 
 def execute_command(command):
     """execute shell command using subprocess..."""
@@ -205,35 +209,88 @@ class Table(object):
         self.location = "Example location"
         self.keywords = {}
         self.additional_resources = []
+        self.image_files = set([])
 
-    def add_image(self, file_name, outdir):
-        """Add an image including thumbnail to the table."""
-        if not os.path.isfile(file_name):
-            raise RuntimeError("File %s does not exist!" % file_name)
-        if not os.path.exists(outdir):
-            os.makedirs(outdir)
-        out_file_name = "{}.png".format(
-            os.path.splitext(file_name)[0].rsplit("/", 1)[1])
-        thumb_out_file_name = "thumb_" + out_file_name
-        # first convert to png, then create thumbnail
-        command = "convert -flatten -fuzz 1% -trim +repage {} {}/{}".format(
-            file_name, outdir, out_file_name)
-        execute_command(command)
-        command = "convert -thumbnail 240x179 {}/{} {}/{}".format(
-            outdir, out_file_name, outdir, thumb_out_file_name)
-        execute_command(command)
-        image = {}
-        image["description"] = "Image file"
-        image["location"] = out_file_name
-        thumbnail = {}
-        thumbnail["description"] = "Thumbnail image file"
-        thumbnail["location"] = thumb_out_file_name
-        self.additional_resources.append(image)
-        self.additional_resources.append(thumbnail)
+    def add_image(self, file_path, outdir=None):
+        """
+        Add an image file to the table.
+
+        This function only stores the path to the image.
+        Any additional processing will be done later
+        (see write_images function).
+
+        :param file_path: Path to the image file.
+        :type file_path: string
+
+        :param outdir: Deprecated.
+        """
+        if outdir:
+            msg = """
+                  The 'outdir' argument to 'add_image' is deprecated.
+                  It is ignored for now, but will be removed in the future.
+                  """
+            warnings.warn(msg, DeprecationWarning)
+
+        if os.path.exists(file_path):
+            self.image_files.add(file_path)
+        else:
+            raise RuntimeError("Cannot find image file: {0}".format(file_path))
+
+
+    def write_output(self, outdir):
+        """
+        Write the table files into the output directory.
+
+        :param outdir: Path to output directory.
+                       Will be created if it doesn't exist.
+        :type outdir: string
+        """
+        self.write_images(outdir)
+        self.write_yaml(outdir)
+
+    def write_images(self, outdir):
+        """
+        Write image files and thumbnails into the output directory.
+
+        :param outdir: Path to output directory.
+                       Will be created if it doesn't exist.
+        :type outdir: string
+        """
+        for image_file in self.image_files:
+            if not os.path.isfile(image_file):
+                raise RuntimeError("File %s does not exist!" % image_file)
+            if not os.path.exists(outdir):
+                os.makedirs(outdir)
+            out_image_file = "{}.png".format(
+                os.path.splitext(image_file)[0].rsplit("/", 1)[1])
+            thumb_out_image_file = "thumb_" + out_image_file
+            # first convert to png, then create thumbnail
+            command = "convert -flatten -fuzz 1% -trim +repage {} {}/{}".format(
+                image_file, outdir, out_image_file)
+            execute_command(command)
+            command = "convert -thumbnail 240x179 {}/{} {}/{}".format(
+                outdir, out_image_file, outdir, thumb_out_image_file)
+            execute_command(command)
+            image = {}
+            image["description"] = "Image file"
+            image["location"] = out_image_file
+            thumbnail = {}
+            thumbnail["description"] = "Thumbnail image file"
+            thumbnail["location"] = thumb_out_image_file
+            self.additional_resources.append(image)
+            self.additional_resources.append(thumbnail)
 
     def add_variable(self, variable):
-        """Add a variable to the table"""
-        self.variables.append(variable)
+        """
+        Add a variable to the table
+
+        :param variable: Variable to add.
+        :type variable: Variable.
+        """
+        if isinstance(variable, Variable):
+            self.variables.append(variable)
+        else:
+            raise TypeError("Unknown object type: {0}".format(str(type(variable))))
 
     def write_yaml(self, outdir="."):
         """
@@ -307,11 +364,26 @@ class Submission(object):
         return data_license
 
     def add_table(self, table):
-        """Append table to tables list."""
-        self.tables.append(table)
+        """Append table to tables list.
+
+        :param table: The table to be added.
+        :type table: Table.
+        """
+        if isinstance(table, Table):
+            self.tables.append(table)
+        else:
+            raise TypeError("Unknown object type: {0}".format(str(type(table))))
 
     def add_link(self, description, location):
-        """Append link to additional_resources list."""
+        """
+        Append link to additional_resources list.
+
+        :param description: Description of what the link refers to.
+        :type description: string.
+
+        :param location: URL to link to.
+        :type location: string
+        """
         # should check for working URL
         link = {}
         link["description"] = description
@@ -327,7 +399,12 @@ class Submission(object):
         self.record_ids.append(record_id)
 
     def read_abstract(self, filepath):
-        """Read in the abstracts file."""
+        """
+        Read in the abstracts file.
+
+        :param filepath: Path to text file containing abstract.
+        :type filepath: string.
+        """
         with open(filepath) as afile:
             raw = str(afile.read())
         raw = raw.replace("\r\n", "")
@@ -364,7 +441,7 @@ class Submission(object):
 
         # Write all the tables
         for table in self.tables:
-            table.write_yaml(outdir)
+            table.write_output(outdir)
 
         # Put everything into a tarfile
         import tarfile
@@ -656,19 +733,29 @@ def get_hist_2d_points(hist):
         Corresponding keys are "x"/"y" for the values of the bin center on the
         respective axis. The bin edges may be found under "x_edges" and "y_edges"
         as a list of tuples (lower_edge, upper_edge).
-        The bin contents and errors are stored under the "z" and "dz" keys.
+        The bin contents and errors are stored under the "z" key.
+        Bin content errors are stored under the "dz" key as either a list of floats (symmetric case)
+        or a list of down/up tuples (asymmetric).
+        Symmetric errors are returned if the histogram error option
+        TH1::GetBinErrorOption() returns TH1::kNormal.
     """
     points = {}
     for key in ["x", "y", "x_edges", "y_edges", "z", "dz"]:
         points[key] = []
 
+    symmetric = (hist.GetBinErrorOption() == r.TH1.kNormal)
     for x_bin in range(1, hist.GetNbinsX() + 1):
         x_val = hist.GetXaxis().GetBinCenter(x_bin)
         width_x = hist.GetXaxis().GetBinWidth(x_bin)
         for y_bin in range(1, hist.GetNbinsY() + 1):
             y_val = hist.GetYaxis().GetBinCenter(y_bin)
             z_val = hist.GetBinContent(x_bin, y_bin)
-            dz_val = hist.GetBinError(x_bin, y_bin)
+
+            if symmetric:
+                dz_val = hist.GetBinError(x_bin, y_bin)
+            else:
+                dz_val = (- hist.GetBinErrorLow(x_bin, y_bin), 
+                          hist.GetBinErrorUp(x_bin, y_bin))
 
             width_y = hist.GetXaxis().GetBinWidth(y_bin)
 
