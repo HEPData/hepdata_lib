@@ -6,12 +6,12 @@ from hepdata_lib import Submission, Table, Variable, Uncertainty
 
 class TestSubmission(TestCase):
     """Test the Submission class."""
-    def test_add_table(self):
-        """Test the add_table function."""
+    def test_add_table_typechecks(self):
+        """Test the type checks in the add_table function."""
 
         # Verify that the type check works
         test_submission = Submission()
-        test_table = Table("Some Tale")
+        test_table = Table("Some Table")
         test_variable = Variable("Some Variable")
         test_uncertainty = Uncertainty("Some Uncertainty")
         try:
