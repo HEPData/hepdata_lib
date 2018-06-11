@@ -126,7 +126,7 @@ class TestRootFileReader(TestCase):
         os.remove(filepath)
 
     def test_read_hist_1d_symmetric_errors(self):
-        """Test the read_hist_1d function."""
+        """Test the read_hist_1d function for a histogram with symmetric errors."""
         fpath = "testfile.root"
 
         # Create test histogram
@@ -135,7 +135,7 @@ class TestRootFileReader(TestCase):
         y_values = list(np.random.uniform(-1e3,1e3,N))
         dy_values = list(np.random.uniform(0,1e3,N))
 
-        hist = ROOT.TH1D("test1d","test1d",N,0,N)
+        hist = ROOT.TH1D("test1d_symm","test1d_symm",N,0,N)
         for i in range(1,hist.GetNbinsX()+1):
             hist.SetBinContent(i,y_values[i-1])
             hist.SetBinError(i,dy_values[i-1])
@@ -153,6 +153,49 @@ class TestRootFileReader(TestCase):
         self.assertTrue(all(float_compare(*tup) for tup in zip(points["x"], x_values)))
         self.assertTrue(all(float_compare(*tup) for tup in zip(points["y"], y_values)))
         self.assertTrue(all(float_compare(*tup) for tup in zip(points["dy"], dy_values)))
+
+        # Clean up
+        os.remove(fpath)
+
+
+    def test_read_hist_1d_asymmetric_errors(self):
+        """Test the read_hist_1d function for a histogram with asymmetric errors."""
+        fpath = "testfile.root"
+
+        # Create test histogram
+        Nbin = 17
+        Nfill = 1000        
+        hist = ROOT.TH1D("test1d_asymm","test1d_asymm",Nbin,0,1)
+        hist.SetBinErrorOption(ROOT.TH1.kPoisson)
+
+        for val in np.random.normal(loc=0.5,scale=0.15,size=Nfill):
+            hist.Fill(val)
+
+        # Extract values
+        x_values = []
+        y_values = []
+        dy_values = []
+        for i in range(1, hist.GetNbinsX()):
+            x_values.append(hist.GetBinCenter(i))
+            y_values.append(hist.GetBinContent(i))
+            dy_values.append((-hist.GetBinErrorLow(i), hist.GetBinErrorUp(i)))
+
+        # Write to file
+        f = ROOT.TFile(fpath,"RECREATE")
+        hist.SetDirectory(f)
+        hist.Write("test")
+        f.Close()
+
+        # Read back
+        reader = RootFileReader(fpath)
+        points = reader.read_hist_1d("test")
+
+        # Check consistency
+        self.assertTrue(set(["x", "y", "x_edges", "dy"]) == set(points.keys()))
+
+        self.assertTrue(all(float_compare(*tup) for tup in zip(points["x"], x_values)))
+        self.assertTrue(all(float_compare(*tup) for tup in zip(points["y"], y_values)))
+        self.assertTrue(all(tuple_compare(*tup) for tup in zip(points["dy"], dy_values)))
 
         # Clean up
         os.remove(fpath)
