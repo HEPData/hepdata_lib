@@ -19,8 +19,9 @@ Welcome to hepdata_lib's documentation!
    observables
    partlist
    phrases
+   contributing
 
-   
+
 
 
 
