@@ -29,14 +29,43 @@ Execute the following commands:
     bumpversion patch # adjust accordingly
     git push origin master --tags
 
-The files in which the versions are updated as well as the current version can be found in the `.bumpversion.cfg`_
+The files in which the versions are updated as well as the current version can be found in the `.bumpversion.cfg`_. You need appropriate rights for the repository to be able to push the tag.
 
 .. _sec-dev-pypi:
 
 Uploading to PyPI
 -----------------------------
 
-Once a new version has been tagged, the package should be uploaded to the Python Package Index (PyPI).
+Once a new version has been tagged, the package should be uploaded to the Python Package Index (PyPI_).
+For the markdown formatting to work, ``twine>=1.11.0`` is required.
+Execute the following commands to create a source distribution and upload it:
+
+::
+
+    python setup.py sdist bdist_wheel
+    pip install -U twine
+    twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
+This uploads to the `PyPI test server`_. Mind that you need to have an account for both the test and the production servers.
+
+Install the package for testing:
+
+::
+
+    pip install --index-url https://test.pypi.org/simple/ hepdata_lib
+
+If everything is fine, upload to the production server:
+
+::
+
+    twine upload dist/*
+
+You should then find the new version at `this location`_. You need to be a maintainer of the project for this to work. For more details please see the `python packaging documentation`_.
+
 
 .. _bumpversion: https://github.com/peritus/bumpversion
 .. _.bumpversion.cfg: https://github.com/clelange/hepdata_lib/blob/master/.bumpversion.cfg
+.. _PyPI: https://pypi.org
+.. _PyPI test server: https://test.pypi.org/project/hepdata_lib/
+.. _this location: https://pypi.org/project/hepdata_lib/
+.. _python packaging documentation: https://packaging.python.org/tutorials/packaging-projects/
