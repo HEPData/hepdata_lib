@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 """Test Submission."""
 import os
+from builtins import bytes
 from unittest import TestCase
 from hepdata_lib import Submission, Table, Variable, Uncertainty
 
@@ -44,7 +45,7 @@ class TestSubmission(TestCase):
         # Check with file that is too big
         size = int(2e8) # bytes in 200 MB
         with open(testpath, "wb") as f:
-            f.write("\0" * size)
+            f.write(bytes("\0" * size,"utf-8"))
         with self.assertRaises(RuntimeError):
             test_submission.add_additional_resource("Some description", testpath, copy_file=True)
 
@@ -54,7 +55,7 @@ class TestSubmission(TestCase):
         # Check with file that is not too big.
         size = int(5e7) # bytes in 50 MB
         with open(testpath, "wb") as f:
-            f.write("\0" * size)
+            f.write(bytes("\0" * size,"utf-8"))
         try:
             test_submission.add_additional_resource("Some description", testpath, copy_file=True)
         except RuntimeError:
