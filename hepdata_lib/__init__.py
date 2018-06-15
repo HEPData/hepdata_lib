@@ -8,6 +8,7 @@ import math
 from collections import defaultdict
 import subprocess
 import warnings
+import shutil
 import yaml
 import numpy as np
 import ROOT as r
@@ -64,6 +65,36 @@ def relative_round(value, relative_digits):
 
     return round(value, int(absolute_digits))
 
+def check_file_existence(path_to_file):
+    """
+    Check that the given file path exists.
+    If not, raise RuntimeError.
+
+    :param path_to_file: File path to check.
+    :type path_to_file: string
+    """
+    if not os.path.exists(path_to_file):
+        raise RuntimeError("Cannot find file: " + path_to_file)
+
+def check_file_size(path_to_file, upper_limit=None, lower_limit=None):
+    """
+    Check that the file size is between the upper and lower limits.
+    If not, raise RuntimeError.
+
+    :param path_to_file: File path to check.
+    :type path_to_file: string
+
+    :param upper_limit: Upper size limit in MB.
+    :type upper_limit: float
+
+    :param lower_limit: Lower size limit in MB.
+    :type lower_limit: float
+    """
+    size = 1e-6 * os.path.getsize(path_to_file)
+    if upper_limit and size > upper_limit:
+        raise RuntimeError("File too big: '{0}'. Maximum allowed value is {1} MB.".format(path_to_file, upper_limit))
+    if lower_limit and size < lower_limit:
+        raise RuntimeError("File too small: '{0}'. Minimal allowed value is {1} MB.".format(path_to_file, lower_limit))
 
 class Variable(object):
     """A Variable is a wrapper for a list of values + some meta data."""
@@ -351,6 +382,7 @@ class Submission(object):
         self.comment = ""
         self.additional_resources = []
         self.record_ids = []
+        self.files_to_copy = []
 
     @staticmethod
     def get_license():
@@ -390,6 +422,41 @@ class Submission(object):
         link["location"] = location
         self.additional_resources.append(link)
 
+    def add_additional_resource(self, description, location, copy_file=False):
+        """
+        Add any kind of additional resource.
+        If copy_file is set to False, the location and description will be added as-is.
+        This is useful e.g. for the case of providing a URL to a web-based resource.
+
+        If copy_file is set to True, we will try to copy the file from the location you have given
+        into the output directory. This only works if the location is a local file.
+        If the location you gave does not exist or points to a file larger than 100 MB,
+        a RuntimeError will be raised.
+        While the file checks are performed immediately (i.e. the file must exist when this function is called),
+        the actual copying only happens once create_files function of the submission object is called.
+
+        :param description: Description of what the resource is.
+        :type description: string.
+
+        :param location: Can be either a URL pointing to a web-based resource or a local file path.
+        :type: string
+
+        :param copy_file: If set to true, will attempt to copy a local file to the tar ball.
+        :type copy_file: bool
+        """
+
+        resource = {}
+        resource["description"] = description
+        if(copy_file):
+            check_file_existence(location)
+            check_file_size(location, upper_limit=100)
+            resource["location"] = os.path.basename(location)
+        else:
+            resource["location"] = location
+
+        self.additional_resources.append(resource)
+        self.files_to_copy.append(location)
+
     def add_record_id(self, r_id, r_type):
         """Append record_id to record_ids list."""
         # should add some type checks
@@ -411,6 +478,18 @@ class Submission(object):
         raw = raw.replace("\n", "")
 
         self.comment = raw
+
+    def copy_files(self, outdir):
+        """
+        Copy the files in the files_to_copy list to the output directory.
+
+        :param outdir: Output directory path to copy to.
+        :type outdir: string
+        """
+        for ifile in self.files_to_copy:
+            check_file_existence(ifile)
+            check_file_size(ifile, upper_limit=100)
+            shutil.copy2(ifile, outdir)
 
     def create_files(self, outdir="."):
         """
@@ -443,6 +522,9 @@ class Submission(object):
         for table in self.tables:
             table.write_output(outdir)
 
+        # Copy additional resource files
+        self.copy_files(outdir)
+
         # Put everything into a tarfile
         import tarfile
         tar = tarfile.open("submission.tar.gz", "w:gz")
@@ -450,6 +532,9 @@ class Submission(object):
             tar.add(yaml_file)
         for png_file in find_all_matching(outdir, "*.png"):
             tar.add(png_file)
+        for additional in self.files_to_copy:
+            tar.add(os.path.join(outdir, os.path.basename(additional)))
+
         tar.close()
 
 
