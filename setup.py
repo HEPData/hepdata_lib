@@ -8,7 +8,7 @@ try:
 except ImportError:
     print("ROOT is required by this library.")
 
-DEPS = ['numpy', 'PyYAML']
+DEPS = ['numpy', 'PyYAML', 'future']
 
 HERE = path.abspath(path.dirname(__file__))
 
