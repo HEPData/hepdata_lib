@@ -221,12 +221,13 @@ class TestRootFileReader(TestCase):
                 hist.SetBinError(ibin, dz_values[ix-1][iy-1])
 
         backup_hist = hist.Clone("backup")
-        f = ROOT.TFile(fpath, "RECREATE")
-        hist.SetDirectory(f)
-        hist.Write("test")
+        rfile = ROOT.TFile(fpath, "RECREATE")
+        hist.SetDirectory(rfile)
+        hist.Write("test2d_sym")
+        rfile.Close()
 
         reader = RootFileReader(fpath)
-        points = reader.read_hist_2d("test")
+        points = reader.read_hist_2d("test2d_sym")
 
         # Check keys
         self.assertTrue(set(["x", "y", "z", "x_edges", "y_edges", "dz"]) == set(points.keys()))
@@ -251,7 +252,6 @@ class TestRootFileReader(TestCase):
             self.assertTrue(float_compare(backup_hist.GetBinContent(ibin), z))
             self.assertTrue(float_compare(backup_hist.GetBinError(ibin), dz))
         # Clean up
-        f.Close()
         os.remove(fpath)
 
     def test_read_hist_2d_asymmetric_errors(self):
@@ -263,7 +263,7 @@ class TestRootFileReader(TestCase):
         NY = 17
         Nfill = 1000
 
-        hist = ROOT.TH2D("test2d", "test2d", NX, 0, 1, NY, 0, 1)
+        hist = ROOT.TH2D("test2_asym", "test2d_asym", NX, 0, 1, NY, 0, 1)
         hist.SetBinErrorOption(ROOT.TH1.kPoisson)
         for val in np.random.normal(loc=0.5, scale=0.15, size=(Nfill, 2)):
             hist.Fill(*val)
@@ -271,13 +271,14 @@ class TestRootFileReader(TestCase):
         backup_hist = hist.Clone("backup")
 
         # Write to file
-        f = ROOT.TFile(fpath, "RECREATE")
-        hist.SetDirectory(f)
-        hist.Write("test")
+        rfile = ROOT.TFile(fpath, "RECREATE")
+        hist.SetDirectory(rfile)
+        hist.Write("test2d_asym")
+        rfile.Close()
 
         # Read back
         reader = RootFileReader(fpath)
-        points = reader.read_hist_2d("test")
+        points = reader.read_hist_2d("test2d_asym")
 
         # Check keys
         self.assertTrue(set(["x", "y", "z", "x_edges", "y_edges", "dz"]) == set(points.keys()))
@@ -300,5 +301,4 @@ class TestRootFileReader(TestCase):
                 (-backup_hist.GetBinErrorLow(ibinx.value, ibiny.value),
                  backup_hist.GetBinErrorUp(ibinx.value, ibiny.value)), dz))
         # Clean up
-        f.Close()
         os.remove(fpath)
