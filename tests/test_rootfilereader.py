@@ -212,7 +212,7 @@ class TestRootFileReader(TestCase):
         z_values = np.random.uniform(-1e3, 1e3, (NX, NY))
         dz_values = np.random.uniform(0, 1e3, (NX, NY))
 
-        hist = ROOT.TH2D("test2d", "test2d", NX, 0, NX, NY, 0, NY)
+        hist = ROOT.TH2D("test2d_sym", "test2d_sym", NX, 0, NX, NY, 0, NY)
 
         for ix in range(1, hist.GetNbinsX()+1):
             for iy in range(1, hist.GetNbinsY()+1):
@@ -224,7 +224,6 @@ class TestRootFileReader(TestCase):
         f = ROOT.TFile(fpath, "RECREATE")
         hist.SetDirectory(f)
         hist.Write("test")
-        f.Close()
 
         reader = RootFileReader(fpath)
         points = reader.read_hist_2d("test")
@@ -252,6 +251,7 @@ class TestRootFileReader(TestCase):
             self.assertTrue(float_compare(backup_hist.GetBinContent(ibin), z))
             self.assertTrue(float_compare(backup_hist.GetBinError(ibin), dz))
         # Clean up
+        f.Close()
         os.remove(fpath)
 
     def test_read_hist_2d_asymmetric_errors(self):
@@ -274,7 +274,6 @@ class TestRootFileReader(TestCase):
         f = ROOT.TFile(fpath, "RECREATE")
         hist.SetDirectory(f)
         hist.Write("test")
-        f.Close()
 
         # Read back
         reader = RootFileReader(fpath)
@@ -301,4 +300,5 @@ class TestRootFileReader(TestCase):
                 (-backup_hist.GetBinErrorLow(ibinx.value, ibiny.value),
                  backup_hist.GetBinErrorUp(ibinx.value, ibiny.value)), dz))
         # Clean up
+        f.Close()
         os.remove(fpath)
