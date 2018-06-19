@@ -32,7 +32,7 @@ class TestSubmission(TestCase):
         with self.assertRaises(TypeError):
             test_submission.add_table(test_uncertainty)
 
-    def test_add_additional_resource_input_checks(self):
+    def test_additional_resource_size(self):
         """Test the file checks in the add_additional_variable function."""
 
         testpath = "./testfile.dat"
@@ -44,8 +44,8 @@ class TestSubmission(TestCase):
 
         # Check with file that is too big
         size = int(2e8) # bytes in 200 MB
-        with open(testpath, "wb") as f:
-            f.write(bytes("\0" * size,"utf-8"))
+        with open(testpath, "wb") as testfile:
+            testfile.write(bytes("\0" * size, "utf-8"))
         with self.assertRaises(RuntimeError):
             test_submission.add_additional_resource("Some description", testpath, copy_file=True)
 
@@ -54,8 +54,8 @@ class TestSubmission(TestCase):
 
         # Check with file that is not too big.
         size = int(5e7) # bytes in 50 MB
-        with open(testpath, "wb") as f:
-            f.write(bytes("\0" * size,"utf-8"))
+        with open(testpath, "wb") as testfile:
+            testfile.write(bytes("\0" * size, "utf-8"))
         try:
             test_submission.add_additional_resource("Some description", testpath, copy_file=True)
         except RuntimeError:
