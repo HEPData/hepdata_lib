@@ -35,8 +35,8 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     zip_safe=False,
     install_requires=DEPS,
-    setup_requires=['pytest-runner'],
-    tests_require=['pytest'],
+    setup_requires=['pytest-runner', 'pytest-pylint'],
+    tests_require=['pytest', 'pylint'],
     project_urls={
         'Documentation': 'https://hepdata-lib.readthedocs.io',
         'Bug Reports': 'https://github.com/clelange/hepdata_lib/issues',
