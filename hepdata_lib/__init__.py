@@ -22,7 +22,15 @@ yaml.add_representer(defaultdict, yaml.representer.Representer.represent_dict)
 warnings.filterwarnings("always", category=DeprecationWarning, module="hepdata_lib")
 
 def execute_command(command):
-    """execute shell command using subprocess..."""
+    """
+    Execute shell command using subprocess.
+    If executable does not exist, return False.
+    For other errors raise RuntimeError.
+    Else return True on success.
+
+    :param command: Command to execute.
+    :type command: string
+    """
     proc = subprocess.Popen(
         command,
         stdin=subprocess.PIPE,
@@ -30,12 +38,16 @@ def execute_command(command):
         stderr=subprocess.PIPE,
         shell=True,
         universal_newlines=True)
-    result = ""
     exit_code = proc.wait()
+    if exit_code == 127:
+        print("Command does not exist:", command)
+        return False
     if exit_code != 0:
+        result = ""
         for line in proc.stderr:
             result = result + line
         raise RuntimeError(result)
+    return True
 
 
 def find_all_matching(path, pattern):
@@ -298,7 +310,11 @@ class Table(object):
             # first convert to png, then create thumbnail
             command = "convert -flatten -fuzz 1% -trim +repage {} {}/{}".format(
                 image_file, outdir, out_image_file)
-            execute_command(command)
+            command_ok = execute_command(command)
+            if not command_ok:
+                print("ImageMagick does not seem to be installed \
+                       or is not in the path - not adding any images.")
+                break
             command = "convert -thumbnail 240x179 {}/{} {}/{}".format(
                 outdir, out_image_file, outdir, thumb_out_image_file)
             execute_command(command)
@@ -447,7 +463,7 @@ class Submission(object):
 
         resource = {}
         resource["description"] = description
-        if(copy_file):
+        if copy_file:
             check_file_existence(location)
             check_file_size(location, upper_limit=100)
             resource["location"] = os.path.basename(location)
@@ -839,7 +855,7 @@ def get_hist_2d_points(hist):
             if symmetric:
                 dz_val = hist.GetBinError(x_bin, y_bin)
             else:
-                dz_val = (- hist.GetBinErrorLow(x_bin, y_bin), 
+                dz_val = (- hist.GetBinErrorLow(x_bin, y_bin),
                           hist.GetBinErrorUp(x_bin, y_bin))
 
             width_y = hist.GetXaxis().GetBinWidth(y_bin)
