@@ -263,7 +263,7 @@ class TestRootFileReader(TestCase):
         NY = 17
         Nfill = 1000
 
-        hist = ROOT.TH2D("test2_asym", "test2d_asym", NX, 0, 1, NY, 0, 1)
+        hist = ROOT.TH2D("test2d_asym", "test2d_asym", NX, 0, 1, NY, 0, 1)
         hist.SetBinErrorOption(ROOT.TH1.kPoisson)
         for val in np.random.normal(loc=0.5, scale=0.15, size=(Nfill, 2)):
             hist.Fill(*val)
