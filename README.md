@@ -24,7 +24,9 @@ For using `hepdata_lib`, you don't even need to install it, but can use the [bin
 
 There are a few more examples available that can directly be run using the [binder](https://mybinder.org/) links below or using [SWAN](https://swan.cern.ch/) (CERN-only) and selecting the corresponding notebook manually:
 
+- [Reading in text files](notebooks/Getting_started.ipynb) [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/clelange/hepdata_lib/master?filepath=notebooks/Getting_started.ipynb)
 - [Reading in a CMS combine ntuple](notebooks/combine_limits.ipynb) [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/clelange/hepdata_lib/master?filepath=notebooks/combine_limits.ipynb)
+- [Reading in ROOT histograms](notebooks/reading_histograms.ipynb) [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/clelange/hepdata_lib/master?filepath=notebooks/reading_histograms.ipynb)
 
 ## External dependencies
 
