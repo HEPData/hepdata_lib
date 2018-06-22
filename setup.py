@@ -23,7 +23,7 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/clelange/hepdata_lib',
     author='Andreas Albert, Clemens Lange',
-    author_email='clemens.lange@cern.ch',
+    author_email='hepdata-lib@cern.ch',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',

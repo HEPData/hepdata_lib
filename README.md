@@ -13,6 +13,21 @@ Library for getting your data into HEPData
 pip install hepdata_lib
 ```
 
+## Getting started
+
+For using `hepdata_lib`, you don't even need to install it, but can use the [binder](https://mybinder.org/) or [SWAN](https://swan.cern.ch/) (CERN-only) services using one of the buttons below and following the instructions in the notebook with name [Getting_started](examples/Getting_started.ipynb):
+
+[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/clelange/hepdata_lib/master?filepath=examples/Getting_started.ipynb)
+[![SWAN](https://swanserver.web.cern.ch/swanserver/images/badge_swan_white_150.png)](https://cern.ch/swanserver/cgi-bin/go?projurl=https://mybinder.org/v2/gh/clelange/hepdata_lib.git)
+
+## Further examples
+
+There are a few more examples available that can directly be run using the [binder](https://mybinder.org/) links below or using [SWAN](https://swan.cern.ch/) (CERN-only) and selecting the corresponding notebook manually:
+
+- [Reading in text files](examples/Getting_started.ipynb) [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/clelange/hepdata_lib/master?filepath=examples/Getting_started.ipynb)
+- [Reading in a CMS combine ntuple](examples/combine_limits.ipynb) [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/clelange/hepdata_lib/master?filepath=examples/combine_limits.ipynb)
+- [Reading in ROOT histograms](examples/reading_histograms.ipynb) [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/clelange/hepdata_lib/master?filepath=examples/reading_histograms.ipynb)
+
 ## External dependencies
 
 - [ROOT](https://root.cern.ch)
