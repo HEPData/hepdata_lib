@@ -1,3 +1,7 @@
+# output from examples
+examples/submission.tar.gz
+examples/example_output/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
