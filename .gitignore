@@ -1,6 +1,6 @@
 # output from examples
-notebooks/submission.tar.gz
-notebooks/example_output/
+examples/submission.tar.gz
+examples/example_output/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
