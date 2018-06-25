@@ -13,9 +13,9 @@ class TestExecuteCommand(TestCase):
         test_command_bad = "nonsense"
         test_command_bad_exit = "ls nonexist"
 
-        assert execute_command(test_command_good)
+        self.assertTrue(execute_command(test_command_good))
 
-        assert not execute_command(test_command_bad)
+        self.assertFalse(execute_command(test_command_bad))
 
         with self.assertRaises(RuntimeError):
             execute_command(test_command_bad_exit)
