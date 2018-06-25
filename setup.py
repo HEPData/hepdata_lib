@@ -35,7 +35,7 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     zip_safe=False,
     install_requires=DEPS,
-    setup_requires=['pytest-runner'],
+    setup_requires=['pytest-runner', 'pytest-cov'],
     tests_require=['pytest'],
     project_urls={
         'Documentation': 'https://hepdata-lib.readthedocs.io',
