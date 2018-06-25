@@ -17,4 +17,4 @@ install:
 
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then python setup.py test; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then python3 setup.py test; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then python3 setup.py test && python3 -m pip install -e . && python3 -m pylint hepdata_lib/__init__.py; fi

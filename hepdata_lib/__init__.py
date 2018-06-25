@@ -92,9 +92,11 @@ def check_file_size(path_to_file, upper_limit=None, lower_limit=None):
     """
     size = 1e-6 * os.path.getsize(path_to_file)
     if upper_limit and size > upper_limit:
-        raise RuntimeError("File too big: '{0}'. Maximum allowed value is {1} MB.".format(path_to_file, upper_limit))
+        raise RuntimeError("File too big: '{0}'. Maximum allowed value is {1} \
+                            MB.".format(path_to_file, upper_limit))
     if lower_limit and size < lower_limit:
-        raise RuntimeError("File too small: '{0}'. Minimal allowed value is {1} MB.".format(path_to_file, lower_limit))
+        raise RuntimeError("File too small: '{0}'. Minimal allowed value is {1} \
+                            MB.".format(path_to_file, lower_limit))
 
 class Variable(object):
     """A Variable is a wrapper for a list of values + some meta data."""
@@ -432,8 +434,9 @@ class Submission(object):
         into the output directory. This only works if the location is a local file.
         If the location you gave does not exist or points to a file larger than 100 MB,
         a RuntimeError will be raised.
-        While the file checks are performed immediately (i.e. the file must exist when this function is called),
-        the actual copying only happens once create_files function of the submission object is called.
+        While the file checks are performed immediately (i.e. the file must exist when this
+        function is called), the actual copying only happens once create_files function of the
+        submission object is called.
 
         :param description: Description of what the resource is.
         :type description: string.
@@ -447,7 +450,7 @@ class Submission(object):
 
         resource = {}
         resource["description"] = description
-        if(copy_file):
+        if copy_file:
             check_file_existence(location)
             check_file_size(location, upper_limit=100)
             resource["location"] = os.path.basename(location)
@@ -839,7 +842,7 @@ def get_hist_2d_points(hist):
             if symmetric:
                 dz_val = hist.GetBinError(x_bin, y_bin)
             else:
-                dz_val = (- hist.GetBinErrorLow(x_bin, y_bin), 
+                dz_val = (- hist.GetBinErrorLow(x_bin, y_bin),
                           hist.GetBinErrorUp(x_bin, y_bin))
 
             width_y = hist.GetXaxis().GetBinWidth(y_bin)
