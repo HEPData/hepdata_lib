@@ -8,7 +8,7 @@ try:
 except ImportError:
     print("ROOT is required by this library.")
 
-DEPS = ['numpy', 'PyYAML', 'future']
+DEPS = ['numpy', 'PyYAML', 'future', 'pylint']
 
 HERE = path.abspath(path.dirname(__file__))
 
