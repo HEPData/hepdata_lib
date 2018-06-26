@@ -27,6 +27,7 @@ RUN apt-get update -qq \
         python-dev \
         python-numpy \
         python-pip \
+        imagemagick \
     && localedef -i en_US -f UTF-8 en_US.UTF-8 \
     && rm -rf /packages /var/lib/apt/lists/* \
     && pip install --no-cache-dir \
