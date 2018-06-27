@@ -65,7 +65,7 @@ class TestSubmission(TestCase):
         os.remove(testpath)
 
     def test_yaml_dump(self):
-        """Test yaml.dump()."""
+        """Test yaml.dump() for Submission."""
 
         test_submission = Submission()
         # test_table = Table("Some Table")
