@@ -63,3 +63,15 @@ class TestSubmission(TestCase):
 
         # Clean up
         os.remove(testpath)
+
+    def test_yaml_dump(self):
+        """Test yaml.dump()."""
+
+        test_submission = Submission()
+        # test_table = Table("Some Table")
+        # test_variable = Variable("Some Variable")
+        # test_uncertainty = Uncertainty("Some Uncertainty")
+        try:
+            test_submission.create_files("test_output")
+        except TypeError:
+            self.fail("Submission.create_files raised an unexpected TypeError.")
