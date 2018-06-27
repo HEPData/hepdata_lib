@@ -9,13 +9,14 @@ from collections import defaultdict
 import subprocess
 import warnings
 import shutil
-import yaml
+from ruamel.yaml import YAML
 import numpy as np
 import ROOT as r
 
-
 # Register defalut dict so that yaml knows it is a dictionary type
-yaml.add_representer(defaultdict, yaml.representer.Representer.represent_dict)
+yaml = YAML()
+yaml.default_flow_style = False
+# yaml.add_representer(defaultdict, yaml.representer.Representer.represent_dict)
 
 
 # Display deprecation warnings
@@ -363,7 +364,7 @@ class Table(object):
         outfile_path = os.path.join(
             outdir, '{NAME}.yaml'.format(NAME=shortname))
         with open(outfile_path, 'w') as outfile:
-            yaml.dump(table, outfile, default_flow_style=False)
+            yaml.dump(table, outfile)
 
         # Add entry to central submission file
         submission_path = os.path.join(outdir, 'submission.yaml')
@@ -381,11 +382,11 @@ class Table(object):
             for name, values in list(self.keywords.items()):
                 submission["keywords"].append({"name": name, "values": values})
 
+            yaml.explicit_start = True
             yaml.dump(
                 submission,
-                submissionfile,
-                default_flow_style=False,
-                explicit_start=True)
+                submissionfile)
+            yaml.explicit_start = True
         return os.path.basename(outfile_path)
 
 class Submission(object):
@@ -531,11 +532,11 @@ class Submission(object):
             submission["record_ids"] = self.record_ids
 
         with open(os.path.join(outdir, 'submission.yaml'), 'w') as outfile:
+            yaml.explicit_start = True
             yaml.dump(
                 submission,
-                outfile,
-                default_flow_style=False,
-                explicit_start=True)
+                outfile)
+            yaml.explicit_start = False
 
         # Write all the tables
         for table in self.tables:
