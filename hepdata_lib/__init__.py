@@ -13,9 +13,10 @@ from ruamel.yaml import YAML
 import numpy as np
 import ROOT as r
 
-# Register defalut dict so that yaml knows it is a dictionary type
-yaml = YAML()
+yaml = YAML()  # pylint: disable=C0103
 yaml.default_flow_style = False
+# Register defalut dict so that yaml knows it is a dictionary type
+yaml.register_class(defaultdict)
 # yaml.add_representer(defaultdict, yaml.representer.Representer.represent_dict)
 
 
