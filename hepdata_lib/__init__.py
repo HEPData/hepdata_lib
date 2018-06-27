@@ -9,15 +9,42 @@ from collections import defaultdict
 import subprocess
 import warnings
 import shutil
-from ruamel.yaml import YAML
+# from ruamel.yaml import YAML
+import yaml
+# try to use LibYAML bindings if possible
+try:
+    from yaml import CLoader as Loader, CDumper as Dumper
+except ImportError:
+    from yaml import Loader, Dumper
+from yaml.representer import SafeRepresenter
 import numpy as np
 import ROOT as r
 
-yaml = YAML()  # pylint: disable=C0103
-yaml.default_flow_style = False
+# yaml = YAML()  # pylint: disable=C0103
+# yaml.default_flow_style = False
 # Register defalut dict so that yaml knows it is a dictionary type
-yaml.register_class(defaultdict)
+# yaml.register_class(defaultdict)
 # yaml.add_representer(defaultdict, yaml.representer.Representer.represent_dict)
+_mapping_tag = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
+
+
+def dict_representer(dumper, data):
+    """represent dict."""
+    return dumper.represent_dict(data.iteritems())
+
+
+def dict_constructor(loader, node):
+    """construct dict."""
+    return defaultdict(loader.construct_pairs(node))
+
+Dumper.add_representer(defaultdict, dict_representer)
+Loader.add_constructor(_mapping_tag, dict_constructor)
+
+Dumper.add_representer(str,
+                       SafeRepresenter.represent_str)
+
+# Dumper.add_representer(unicode,
+#                        SafeRepresenter.represent_unicode)
 
 
 # Display deprecation warnings
@@ -365,7 +392,7 @@ class Table(object):
         outfile_path = os.path.join(
             outdir, '{NAME}.yaml'.format(NAME=shortname))
         with open(outfile_path, 'w') as outfile:
-            yaml.dump(table, outfile)
+            yaml.dump(table, outfile, default_flow_style=False)
 
         # Add entry to central submission file
         submission_path = os.path.join(outdir, 'submission.yaml')
@@ -383,11 +410,13 @@ class Table(object):
             for name, values in list(self.keywords.items()):
                 submission["keywords"].append({"name": name, "values": values})
 
-            yaml.explicit_start = True
+            # yaml.explicit_start = True
             yaml.dump(
                 submission,
-                submissionfile)
-            yaml.explicit_start = True
+                submissionfile,
+                default_flow_style=False,
+                explicit_start=True)
+            # yaml.explicit_start = True
         return os.path.basename(outfile_path)
 
 class Submission(object):
@@ -533,11 +562,13 @@ class Submission(object):
             submission["record_ids"] = self.record_ids
 
         with open(os.path.join(outdir, 'submission.yaml'), 'w') as outfile:
-            yaml.explicit_start = True
+            # yaml.explicit_start = True
             yaml.dump(
                 submission,
-                outfile)
-            yaml.explicit_start = False
+                outfile,
+                default_flow_style=False,
+                explicit_start=True)
+            # yaml.explicit_start = False
 
         # Write all the tables
         for table in self.tables:
