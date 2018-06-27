@@ -37,3 +37,5 @@ class TestTable(TestCase):
             test_table.write_yaml("test_output")
         except TypeError:
             self.fail("Table.test_table raised an unexpected TypeError.")
+        with self.assertRaises(TypeError):
+            test_table.write_yaml(None)
