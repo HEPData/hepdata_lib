@@ -803,10 +803,14 @@ class RootFileReader(object):
 
         """
         tree = self.tfile.Get(path_to_tree)
-
+        if not tree or not isinstance(tree, r.TTree):
+            raise RuntimeError("No TTree found for path '{0}'.".format(path_to_tree))
         values = []
         for event in tree:
-            values.append(getattr(event, branch_name))
+            try:
+                values.append(getattr(event, branch_name))
+            except AttributeError:
+                raise RuntimeError("The TTree does not have a branch with name '{0}'.".format(branch_name))
         return values
 
     def read_limit_tree(self,
