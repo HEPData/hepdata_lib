@@ -810,7 +810,8 @@ class RootFileReader(object):
             try:
                 values.append(getattr(event, branch_name))
             except AttributeError:
-                raise RuntimeError("The TTree does not have a branch with name '{0}'.".format(branch_name))
+                msg = "The TTree does not have a branch with name '{0}'.".format(branch_name)
+                raise RuntimeError(msg)
         return values
 
     def read_limit_tree(self,
