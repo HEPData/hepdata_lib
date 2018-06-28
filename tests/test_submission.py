@@ -63,3 +63,13 @@ class TestSubmission(TestCase):
 
         # Clean up
         os.remove(testpath)
+
+    def test_create_files(self):
+        """Test create_files() for Submission."""
+
+        test_submission = Submission()
+
+        try:
+            test_submission.create_files("test_output")
+        except TypeError:
+            self.fail("Submission.create_files raised an unexpected TypeError.")

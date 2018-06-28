@@ -26,3 +26,17 @@ class TestTable(TestCase):
             test_table.add_variable("a string")
         with self.assertRaises(TypeError):
             test_table.add_variable(test_uncertainty)
+
+
+    def test_write_yaml(self):
+        """Test write_yaml() for Table."""
+
+        test_table = Table("Some Table")
+        test_variable = Variable("Some Variable")
+        test_table.add_variable(test_variable)
+        try:
+            test_table.write_yaml("test_output")
+        except TypeError:
+            self.fail("Table.write_yaml raised an unexpected TypeError.")
+        with self.assertRaises(TypeError):
+            test_table.write_yaml(None)
