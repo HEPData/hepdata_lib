@@ -10,12 +10,34 @@ import subprocess
 import warnings
 import shutil
 import yaml
+# try to use LibYAML bindings if possible
+try:
+    from yaml import CLoader as Loader, CDumper as Dumper
+except ImportError:
+    from yaml import Loader, Dumper
+from yaml.representer import SafeRepresenter
 import numpy as np
 import ROOT as r
 
 
-# Register defalut dict so that yaml knows it is a dictionary type
-yaml.add_representer(defaultdict, yaml.representer.Representer.represent_dict)
+MAPPING_TAG = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
+
+
+def dict_representer(dumper, data):
+    """represent dict."""
+    return dumper.represent_dict(data.iteritems())
+
+
+def dict_constructor(loader, node):
+    """construct dict."""
+    return defaultdict(loader.construct_pairs(node))
+
+
+Dumper.add_representer(defaultdict, dict_representer)
+Loader.add_constructor(MAPPING_TAG, dict_constructor)
+
+Dumper.add_representer(str,
+                       SafeRepresenter.represent_str)
 
 
 # Display deprecation warnings
