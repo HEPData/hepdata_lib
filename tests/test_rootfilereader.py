@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 """Test RootFileReader."""
 from unittest import TestCase
+from array import array
 import os
 import ctypes
 from test_utilities import float_compare, tuple_compare
@@ -302,3 +303,42 @@ class TestRootFileReader(TestCase):
                  backup_hist.GetBinErrorUp(ibinx.value, ibiny.value)), dz))
         # Clean up
         os.remove(fpath)
+
+    def test_read_tree(self):
+        """Test the read_tree function."""
+
+        Nfill = 1000
+        fpath = "testfile.root"
+        branchname = "testbranch"
+        path_to_tree = "testpath"
+        # Set up some test data, put into TTree and write to file
+        data = np.random.normal(loc=0.5, scale=0.15, size=Nfill)
+
+        number = array("f",[0])
+        tree = ROOT.TTree()
+        tree.Branch(branchname, number, "test/F")
+        for inumber in data:
+            number[0] = inumber
+            tree.Fill()
+
+        rootfile = ROOT.TFile(fpath, "RECREATE")
+        tree.Write(path_to_tree)
+        if(rootfile): rootfile.Close()
+
+
+        # Read data back and check consistency
+        reader = RootFileReader(fpath)
+        try:
+            data_readback = reader.read_tree(path_to_tree, branchname)
+        except RuntimeError:
+            self.fail("RootFileReader.read_tree raised an unexpected RuntimeError!")
+        self.assertIsInstance(data_readback, list)
+        self.assertTrue(all([float_compare(values[0], values[1]) for values in zip(data, data_readback)]))
+
+        # Try reading a nonexistant branch from an existing tree
+        with self.assertRaises(RuntimeError):
+            reader.read_tree(path_to_tree, "some_random_name")
+
+        # Try reading a nonexistant tree
+        with self.assertRaises(RuntimeError):
+            reader.read_tree("some/random/path", "some_random_name")
