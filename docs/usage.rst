@@ -21,7 +21,62 @@ The HEPData data model revolves around **Tables** and **Variables**. At its core
 Reading data
 -------------------------------
 
-**TODO**
+Reading from plain text
++++++++++++++++++++++++++++++++
+
+If you save your data in a text file, a simple-to-use tool is the ``numpy.loadtxt`` function,
+which loads column-wise data from plain-text files and returns it as a ``numpy.array``.
+
+::
+
+    import numpy as np
+    my_array = np.loadtxt("some_file.txt")
+
+A detailed example is available here_.
+For documentation on the `loadtxt` function, please refer the `numpy documentation`_.
+
+.. _here: https://github.com/clelange/hepdata_lib/blob/master/examples/Getting_started.ipynb
+.. _numpy documentation: https://docs.scipy.org/doc/numpy/reference/generated/numpy.loadtxt.html
+
+
+Reading from ROOT files
++++++++++++++++++++++++++++++++
+
+In many cases, data in the experiments is available as one of various ROOT data types, such as ``TGraphs``, ``TH1``, ``TH2``, etc, which are saved in ``*.root`` files.
+
+To facilitate reading these objects, the ``RootFileReader`` class is provided.
+The reader is instantiated by passing a path to the ROOT file to read from:
+
+::
+
+    from hepdata_lib import RootFileReader
+    reader = RootFileReader("/path/to/myfile.root")
+
+After initialization, individual methods are provided for access to different types of objects stored in the file.
+
+* Reading TGraph, TGraphErrors, TGraphAsymmErrors: ``RootFileReader.read_graph``
+* Reading TH1: ``RootFileReader.read_hist_1d``
+* Reading TH2: ``RootFileReader.read_hist_2d``
+
+While the details of each function are adapted to their respective use cases, they follow a common input/output logic. The methods are called by providing the path to the object inside the ROOT file. They return a dictionary containing lists of all relevant numbers that can be extracted from the object, such as x values, y values, uncertainties, etc.
+
+As an example, if a TGraph is saved as with name ``mygraph`` in the directory ``topdir/subdir`` inside the ROOT file, it can be retrieved as:
+
+::
+
+    data = reader.read_graph("topdir/subdir/mygraph")
+
+Since a graph is simply a set of (x,y) pairs for each point, the ``data`` dictionary will have two key/value pairs:
+
+* key "x" -> list of x values.
+* key "y" -> list of y values.
+
+More complex information will be returned for ``TGraphErrors``, etc, which can also be read in this manner.
+For detailed descriptions of the extraction logic and returned data, please refer to the documentation of the individual methods.
+
+An `example notebook`_ shows how to read histograms from a ROOT file.
+
+.. _example notebook: https://github.com/clelange/hepdata_lib/blob/master/examples/reading_histograms.ipynb
 
 .. _sec-usage-writing:
 
