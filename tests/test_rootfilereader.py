@@ -158,6 +158,40 @@ class TestRootFileReader(TestCase):
         os.remove(fpath)
 
 
+    def test_read_hist_1d_range(self):
+        """Test the read_hist_1d function for a histogram with symmetric errors."""
+        fpath = "testfile.root"
+
+        # Create test histogram
+        N = 100
+        xmin=20
+        xmax=80
+        x_values = [0.5 + x for x in range(xmin, xmax)]
+        y_values = list(np.random.uniform(-1e3, 1e3, xmax-xmin))
+        dy_values = list(np.random.uniform(0, 1e3, xmax-xmin))
+
+        hist = ROOT.TH1D("test1d_symm", "test1d_symm", N, 0, N)
+        for i in range(xmin, xmax):
+            hist.SetBinContent(i+1, y_values[i-xmin])
+            hist.SetBinError(i+1, dy_values[i-xmin])
+
+        f = ROOT.TFile(fpath, "RECREATE")
+        hist.SetDirectory(f)
+        hist.Write("test")
+        f.Close()
+
+        reader = RootFileReader(fpath)
+        points = reader.read_hist_1d("test", xmin=xmin, xmax=xmax)
+
+        self.assertTrue(set(["x", "y", "x_edges", "dy"]) == set(points.keys()))
+
+        self.assertTrue(all(float_compare(*tup) for tup in zip(points["x"], x_values)))
+        self.assertTrue(all(float_compare(*tup) for tup in zip(points["y"], y_values)))
+        self.assertTrue(all(float_compare(*tup) for tup in zip(points["dy"], dy_values)))
+
+        # Clean up
+        os.remove(fpath)
+
     def test_read_hist_1d_asymmetric_errors(self):
         """Test the read_hist_1d function for a histogram with asymmetric errors."""
         fpath = "testfile.root"
@@ -255,6 +289,67 @@ class TestRootFileReader(TestCase):
         # Clean up
         os.remove(fpath)
 
+
+
+    def test_read_hist_2d_range(self):
+        """Test the read_hist_2d function with symmetric errors."""
+        fpath = "testfile.root"
+
+        # Create test histogram
+        NX = 100
+        NY = 100
+        xmin=20
+        xmax=80
+        ymin=30
+        ymax=90
+        x_values = [0.5 + x for x in range(xmin, xmax)]
+        y_values = [0.5 + x for x in range(ymin, ymax)]
+        z_values = np.random.uniform(-1e3, 1e3, (xmax-xmin, ymax-ymin))
+        dz_values = np.random.uniform(0, 1e3, (xmax-xmin, ymax-ymin))
+
+        hist = ROOT.TH2D("test2d_sym", "test2d_sym", NX, 0, NX, NY, 0, NY)
+
+        for ix in range(xmin, xmax):
+            for iy in range(ymin, ymax):
+                ibin = hist.GetBin(ix+1, iy+1)
+                hist.SetBinContent(ibin, z_values[ix-xmin][iy-ymin])
+                hist.SetBinError(ibin, dz_values[ix-xmin][iy-ymin])
+
+        backup_hist = hist.Clone("backup")
+        rfile = ROOT.TFile(fpath, "RECREATE")
+        hist.SetDirectory(rfile)
+        hist.Write("test2d_sym")
+        rfile.Close()
+
+        reader = RootFileReader(fpath)
+        points = reader.read_hist_2d("test2d_sym", xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax)
+
+        # Check keys
+        self.assertTrue(set(["x", "y", "z", "x_edges", "y_edges", "dz"]) == set(points.keys()))
+
+        # Check length
+        for v in points.values():
+            self.assertTrue(len(v) == (xmax-xmin)*(ymax-ymin))
+
+        # Check unordered contents
+        self.assertTrue(set(points["x"]) == set(x_values))
+        self.assertTrue(set(points["y"]) == set(y_values))
+
+        # Look up original bins and compare
+        for x, y, z, dz in zip(points["x"], points["y"], points["z"], points["dz"]):
+            ibin = backup_hist.Fill(x, y, 0)
+            ibinx = ctypes.c_int()
+            ibiny = ctypes.c_int()
+            ibinz = ctypes.c_int()
+            backup_hist.GetBinXYZ(ibin, ibinx, ibiny, ibinz)
+            self.assertTrue(float_compare(backup_hist.GetXaxis().GetBinCenter(ibinx.value), x))
+            self.assertTrue(float_compare(backup_hist.GetYaxis().GetBinCenter(ibiny.value), y))
+            self.assertTrue(float_compare(backup_hist.GetBinContent(ibin), z))
+            self.assertTrue(float_compare(backup_hist.GetBinError(ibin), dz))
+        # Clean up
+        os.remove(fpath)
+
+        
     def test_read_hist_2d_asymmetric_errors(self):
         """Test the read_hist_2d function with asymmetric errors."""
         fpath = "testfile.root"
