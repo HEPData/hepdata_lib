@@ -766,7 +766,7 @@ class RootFileReader(object):
         graph = self.retrieve_object(path_to_graph)
         return get_graph_points(graph)
 
-    def read_hist_2d(self, path_to_hist):
+    def read_hist_2d(self, path_to_hist,xmin=None,xmax=None,ymin=None,ymax=None):
         """Read in a TH2.
 
         :param path_to_hist: Absolute path in the current TFile.
@@ -776,9 +776,9 @@ class RootFileReader(object):
             check the documentation of the get_hist_2d_points function
         """
         hist = self.retrieve_object(path_to_hist)
-        return get_hist_2d_points(hist)
+        return get_hist_2d_points(hist,xmin,xmax,ymin,ymax)
 
-    def read_hist_1d(self, path_to_hist):
+    def read_hist_1d(self, path_to_hist,xmin=None,xmax=None):
         """Read in a TH1.
 
         :param path_to_hist: Absolute path in the current TFile.
@@ -788,7 +788,7 @@ class RootFileReader(object):
             check the documentation of the get_hist_1d_points function
         """
         hist = self.retrieve_object(path_to_hist)
-        return get_hist_1d_points(hist)
+        return get_hist_1d_points(hist,xmin,xmax)
 
     def read_tree(self, path_to_tree, branch_name):
         """Extract a list of values from a tree branch.
@@ -853,7 +853,7 @@ class RootFileReader(object):
         return values
 
 
-def get_hist_2d_points(hist):
+def get_hist_2d_points(hist,xmin=None,xmax=None,ymin=None,ymax=None):
     """
     Get points from a TH2.
 
@@ -874,11 +874,15 @@ def get_hist_2d_points(hist):
     for key in ["x", "y", "x_edges", "y_edges", "z", "dz"]:
         points[key] = []
 
+    ixmin = hist.GetXaxis().FindBin(xmin) if xmin != None else 1
+    ixmax = hist.GetXaxis().FindBin(xmax) if xmax != None else hist.GetNbinsX() + 1
+    iymin = hist.GetYaxis().FindBin(ymin) if ymin != None else 1
+    iymax = hist.GetYaxis().FindBin(ymax) if ymax != None else hist.GetNbinsY() + 1
     symmetric = (hist.GetBinErrorOption() == r.TH1.kNormal)
-    for x_bin in range(1, hist.GetNbinsX() + 1):
+    for x_bin in range(ixmin,ixmax):
         x_val = hist.GetXaxis().GetBinCenter(x_bin)
         width_x = hist.GetXaxis().GetBinWidth(x_bin)
-        for y_bin in range(1, hist.GetNbinsY() + 1):
+        for y_bin in range(iymin,iymax):
             y_val = hist.GetYaxis().GetBinCenter(y_bin)
             z_val = hist.GetBinContent(x_bin, y_bin)
 
@@ -903,7 +907,7 @@ def get_hist_2d_points(hist):
 
 
 
-def get_hist_1d_points(hist):
+def get_hist_1d_points(hist,xmin=None,xmax=None):
     """
     Get points from a TH1.
 
@@ -924,7 +928,9 @@ def get_hist_1d_points(hist):
         points[key] = []
 
     symmetric = (hist.GetBinErrorOption() == r.TH1.kNormal)
-    for x_bin in range(1, hist.GetNbinsX() + 1):
+    ixmin = hist.GetXaxis().FindBin(xmin) if xmin != None else 1
+    ixmax = hist.GetXaxis().FindBin(xmax) if xmax != None else hist.GetNbinsX() + 1
+    for x_bin in range(ixmin,ixmax):
         x_val = hist.GetXaxis().GetBinCenter(x_bin)
         width_x = hist.GetXaxis().GetBinWidth(x_bin)
 
