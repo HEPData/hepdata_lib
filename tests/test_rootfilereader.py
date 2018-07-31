@@ -330,9 +330,9 @@ class TestRootFileReader(TestCase):
         reader = RootFileReader(fpath)
 
         with self.assertRaises(TypeError):
-            reader.read_hist_1d("test", xlim=(xmin, xmax), ylim=(ymin, ymax), zlim=(ymin, ymax))
+            reader.read_hist_2d("test", xlim=(xmin, xmax), ylim=(ymin, ymax), zlim=(ymin, ymax))
         with self.assertRaises(TypeError):
-            reader.read_hist_1d("test", zlim=(xmin, xmax))
+            reader.read_hist_2d("test", zlim=(xmin, xmax))
 
         points = reader.read_hist_2d("test2d_sym", xlim=(xmin, xmax), ylim=(ymin, ymax))
 
