@@ -877,7 +877,7 @@ class RootFileReader(object):
 
 
 def get_hist_2d_points(hist, **kwargs):
-    # pylint: disable=anomalous-backslash-in-string
+    # pylint: disable=anomalous-backslash-in-string,too-many-locals
     """
     Get points from a TH2.
 
