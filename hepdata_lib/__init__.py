@@ -727,31 +727,31 @@ class RootFileReader(object):
         # Otherwise, try canvas approach
         if obj:
             return obj
-        else:
-            parts = path_to_object.split("/")
-            path_to_canvas = "/".join(parts[0:-1])
-            name = parts[-1]
+        parts = path_to_object.split("/")
+        path_to_canvas = "/".join(parts[0:-1])
+        name = parts[-1]
 
-            try:
-                canv = self.tfile.Get(path_to_canvas)
-                assert canv
-                for entry in list(canv.GetListOfPrimitives()):
-                    if entry.GetName() == name:
-                        return entry
+        try:
+            canv = self.tfile.Get(path_to_canvas)
+            assert canv
+            for entry in list(canv.GetListOfPrimitives()):
+                if entry.GetName() == name:
+                    return entry
 
-                # Didn't find anything. Print available primitives to help user debug.
-                print("Available primitives in TCanvas '{0}':".format(
-                    path_to_canvas))
-                for entry in list(canv.GetListOfPrimitives()):
-                    print("Name: '{0}', Type: '{1}'.".format(
-                        entry.GetName(), type(entry)))
-                assert False
-                return entry
+            # Didn't find anything. Print available primitives to help user debug.
+            print("Available primitives in TCanvas '{0}':".format(
+                path_to_canvas))
+            for entry in list(canv.GetListOfPrimitives()):
+                print("Name: '{0}', Type: '{1}'.".format(
+                    entry.GetName(), type(entry)))
+            assert False
+            return entry
 
-            except AssertionError:
-                raise IOError(
-                    "Cannot find any object in file {0} with path {1}".format(
-                        self.tfile, path_to_object))
+        except AssertionError:
+            raise IOError(
+                "Cannot find any object in file {0} with path {1}".format(
+                    self.tfile, path_to_object))
+
 
     def read_graph(self, path_to_graph):
         """Extract lists of X and Y values from a TGraph.
