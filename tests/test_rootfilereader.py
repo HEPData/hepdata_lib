@@ -164,8 +164,8 @@ class TestRootFileReader(TestCase):
 
         # Create test histogram
         N = 100
-        xmin=20
-        xmax=80
+        xmin = 20
+        xmax = 80
         x_values = [0.5 + x for x in range(xmin, xmax)]
         y_values = list(np.random.uniform(-1e3, 1e3, xmax-xmin))
         dy_values = list(np.random.uniform(0, 1e3, xmax-xmin))
@@ -181,7 +181,13 @@ class TestRootFileReader(TestCase):
         f.Close()
 
         reader = RootFileReader(fpath)
-        points = reader.read_hist_1d("test", xmin=xmin, xmax=xmax)
+
+        with self.assertRaises(TypeError):
+            reader.read_hist_1d("test", xlim=(xmin, xmax), ylim=(xmin, xmax))
+        with self.assertRaises(TypeError):
+            reader.read_hist_1d("test", ylim=(xmin, xmax))
+
+        points = reader.read_hist_1d("test", xlim=(xmin, xmax))
 
         self.assertTrue(set(["x", "y", "x_edges", "dy"]) == set(points.keys()))
 
@@ -298,10 +304,10 @@ class TestRootFileReader(TestCase):
         # Create test histogram
         NX = 100
         NY = 100
-        xmin=20
-        xmax=80
-        ymin=30
-        ymax=90
+        xmin = 20
+        xmax = 80
+        ymin = 30
+        ymax = 90
         x_values = [0.5 + x for x in range(xmin, xmax)]
         y_values = [0.5 + x for x in range(ymin, ymax)]
         z_values = np.random.uniform(-1e3, 1e3, (xmax-xmin, ymax-ymin))
@@ -322,7 +328,13 @@ class TestRootFileReader(TestCase):
         rfile.Close()
 
         reader = RootFileReader(fpath)
-        points = reader.read_hist_2d("test2d_sym", xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax)
+
+        with self.assertRaises(TypeError):
+            reader.read_hist_1d("test", xlim=(xmin, xmax), ylim=(ymin, ymax), zlim=(ymin, ymax))
+        with self.assertRaises(TypeError):
+            reader.read_hist_1d("test", zlim=(xmin, xmax))
+
+        points = reader.read_hist_2d("test2d_sym", xlim=(xmin, xmax), ylim=(ymin, ymax))
 
         # Check keys
         self.assertTrue(set(["x", "y", "z", "x_edges", "y_edges", "dz"]) == set(points.keys()))
@@ -349,7 +361,7 @@ class TestRootFileReader(TestCase):
         # Clean up
         os.remove(fpath)
 
-        
+
     def test_read_hist_2d_asymmetric_errors(self):
         """Test the read_hist_2d function with asymmetric errors."""
         fpath = "testfile.root"

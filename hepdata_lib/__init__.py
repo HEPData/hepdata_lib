@@ -766,29 +766,52 @@ class RootFileReader(object):
         graph = self.retrieve_object(path_to_graph)
         return get_graph_points(graph)
 
-    def read_hist_2d(self, path_to_hist, xmin=None, xmax=None, ymin=None, ymax=None):
+    def read_hist_2d(self, path_to_hist, **kwargs):
+        # pylint: disable=anomalous-backslash-in-string
         """Read in a TH2.
 
         :param path_to_hist: Absolute path in the current TFile.
         :type path_to_hist: str
+        :param \**kwargs: See below
+
+        :Keyword Arguments:
+            * *xlim* (``set``) --
+                limit x-axis range to consider (xmin, xmax)
+            * *ylim* (``set``) --
+                limit y-axis range to consider (ymin, ymax)
 
         :returns: dict -- For a description of the contents,
             check the documentation of the get_hist_2d_points function
         """
-        hist = self.retrieve_object(path_to_hist)
-        return get_hist_2d_points(hist, xmin, xmax, ymin, ymax)
+        xlim = kwargs.pop('xlim', (None, None))
+        ylim = kwargs.pop('ylim', (None, None))
+        if kwargs:
+            raise TypeError('Unexpected **kwargs: %r' % kwargs)
 
-    def read_hist_1d(self, path_to_hist, xmin=None, xmax=None):
+        hist = self.retrieve_object(path_to_hist)
+        return get_hist_2d_points(hist, xlim=xlim, ylim=ylim)
+
+    def read_hist_1d(self, path_to_hist, **kwargs):
+        # pylint: disable=anomalous-backslash-in-string
         """Read in a TH1.
 
         :param path_to_hist: Absolute path in the current TFile.
         :type path_to_hist: str
+        :param \**kwargs: See below
+
+        :Keyword Arguments:
+            * *xlim* (``set``) --
+                limit x-axis range to consider (xmin, xmax)
 
         :returns: dict -- For a description of the contents,
             check the documentation of the get_hist_1d_points function
         """
+        xlim = kwargs.pop('xlim', (None, None))
+        if kwargs:
+            raise TypeError('Unexpected **kwargs: %r' % kwargs)
+
         hist = self.retrieve_object(path_to_hist)
-        return get_hist_1d_points(hist, xmin, xmax)
+        return get_hist_1d_points(hist, xlim=xlim)
 
     def read_tree(self, path_to_tree, branch_name):
         """Extract a list of values from a tree branch.
@@ -853,12 +876,20 @@ class RootFileReader(object):
         return values
 
 
-def get_hist_2d_points(hist, xmin=None, xmax=None, ymin=None, ymax=None):
+def get_hist_2d_points(hist, **kwargs):
+    # pylint: disable=anomalous-backslash-in-string
     """
     Get points from a TH2.
 
     :param hist: Histogram to extract points from
     :type hist: TH2D
+    :param \**kwargs: See below
+
+    :Keyword Arguments:
+        * *xlim* (``set``) --
+            limit x-axis range to consider (xmin, xmax)
+        * *ylim* (``set``) --
+            limit y-axis range to consider (ymin, ymax)
 
     :returns: dict -- Lists of x/y/z values saved in dictionary.
         Corresponding keys are "x"/"y" for the values of the bin center on the
@@ -870,14 +901,19 @@ def get_hist_2d_points(hist, xmin=None, xmax=None, ymin=None, ymax=None):
         Symmetric errors are returned if the histogram error option
         TH1::GetBinErrorOption() returns TH1::kNormal.
     """
+    xlim = kwargs.pop('xlim', (None, None))
+    ylim = kwargs.pop('ylim', (None, None))
+    if kwargs:
+        raise TypeError('Unexpected **kwargs: %r' % kwargs)
+
     points = {}
     for key in ["x", "y", "x_edges", "y_edges", "z", "dz"]:
         points[key] = []
 
-    ixmin = hist.GetXaxis().FindBin(xmin) if xmin else 1
-    ixmax = hist.GetXaxis().FindBin(xmax) if xmax else hist.GetNbinsX() + 1
-    iymin = hist.GetYaxis().FindBin(ymin) if ymin else 1
-    iymax = hist.GetYaxis().FindBin(ymax) if ymax else hist.GetNbinsY() + 1
+    ixmin = hist.GetXaxis().FindBin(xlim[0]) if xlim[0] is not None else 1
+    ixmax = hist.GetXaxis().FindBin(xlim[1]) if xlim[1] is not None else hist.GetNbinsX() + 1
+    iymin = hist.GetYaxis().FindBin(ylim[0]) if ylim[0] is not None else 1
+    iymax = hist.GetYaxis().FindBin(ylim[1]) if ylim[1] is not None else hist.GetNbinsY() + 1
     symmetric = (hist.GetBinErrorOption() == r.TH1.kNormal)
     for x_bin in range(ixmin, ixmax):
         x_val = hist.GetXaxis().GetBinCenter(x_bin)
@@ -907,12 +943,18 @@ def get_hist_2d_points(hist, xmin=None, xmax=None, ymin=None, ymax=None):
 
 
 
-def get_hist_1d_points(hist, xmin=None, xmax=None):
+def get_hist_1d_points(hist, **kwargs):
+    # pylint: disable=anomalous-backslash-in-string
     """
     Get points from a TH1.
 
     :param hist: Histogram to extract points from
     :type hist: TH1D
+    :param \**kwargs: See below
+
+    :Keyword Arguments:
+        * *xlim* (``set``) --
+            limit x-axis range to consider (xmin, xmax)
 
     :returns: dict -- Lists of x/y values saved in dictionary.
         Corresponding keys are "x" for the value of the bin center.
@@ -923,13 +965,17 @@ def get_hist_1d_points(hist, xmin=None, xmax=None):
         Symmetric errors are returned if the histogram error option
         TH1::GetBinErrorOption() returns TH1::kNormal.
     """
+    xlim = kwargs.pop('xlim', (None, None))
+    if kwargs:
+        raise TypeError('Unexpected **kwargs: %r' % kwargs)
+
     points = {}
     for key in ["x", "y", "x_edges", "dy"]:
         points[key] = []
 
     symmetric = (hist.GetBinErrorOption() == r.TH1.kNormal)
-    ixmin = hist.GetXaxis().FindBin(xmin) if xmin else 1
-    ixmax = hist.GetXaxis().FindBin(xmax) if xmax else hist.GetNbinsX() + 1
+    ixmin = hist.GetXaxis().FindBin(xlim[0]) if xlim[0] is not None else 1
+    ixmax = hist.GetXaxis().FindBin(xlim[1]) if xlim[1] is not None else hist.GetNbinsX() + 1
     for x_bin in range(ixmin, ixmax):
         x_val = hist.GetXaxis().GetBinCenter(x_bin)
         width_x = hist.GetXaxis().GetBinWidth(x_bin)
