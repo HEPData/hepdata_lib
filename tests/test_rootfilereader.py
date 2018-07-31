@@ -5,10 +5,10 @@ from unittest import TestCase
 from array import array
 import os
 import ctypes
-from test_utilities import float_compare, tuple_compare
-from hepdata_lib import RootFileReader
 import numpy as np
 import ROOT
+from test_utilities import float_compare, tuple_compare
+from hepdata_lib import RootFileReader
 
 
 class TestRootFileReader(TestCase):
