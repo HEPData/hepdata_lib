@@ -112,3 +112,4 @@ ENV/
 
 # Virtual Studio Code
 .vscode/
+.idea/

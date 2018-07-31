@@ -2,14 +2,17 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-import os
+
 import fnmatch
 import math
-from collections import defaultdict
+import os
+import shutil
 import subprocess
 import warnings
-import shutil
+from collections import defaultdict
+
 import yaml
+
 # try to use LibYAML bindings if possible
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
@@ -18,7 +21,6 @@ except ImportError:
 from yaml.representer import SafeRepresenter
 import numpy as np
 import ROOT as r
-
 
 MAPPING_TAG = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
 
@@ -39,9 +41,9 @@ Loader.add_constructor(MAPPING_TAG, dict_constructor)
 Dumper.add_representer(str,
                        SafeRepresenter.represent_str)
 
-
 # Display deprecation warnings
 warnings.filterwarnings("always", category=DeprecationWarning, module="hepdata_lib")
+
 
 def execute_command(command):
     """
@@ -99,6 +101,7 @@ def relative_round(value, relative_digits):
 
     return round(value, int(absolute_digits))
 
+
 def check_file_existence(path_to_file):
     """
     Check that the given file path exists.
@@ -109,6 +112,7 @@ def check_file_existence(path_to_file):
     """
     if not os.path.exists(path_to_file):
         raise RuntimeError("Cannot find file: " + path_to_file)
+
 
 def check_file_size(path_to_file, upper_limit=None, lower_limit=None):
     """
@@ -131,6 +135,7 @@ def check_file_size(path_to_file, upper_limit=None, lower_limit=None):
     if lower_limit and size < lower_limit:
         raise RuntimeError("File too small: '{0}'. Minimal allowed value is {1} \
                             MB.".format(path_to_file, lower_limit))
+
 
 class Variable(object):
     """A Variable is a wrapper for a list of values + some meta data."""
@@ -201,8 +206,8 @@ class Variable(object):
         lenunc = len(uncertainty.values)
         if lenvar and (lenvar is not lenunc):
             raise ValueError("Length of uncertainty list ({0})" \
-            "is not the same as length of Variable" \
-            "values list ({1})!.".format(lenunc, lenvar))
+                             "is not the same as length of Variable" \
+                             "values list ({1})!.".format(lenunc, lenvar))
         self.uncertainties.append(uncertainty)
 
     def make_dict(self):
@@ -243,17 +248,17 @@ class Variable(object):
                 if unc.is_symmetric:
                     valuedict['errors'].append({
                         "symerror":
-                        relative_round(unc.values[i], self.digits),
+                            relative_round(unc.values[i], self.digits),
                         "label":
-                        unc.label
+                            unc.label
                     })
                 else:
                     valuedict['errors'].append({
                         "asymerror": {
                             "minus":
-                            relative_round(unc.values[i][0], self.digits),
+                                relative_round(unc.values[i][0], self.digits),
                             "plus":
-                            relative_round(unc.values[i][1], self.digits)
+                                relative_round(unc.values[i][1], self.digits)
                         },
                         "label": unc.label
                     })
@@ -302,7 +307,6 @@ class Table(object):
             self.image_files.add(file_path)
         else:
             raise RuntimeError("Cannot find image file: {0}".format(file_path))
-
 
     def write_output(self, outdir):
         """
@@ -409,6 +413,7 @@ class Table(object):
                 default_flow_style=False,
                 explicit_start=True)
         return os.path.basename(outfile_path)
+
 
 class Submission(object):
     """
@@ -635,7 +640,6 @@ class Uncertainty(object):
                 )
             self._values = [(float(x[0]), float(x[1])) for x in values]
 
-
     def set_values_from_intervals(self, intervals, nominal):
         """
         Set values relative to set of nominal valuesself.
@@ -751,7 +755,6 @@ class RootFileReader(object):
             raise IOError(
                 "Cannot find any object in file {0} with path {1}".format(
                     self.tfile, path_to_object))
-
 
     def read_graph(self, path_to_graph):
         """Extract lists of X and Y values from a TGraph.
@@ -942,7 +945,6 @@ def get_hist_2d_points(hist, **kwargs):
     return points
 
 
-
 def get_hist_1d_points(hist, **kwargs):
     # pylint: disable=anomalous-backslash-in-string
     """
@@ -993,6 +995,8 @@ def get_hist_1d_points(hist, **kwargs):
         points["dy"].append(dy_val)
 
     return points
+
+
 def get_graph_points(graph):
     """
     Extract lists of X and Y values from a TGraph.
