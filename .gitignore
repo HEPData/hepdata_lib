@@ -2,6 +2,11 @@
 examples/submission.tar.gz
 examples/example_output/
 
+# test output
+submission.tar.gz
+testfile.root
+test_output/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
