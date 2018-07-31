@@ -182,10 +182,30 @@ class TestRootFileReader(TestCase):
 
         reader = RootFileReader(fpath)
 
+        # pass too many axis limits
         with self.assertRaises(TypeError):
             reader.read_hist_1d("test", xlim=(xmin, xmax), ylim=(xmin, xmax))
+        # pass wrong axis limits or parameter
         with self.assertRaises(TypeError):
             reader.read_hist_1d("test", ylim=(xmin, xmax))
+        # pass xmax < xmin (wrong ordering)
+        with self.assertRaises(AssertionError):
+            reader.read_hist_1d("test", xlim=(xmax, xmin))
+        # pass too many parameters as single axis limit
+        with self.assertRaises(AssertionError):
+            reader.read_hist_1d("test", xlim=(xmin, xmax, 5))
+        # pass non-float/-int as first item
+        with self.assertRaises(AssertionError):
+            reader.read_hist_1d("test", xlim=("5", xmax))
+        # pass non-float/-int as second item
+        with self.assertRaises(AssertionError):
+            reader.read_hist_1d("test", xlim=(xmin, "12"))
+        # pass set instance (needs to be ordered tuple or list)
+        with self.assertRaises(AssertionError):
+            reader.read_hist_1d("test", xlim={xmin, xmax})
+        # pass wrong instance
+        with self.assertRaises(AssertionError):
+            reader.read_hist_1d("test", xlim="some string")
 
         points = reader.read_hist_1d("test", xlim=(xmin, xmax))
 
@@ -329,10 +349,30 @@ class TestRootFileReader(TestCase):
 
         reader = RootFileReader(fpath)
 
+        # pass too many axis limits
         with self.assertRaises(TypeError):
             reader.read_hist_2d("test", xlim=(xmin, xmax), ylim=(ymin, ymax), zlim=(ymin, ymax))
+        # pass non-existing axis limit/parameter
         with self.assertRaises(TypeError):
             reader.read_hist_2d("test", zlim=(xmin, xmax))
+        # pass wrong order (xmax < xmin)
+        with self.assertRaises(AssertionError):
+            reader.read_hist_2d("test", ylim=(xmax, xmin))
+        # pass too many parameters as single axis limit
+        with self.assertRaises(AssertionError):
+            reader.read_hist_2d("test", ylim=(xmin, xmax, 5))
+        # pass wrong type as first item
+        with self.assertRaises(AssertionError):
+            reader.read_hist_2d("test", ylim=("5", xmax))
+        # pass wrong type as second item
+        with self.assertRaises(AssertionError):
+            reader.read_hist_2d("test", ylim=(xmin, "12"))
+        # pass set instance (needs ordered datatype: tuple or list)
+        with self.assertRaises(AssertionError):
+            reader.read_hist_2d("test", xlim={xmin, xmax})
+        # pass wrong instance
+        with self.assertRaises(AssertionError):
+            reader.read_hist_2d("test", xlim="some string")
 
         points = reader.read_hist_2d("test2d_sym", xlim=(xmin, xmax), ylim=(ymin, ymax))
 

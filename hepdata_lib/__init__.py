@@ -778,9 +778,9 @@ class RootFileReader(object):
         :param \**kwargs: See below
 
         :Keyword Arguments:
-            * *xlim* (``set``) --
+            * *xlim* (``tuple``) --
                 limit x-axis range to consider (xmin, xmax)
-            * *ylim* (``set``) --
+            * *ylim* (``tuple``) --
                 limit y-axis range to consider (ymin, ymax)
 
         :returns: dict -- For a description of the contents,
@@ -790,6 +790,16 @@ class RootFileReader(object):
         ylim = kwargs.pop('ylim', (None, None))
         if kwargs:
             raise TypeError('Unexpected **kwargs: %r' % kwargs)
+        assert isinstance(xlim, (tuple, list))
+        assert isinstance(ylim, (tuple, list))
+        assert len(xlim) == 2
+        assert len(ylim) == 2
+        if xlim[0] and xlim[1]:
+            assert all(isinstance(val, (int, float)) for val in xlim)
+            assert(xlim[0] < xlim[1])
+        if ylim[0] and ylim[1]:
+            assert all(isinstance(val, (int, float)) for val in ylim)
+            assert(ylim[0] < ylim[1])
 
         hist = self.retrieve_object(path_to_hist)
         return get_hist_2d_points(hist, xlim=xlim, ylim=ylim)
@@ -803,7 +813,7 @@ class RootFileReader(object):
         :param \**kwargs: See below
 
         :Keyword Arguments:
-            * *xlim* (``set``) --
+            * *xlim* (``tuple``) --
                 limit x-axis range to consider (xmin, xmax)
 
         :returns: dict -- For a description of the contents,
@@ -812,6 +822,11 @@ class RootFileReader(object):
         xlim = kwargs.pop('xlim', (None, None))
         if kwargs:
             raise TypeError('Unexpected **kwargs: %r' % kwargs)
+        assert isinstance(xlim, (tuple, list))
+        assert len(xlim) == 2
+        if xlim[0] and xlim[1]:
+            assert all(isinstance(val, (int, float)) for val in xlim)
+            assert(xlim[0] < xlim[1])
 
         hist = self.retrieve_object(path_to_hist)
         return get_hist_1d_points(hist, xlim=xlim)
@@ -889,9 +904,9 @@ def get_hist_2d_points(hist, **kwargs):
     :param \**kwargs: See below
 
     :Keyword Arguments:
-        * *xlim* (``set``) --
+        * *xlim* (``tuple``) --
             limit x-axis range to consider (xmin, xmax)
-        * *ylim* (``set``) --
+        * *ylim* (``tuple``) --
             limit y-axis range to consider (ymin, ymax)
 
     :returns: dict -- Lists of x/y/z values saved in dictionary.
@@ -908,6 +923,16 @@ def get_hist_2d_points(hist, **kwargs):
     ylim = kwargs.pop('ylim', (None, None))
     if kwargs:
         raise TypeError('Unexpected **kwargs: %r' % kwargs)
+    assert isinstance(xlim, (tuple, list))
+    assert isinstance(ylim, (tuple, list))
+    assert len(xlim) == 2
+    assert len(ylim) == 2
+    if xlim[0] and xlim[1]:
+        assert all(isinstance(val, (int, float)) for val in xlim)
+        assert(xlim[0] < xlim[1])
+    if ylim[0] and ylim[1]:
+        assert all(isinstance(val, (int, float)) for val in ylim)
+        assert(ylim[0] < ylim[1])
 
     points = {}
     for key in ["x", "y", "x_edges", "y_edges", "z", "dz"]:
@@ -955,7 +980,7 @@ def get_hist_1d_points(hist, **kwargs):
     :param \**kwargs: See below
 
     :Keyword Arguments:
-        * *xlim* (``set``) --
+        * *xlim* (``tuple``) --
             limit x-axis range to consider (xmin, xmax)
 
     :returns: dict -- Lists of x/y values saved in dictionary.
@@ -970,6 +995,11 @@ def get_hist_1d_points(hist, **kwargs):
     xlim = kwargs.pop('xlim', (None, None))
     if kwargs:
         raise TypeError('Unexpected **kwargs: %r' % kwargs)
+    assert isinstance(xlim, (tuple, list))
+    assert len(xlim) == 2
+    if xlim[0] and xlim[1]:
+        assert all(isinstance(val, (int, float)) for val in xlim)
+        assert(xlim[0] < xlim[1])
 
     points = {}
     for key in ["x", "y", "x_edges", "dy"]:
