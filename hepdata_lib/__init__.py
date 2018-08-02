@@ -22,7 +22,7 @@ from yaml.representer import SafeRepresenter
 import numpy as np
 import ROOT as r
 
-import hepdata_lib.helpers
+from hepdata_lib import helpers
 
 MAPPING_TAG = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
 
@@ -147,12 +147,12 @@ class Variable(object):
 
             if self.is_binned:
                 valuedict["low"] = helpers.relative_round(self._values[i][0],
-                                                  self.digits)
+                                                          self.digits)
                 valuedict["high"] = helpers.relative_round(self._values[i][1],
-                                                   self.digits)
+                                                           self.digits)
             else:
                 valuedict["value"] = helpers.relative_round(self._values[i],
-                                                    self.digits)
+                                                            self.digits)
 
             for unc in self.uncertainties:
                 if unc.is_symmetric:
