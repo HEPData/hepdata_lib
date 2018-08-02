@@ -22,7 +22,7 @@ from yaml.representer import SafeRepresenter
 import numpy as np
 import ROOT as r
 
-import hepdata_lib.helpers as helpers
+import hepdata_lib.helpers
 
 MAPPING_TAG = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
 
@@ -146,19 +146,19 @@ class Variable(object):
             valuedict = defaultdict(list)
 
             if self.is_binned:
-                valuedict["low"] = relative_round(self._values[i][0],
+                valuedict["low"] = helpers.relative_round(self._values[i][0],
                                                   self.digits)
-                valuedict["high"] = relative_round(self._values[i][1],
+                valuedict["high"] = helpers.relative_round(self._values[i][1],
                                                    self.digits)
             else:
-                valuedict["value"] = relative_round(self._values[i],
+                valuedict["value"] = helpers.relative_round(self._values[i],
                                                     self.digits)
 
             for unc in self.uncertainties:
                 if unc.is_symmetric:
                     valuedict['errors'].append({
                         "symerror":
-                            relative_round(unc.values[i], self.digits),
+                            helpers.relative_round(unc.values[i], self.digits),
                         "label":
                             unc.label
                     })
@@ -166,9 +166,9 @@ class Variable(object):
                     valuedict['errors'].append({
                         "asymerror": {
                             "minus":
-                                relative_round(unc.values[i][0], self.digits),
+                                helpers.relative_round(unc.values[i][0], self.digits),
                             "plus":
-                                relative_round(unc.values[i][1], self.digits)
+                                helpers.relative_round(unc.values[i][1], self.digits)
                         },
                         "label": unc.label
                     })
