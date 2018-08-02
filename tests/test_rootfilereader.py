@@ -14,6 +14,37 @@ from hepdata_lib.root_utils import RootFileReader, get_hist_2d_points
 class TestRootFileReader(TestCase):
     """Test the RootFileReader class."""
 
+    def test_tfile_setter(self):
+        """
+        Test the behavior of the RootFileReader member setters.
+        """
+
+        # Check with nonexistant file that ends in .root
+        with self.assertRaises(RuntimeError):
+            reader = RootFileReader("/path/to/nowhere/butEndsIn.root")
+
+        # Check with existant file that does not end in .root
+        with open("test.txt","w") as testfile:
+            testfile.write("TEST CONTENT")
+
+        with self.assertRaises(RuntimeError):
+            reader = RootFileReader("test.txt")
+
+        # Check with wrong input type
+        with self.assertRaises(ValueError):
+            reader = RootFileReader(5)
+        with self.assertRaises(ValueError):
+            reader = RootFileReader([])
+        with self.assertRaises(ValueError):
+            reader = RootFileReader({})
+
+        # Finally, try a good call
+        testfile = ROOT.TFile("testfile.root")
+        try:
+            reader = RootFileReader(testfile)
+        except:
+            self.fail("RootFileReader raised an unexpected exception.")
+
     def test_read_graph_tgraph(self):
         """
         Test the behavior of the read_graph function
