@@ -8,7 +8,7 @@ import ctypes
 import numpy as np
 import ROOT
 from test_utilities import float_compare, tuple_compare
-from hepdata_lib import RootFileReader
+from hepdata_lib.RootUtils import RootFileReader, get_hist_2d_points
 
 
 class TestRootFileReader(TestCase):
