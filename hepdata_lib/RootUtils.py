@@ -31,7 +31,9 @@ class RootFileReader(object):
         :type tfile: TFile or str
         """
         if isinstance(tfile, str):
-            if check_file_existence(tfile) and tfile.endswith(".root"):
+            if not tfile.endswith(".root"):
+                raise RuntimeError("RootFileReader: Input file is not a ROOT file (name does not end in .root)!")
+            if check_file_existence(tfile):
                 self._tfile = r.TFile(tfile)
         elif isinstance(tfile, r.TFile):
             self._tfile = tfile
