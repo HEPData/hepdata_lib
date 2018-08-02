@@ -11,7 +11,6 @@ import subprocess
 import warnings
 from collections import defaultdict
 
-from hepdata_lib.helpers import *
 import yaml
 
 # try to use LibYAML bindings if possible
@@ -22,6 +21,8 @@ except ImportError:
 from yaml.representer import SafeRepresenter
 import numpy as np
 import ROOT as r
+
+import hepdata_lib.helpers as helpers
 
 MAPPING_TAG = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
 
@@ -247,7 +248,7 @@ class Table(object):
             # first convert to png, then create thumbnail
             command = "convert -flatten -fuzz 1% -trim +repage {} {}/{}".format(
                 image_file, outdir, out_image_file)
-            command_ok = execute_command(command)
+            command_ok = helpers.execute_command(command)
             if not command_ok:
                 print("ImageMagick does not seem to be installed \
                        or is not in the path - not adding any images.")
@@ -403,8 +404,8 @@ class Submission(object):
         resource = {}
         resource["description"] = description
         if copy_file:
-            check_file_existence(location)
-            check_file_size(location, upper_limit=100)
+            helpers.check_file_existence(location)
+            helpers.check_file_size(location, upper_limit=100)
             resource["location"] = os.path.basename(location)
         else:
             resource["location"] = location
@@ -442,8 +443,8 @@ class Submission(object):
         :type outdir: string
         """
         for ifile in self.files_to_copy:
-            check_file_existence(ifile)
-            check_file_size(ifile, upper_limit=100)
+            helpers.check_file_existence(ifile)
+            helpers.check_file_size(ifile, upper_limit=100)
             shutil.copy2(ifile, outdir)
 
     def create_files(self, outdir="."):
@@ -483,9 +484,9 @@ class Submission(object):
         # Put everything into a tarfile
         import tarfile
         tar = tarfile.open("submission.tar.gz", "w:gz")
-        for yaml_file in find_all_matching(outdir, "*.yaml"):
+        for yaml_file in helpers.find_all_matching(outdir, "*.yaml"):
             tar.add(yaml_file)
-        for png_file in find_all_matching(outdir, "*.png"):
+        for png_file in helpers.find_all_matching(outdir, "*.png"):
             tar.add(png_file)
         for additional in self.files_to_copy:
             tar.add(os.path.join(outdir, os.path.basename(additional)))
@@ -576,6 +577,3 @@ class Uncertainty(object):
         else:
             self.values = [(factor * x[0], factor * x[1])
                            for x in self.values]
-
-
-
