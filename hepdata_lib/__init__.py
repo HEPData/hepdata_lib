@@ -255,7 +255,7 @@ class Table(object):
                 break
             command = "convert -thumbnail 240x179 {}/{} {}/{}".format(
                 outdir, out_image_file, outdir, thumb_out_image_file)
-            execute_command(command)
+            helpers.execute_command(command)
             image = {}
             image["description"] = "Image file"
             image["location"] = out_image_file
