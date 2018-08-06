@@ -21,6 +21,7 @@ except ImportError:
 from yaml.representer import SafeRepresenter
 
 from hepdata_lib import helpers
+from hepdata_lib.root_utils import RootFileReader
 
 MAPPING_TAG = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
 
