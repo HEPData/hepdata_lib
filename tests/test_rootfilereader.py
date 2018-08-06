@@ -7,7 +7,7 @@ import os
 import ctypes
 import numpy as np
 import ROOT
-from test_utilities import float_compare, tuple_compare
+from test_utilities import float_compare, tuple_compare, histogram_compare_1d, make_tmp_root_file
 from hepdata_lib.root_utils import RootFileReader, get_hist_2d_points
 
 
@@ -520,3 +520,50 @@ class TestRootFileReader(TestCase):
         # Try reading a nonexistant tree
         with self.assertRaises(RuntimeError):
             reader.read_tree("some/random/path", "some_random_name")
+
+    def test_retrieve_object_failure(self):
+        '''Check that retrieve_object fails the way it should.'''
+        path_to_file = make_tmp_root_file(close=True)
+
+        reader = RootFileReader(path_to_file)
+
+        with self.assertRaises(IOError):
+            reader.retrieve_object("Some/Nonsense/Path")
+
+        # Clean up
+        os.remove(path_to_file)
+
+    def test_retrieve_object_canvas(self):
+        '''Check that retrieve_object correctly reads from canvas.'''
+        # Disable graphical output
+        ROOT.gROOT.SetBatch(ROOT.kTRUE)
+
+        # Create test histogram, plot on canvas, save to file
+        histogram = ROOT.TH1D("testhist", "testhist", 10, 0, 1)
+
+        tfile = make_tmp_root_file()
+        path_to_file = tfile.GetName()
+
+        canvas = ROOT.TCanvas()
+        histogram.Draw("HIST")
+        canvas.Write("canvas")
+
+        reference = histogram.Clone("reference")
+        reference.SetDirectory(0)
+        if(tfile): tfile.Close()
+
+        # Read it back
+        reader = RootFileReader(path_to_file)
+        try:
+            readback = reader.retrieve_object("canvas/testhist")
+        except IOError:
+            print("RootFileReader.retrieve_object raised unexpected IOError!")
+            self.fail()
+
+        self.assertTrue(readback)
+        self.assertTrue(
+            histogram_compare_1d(reference, readback)
+            )
+
+        # Clean up
+        os.remove(path_to_file)
