@@ -6,6 +6,8 @@ from __future__ import print_function
 import os
 import subprocess
 import fnmatch
+import math
+import numpy as np
 
 def execute_command(command):
     """
@@ -96,4 +98,3 @@ def check_file_size(path_to_file, upper_limit=None, lower_limit=None):
     if lower_limit and size < lower_limit:
         raise RuntimeError("File too small: '{0}'. Minimal allowed value is {1} \
                             MB.".format(path_to_file, lower_limit))
-

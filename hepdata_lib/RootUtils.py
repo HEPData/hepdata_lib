@@ -1,9 +1,9 @@
 """hepdata_lib utilities to interact with ROOT data formats."""
 
 from collections import defaultdict
-from hepdata_lib.helpers import check_file_existence
 import numpy as np
 import ROOT as r
+from hepdata_lib.helpers import check_file_existence
 
 class RootFileReader(object):
     """Easily extract information from ROOT histograms, graphs, etc"""
@@ -32,7 +32,9 @@ class RootFileReader(object):
         """
         if isinstance(tfile, str):
             if not tfile.endswith(".root"):
-                raise RuntimeError("RootFileReader: Input file is not a ROOT file (name does not end in .root)!")
+                raise RuntimeError(
+                    "RootFileReader: Input file is not a ROOT file (name does not end in .root)!"
+                    )
             if check_file_existence(tfile):
                 self._tfile = r.TFile(tfile)
         elif isinstance(tfile, r.TFile):
