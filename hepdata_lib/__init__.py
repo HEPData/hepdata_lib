@@ -19,8 +19,6 @@ try:
 except ImportError:
     from yaml import Loader, Dumper
 from yaml.representer import SafeRepresenter
-import numpy as np
-import ROOT as r
 
 from hepdata_lib import helpers
 
