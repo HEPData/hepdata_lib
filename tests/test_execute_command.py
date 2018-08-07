@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 """Test execute_command() function."""
 from unittest import TestCase
-from hepdata_lib import execute_command
+from hepdata_lib.helpers import execute_command
 
 class TestExecuteCommand(TestCase):
     """Test execute_command() function."""
