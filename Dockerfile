@@ -31,6 +31,7 @@ RUN apt-get update -qq \
     && localedef -i en_US -f UTF-8 en_US.UTF-8 \
     && rm -rf /packages /var/lib/apt/lists/* \
     && pip install --no-cache-dir \
+        pylint==1.9.* \
         jupyter \
         metakernel \
         zmq \
