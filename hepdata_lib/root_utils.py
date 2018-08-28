@@ -282,8 +282,7 @@ def get_hist_2d_points(hist, **kwargs):
     symmetric = (hist.GetBinErrorOption() == r.TH1.kNormal)
     for x_bin in range(ixmin, ixmax):
         x_val = hist.GetXaxis().GetBinCenter(x_bin)
-        x_bin_low = hist.GetXaxis().GetBinLowEdge(x_bin)
-        x_bin_up = hist.GetXaxis().GetBinUpEdge(x_bin)
+        width_x = hist.GetXaxis().GetBinWidth(x_bin)
         for y_bin in range(iymin, iymax):
             y_val = hist.GetYaxis().GetBinCenter(y_bin)
             z_val = hist.GetBinContent(x_bin, y_bin)
@@ -294,14 +293,13 @@ def get_hist_2d_points(hist, **kwargs):
                 dz_val = (- hist.GetBinErrorLow(x_bin, y_bin),
                           hist.GetBinErrorUp(x_bin, y_bin))
 
-            y_bin_low = hist.GetYaxis().GetBinLowEdge(y_bin)
-            y_bin_up = hist.GetYaxis().GetBinUpEdge(y_bin)
+            width_y = hist.GetYaxis().GetBinWidth(y_bin)
 
             points["x"].append(x_val)
-            points["x_edges"].append((x_bin_low, x_bin_up))
+            points["x_edges"].append((x_val - width_x / 2, x_val + width_x / 2))
 
             points["y"].append(y_val)
-            points["y_edges"].append((y_bin_low, y_bin_up))
+            points["y_edges"].append((y_val - width_y / 2, y_val + width_y / 2))
 
             points["z"].append(z_val)
             points["dz"].append(dz_val)
@@ -349,8 +347,7 @@ def get_hist_1d_points(hist, **kwargs):
     ixmax = hist.GetXaxis().FindBin(xlim[1]) if xlim[1] is not None else hist.GetNbinsX() + 1
     for x_bin in range(ixmin, ixmax):
         x_val = hist.GetXaxis().GetBinCenter(x_bin)
-        x_bin_low = hist.GetXaxis().GetBinLowEdge(x_bin)
-        x_bin_up = hist.GetXaxis().GetBinUpEdge(x_bin)
+        width_x = hist.GetXaxis().GetBinWidth(x_bin)
 
         y_val = hist.GetBinContent(x_bin)
         if symmetric:
@@ -359,7 +356,7 @@ def get_hist_1d_points(hist, **kwargs):
             dy_val = (-hist.GetBinErrorLow(x_bin), hist.GetBinErrorUp(x_bin))
 
         points["x"].append(x_val)
-        points["x_edges"].append((x_bin_low, x_bin_up))
+        points["x_edges"].append((x_val - width_x / 2, x_val + width_x / 2))
 
         points["y"].append(y_val)
         points["dy"].append(dy_val)
