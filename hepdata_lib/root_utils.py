@@ -293,7 +293,7 @@ def get_hist_2d_points(hist, **kwargs):
                 dz_val = (- hist.GetBinErrorLow(x_bin, y_bin),
                           hist.GetBinErrorUp(x_bin, y_bin))
 
-            width_y = hist.GetXaxis().GetBinWidth(y_bin)
+            width_y = hist.GetYaxis().GetBinWidth(y_bin)
 
             points["x"].append(x_val)
             points["x_edges"].append((x_val - width_x / 2, x_val + width_x / 2))
