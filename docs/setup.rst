@@ -82,7 +82,7 @@ Setup on lxplus with CMSSW
 --------------------------
 
 In order to have all relevant libraries available, a straightforward alternative to using your own machine may be lxplus.
-You can use the same instructions as above, but in order to succeed, make sure to use a `CMSSW_10_2_3` environment and propagate the correct python environment to your virtual environment (other CMSSW releases may also work, but this one has been tested). In short:
+You can use the same instructions as above, but in order to succeed, make sure to use a CMSSW_10_2_3 environment and propagate the correct python environment to your virtual environment (other CMSSW releases may also work, but this one has been tested). In short:
 
 ::
 
