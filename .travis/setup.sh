@@ -7,9 +7,9 @@ source ./.travis/travis_wait.sh
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     brew update
     brew cask uninstall --force oclint
-    brew upgrade python
+    brew upgrade python cmake libpng libtiff
     # Install ROOT dependencies
-    brew install cmake ossp-uuid davix isl libmpc gcc fftw libpng freetype fontconfig libtiff webp gd graphviz gsl lz4 tbb xrootd
+    brew install ossp-uuid davix isl libmpc gcc fftw freetype fontconfig webp gd graphviz gsl lz4 tbb xrootd
     echo "Installing ROOT"
     # travis_wait 45 brew install root
     curl -O https://clange.web.cern.ch/clange/root-v6.14.02.tar.gz
