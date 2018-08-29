@@ -14,11 +14,6 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     # travis_wait 45 brew install root
     curl -O https://clange.web.cern.ch/clange/root-v6.14.02.tar.gz
     tar xzf root-v6.14.02.tar.gz
-    cd 6.14.02/
-    export PATH=${PATH}:${PWD}/bin
-    source bin/thisroot.sh
-    cd ../
-    which root
 
     # Workaround for buggy PyYaml v 3.12 on pypi
     # Can be removed once PyYaml 3.13 is released
