@@ -15,6 +15,7 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     curl -O https://clange.web.cern.ch/clange/root-v6.14.02.tar.gz
     tar xzf root-v6.14.02.tar.gz
     cd 6.14.02/
+    export PATH=${PATH}:${PWD}/bin
     source bin/thisroot.sh
     cd ../
     which root
