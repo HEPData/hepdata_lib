@@ -8,9 +8,12 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     brew update
     brew cask uninstall --force oclint
     brew upgrade python
-    brew install gcc xrootd
+    # Install ROOT dependencies
+    brew install cmake ossp-uuid davix isl libmpc gcc fftw libpng freetype fontconfig libtiff webp gd graphviz gsl lz4 tbb xrootd
     echo "Installing ROOT"
-    travis_wait 45 brew install root
+    # travis_wait 45 brew install root
+    curl -O https://clange.web.cern.ch/clange/root-v6.14.02.tar.gz
+    tar xzf root-v6.14.02.tar.gz
 
     # Workaround for buggy PyYaml v 3.12 on pypi
     # Can be removed once PyYaml 3.13 is released
