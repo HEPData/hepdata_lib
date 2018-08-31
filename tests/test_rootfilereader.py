@@ -25,15 +25,13 @@ class TestRootFileReader(TestCase):
 
         # Check with existant file that does not end in .root
         path_to_file = "test.txt"
+        self.addCleanup(os.remove, path_to_file)
+
         with open(path_to_file,"w") as testfile:
             testfile.write("TEST CONTENT")
 
         with self.assertRaises(RuntimeError):
             reader = RootFileReader(path_to_file)
-
-        # Clean up
-        os.remove(path_to_file)
-
 
         # Check with wrong input type
         with self.assertRaises(ValueError):
@@ -44,14 +42,15 @@ class TestRootFileReader(TestCase):
             reader = RootFileReader({})
 
         # Finally, try a good call
-        path_to_file = make_tmp_root_file(close=True)
+        path_to_file = make_tmp_root_file(close=True, testcase=self)
+
         try:
             reader = RootFileReader(path_to_file)
         except:
             self.fail("RootFileReader raised an unexpected exception.")
 
         # Clean up
-        os.remove(path_to_file)
+        self.doCleanups()
 
     def test_read_graph_tgraph(self):
         """
@@ -59,7 +58,6 @@ class TestRootFileReader(TestCase):
         when reading a TGraph from file.
         """
         N = 20
-        filepath = "testfile.root"
         name = "testgraph"
 
         x = np.random.uniform(-1e3, 1e3, N)
@@ -70,13 +68,13 @@ class TestRootFileReader(TestCase):
         for i, (ix, iy) in enumerate(zip(x, y)):
             g.SetPoint(i, ix, iy)
 
-        f = ROOT.TFile(filepath, "RECREATE")
-        f.cd()
+        testfile = make_tmp_root_file(testcase=self)
+        testfile.cd()
         g.Write(name)
-        f.Close()
+        testfile.Close()
 
         # Read graph back from file
-        reader = RootFileReader(filepath)
+        reader = RootFileReader(testfile.GetName())
         data = reader.read_graph(name)
 
         self.assertTrue(set(data.keys()) == set(["x", "y"]))
@@ -84,7 +82,7 @@ class TestRootFileReader(TestCase):
         self.assertTrue(all(data["y"] == y))
 
         # Clean up
-        os.remove(filepath)
+        self.doCleanups()
 
     def test_read_graph_tgrapherrors(self):
         """
@@ -92,7 +90,6 @@ class TestRootFileReader(TestCase):
         when reading a TGraphErrors from file.
         """
         N = 20
-        filepath = "testfile.root"
         name = "testgraph"
 
         x = np.random.uniform(-1e3, 1e3, N)
@@ -105,13 +102,13 @@ class TestRootFileReader(TestCase):
         for i, (ix, iy, idx, idy) in enumerate(zip(x, y, dx, dy)):
             g.SetPoint(i, ix, iy)
             g.SetPointError(i, idx, idy)
-        f = ROOT.TFile(filepath, "RECREATE")
-        f.cd()
+        testfile = make_tmp_root_file(testcase=self)
+        testfile.cd()
         g.Write(name)
-        f.Close()
+        testfile.Close()
 
         # Read graph back from file
-        reader = RootFileReader(filepath)
+        reader = RootFileReader(testfile.GetName())
         data = reader.read_graph(name)
 
         self.assertTrue(set(data.keys()) == set(["x", "y", "dx", "dy"]))
@@ -121,7 +118,7 @@ class TestRootFileReader(TestCase):
         self.assertTrue(all(data["dy"] == dy))
 
         # Clean up
-        os.remove(filepath)
+        self.doCleanups()
 
     def test_read_graph_tgrapherrors2(self):
         """
@@ -144,13 +141,13 @@ class TestRootFileReader(TestCase):
         for i, (ix, iy, idx1, idx2, idy1, idy2) in enumerate(zip(x, y, dx1, dx2, dy1, dy2)):
             g.SetPoint(i, ix, iy)
             g.SetPointError(i, idx1, idx2, idy1, idy2)
-        f = ROOT.TFile(filepath, "RECREATE")
-        f.cd()
+        testfile = make_tmp_root_file(testcase=self)
+        testfile.cd()
         g.Write(name)
-        f.Close()
+        testfile.Close()
 
         # Read graph back from file
-        reader = RootFileReader(filepath)
+        reader = RootFileReader(testfile.GetName())
         data = reader.read_graph(name)
 
         self.assertTrue(set(data.keys()) == set(["x", "y", "dx", "dy"]))
@@ -162,11 +159,11 @@ class TestRootFileReader(TestCase):
         self.assertTrue(data["dy"] == list(zip([-tmp for tmp in dy1], dy2)))
 
         # Clean up
-        os.remove(filepath)
+        self.doCleanups()
 
     def test_read_hist_1d_symmetric_errors(self):
         """Test the read_hist_1d function for a histogram with symmetric errors."""
-        fpath = "testfile.root"
+        name = "test"
 
         # Create test histogram
         N = 100
@@ -179,13 +176,13 @@ class TestRootFileReader(TestCase):
             hist.SetBinContent(i, y_values[i-1])
             hist.SetBinError(i, dy_values[i-1])
 
-        f = ROOT.TFile(fpath, "RECREATE")
-        hist.SetDirectory(f)
-        hist.Write("test")
-        f.Close()
+        testfile = make_tmp_root_file(testcase=self)
+        testfile.cd()
+        hist.Write(name)
+        testfile.Close()
 
-        reader = RootFileReader(fpath)
-        points = reader.read_hist_1d("test")
+        reader = RootFileReader(testfile.GetName())
+        points = reader.read_hist_1d(name)
 
         self.assertTrue(set(["x", "y", "x_edges", "dy"]) == set(points.keys()))
 
@@ -194,12 +191,10 @@ class TestRootFileReader(TestCase):
         self.assertTrue(all(float_compare(*tup) for tup in zip(points["dy"], dy_values)))
 
         # Clean up
-        os.remove(fpath)
-
+        self.doCleanups()
 
     def test_read_hist_1d_range(self):
         """Test the read_hist_1d function for a histogram with symmetric errors."""
-        fpath = "testfile.root"
 
         # Create test histogram
         N = 100
@@ -209,44 +204,46 @@ class TestRootFileReader(TestCase):
         y_values = list(np.random.uniform(-1e3, 1e3, xmax-xmin))
         dy_values = list(np.random.uniform(0, 1e3, xmax-xmin))
 
-        hist = ROOT.TH1D("test1d_symm", "test1d_symm", N, 0, N)
+        testname = "test1d_symm"
+        hist = ROOT.TH1D(testname, testname, N, 0, N)
         for i in range(xmin, xmax):
             hist.SetBinContent(i+1, y_values[i-xmin])
             hist.SetBinError(i+1, dy_values[i-xmin])
 
-        f = ROOT.TFile(fpath, "RECREATE")
-        hist.SetDirectory(f)
-        hist.Write("test")
-        f.Close()
 
-        reader = RootFileReader(fpath)
+        testfile = make_tmp_root_file(testcase=self)
+        testfile.cd()
+        hist.Write(testname)
+        testfile.Close()
+
+        reader = RootFileReader(testfile.GetName())
 
         # pass too many axis limits
         with self.assertRaises(TypeError):
-            reader.read_hist_1d("test", xlim=(xmin, xmax), ylim=(xmin, xmax))
+            reader.read_hist_1d(testname, xlim=(xmin, xmax), ylim=(xmin, xmax))
         # pass wrong axis limits or parameter
         with self.assertRaises(TypeError):
-            reader.read_hist_1d("test", ylim=(xmin, xmax))
+            reader.read_hist_1d(testname, ylim=(xmin, xmax))
         # pass xmax < xmin (wrong ordering)
         with self.assertRaises(AssertionError):
-            reader.read_hist_1d("test", xlim=(xmax, xmin))
+            reader.read_hist_1d(testname, xlim=(xmax, xmin))
         # pass too many parameters as single axis limit
         with self.assertRaises(AssertionError):
-            reader.read_hist_1d("test", xlim=(xmin, xmax, 5))
+            reader.read_hist_1d(testname, xlim=(xmin, xmax, 5))
         # pass non-float/-int as first item
         with self.assertRaises(AssertionError):
-            reader.read_hist_1d("test", xlim=("5", xmax))
+            reader.read_hist_1d(testname, xlim=("5", xmax))
         # pass non-float/-int as second item
         with self.assertRaises(AssertionError):
-            reader.read_hist_1d("test", xlim=(xmin, "12"))
+            reader.read_hist_1d(testname, xlim=(xmin, "12"))
         # pass set instance (needs to be ordered tuple or list)
         with self.assertRaises(AssertionError):
-            reader.read_hist_1d("test", xlim={xmin, xmax})
+            reader.read_hist_1d(testname, xlim={xmin, xmax})
         # pass wrong instance
         with self.assertRaises(AssertionError):
-            reader.read_hist_1d("test", xlim="some string")
+            reader.read_hist_1d(testname, xlim="some string")
 
-        points = reader.read_hist_1d("test", xlim=(xmin, xmax))
+        points = reader.read_hist_1d(testname, xlim=(xmin, xmax))
 
         self.assertTrue(set(["x", "y", "x_edges", "dy"]) == set(points.keys()))
 
@@ -255,7 +252,7 @@ class TestRootFileReader(TestCase):
         self.assertTrue(all(float_compare(*tup) for tup in zip(points["dy"], dy_values)))
 
         # Clean up
-        os.remove(fpath)
+        self.doCleanups()
 
     def test_read_hist_1d_asymmetric_errors(self):
         """Test the read_hist_1d function for a histogram with asymmetric errors."""
@@ -264,7 +261,8 @@ class TestRootFileReader(TestCase):
         # Create test histogram
         Nbin = 17
         Nfill = 1000
-        hist = ROOT.TH1D("test1d_asymm", "test1d_asymm", Nbin, 0, 1)
+        testname = "test1d_asymm"
+        hist = ROOT.TH1D(testname, testname, Nbin, 0, 1)
         hist.SetBinErrorOption(ROOT.TH1.kPoisson)
 
         for val in np.random.normal(loc=0.5, scale=0.15, size=Nfill):
@@ -280,14 +278,14 @@ class TestRootFileReader(TestCase):
             dy_values.append((-hist.GetBinErrorLow(i), hist.GetBinErrorUp(i)))
 
         # Write to file
-        f = ROOT.TFile(fpath, "RECREATE")
-        hist.SetDirectory(f)
-        hist.Write("test")
-        f.Close()
+        testfile = make_tmp_root_file(testcase=self)
+        testfile.cd()
+        hist.Write(testname)
+        testfile.Close()
 
         # Read back
-        reader = RootFileReader(fpath)
-        points = reader.read_hist_1d("test")
+        reader = RootFileReader(testfile.GetName())
+        points = reader.read_hist_1d(testname)
 
         # Check consistency
         self.assertTrue(set(["x", "y", "x_edges", "dy"]) == set(points.keys()))
@@ -297,7 +295,7 @@ class TestRootFileReader(TestCase):
         self.assertTrue(all(tuple_compare(*tup) for tup in zip(points["dy"], dy_values)))
 
         # Clean up
-        os.remove(fpath)
+        self.doCleanups()
 
 
     def test_read_hist_2d_symmetric_errors(self):
@@ -312,7 +310,8 @@ class TestRootFileReader(TestCase):
         z_values = np.random.uniform(-1e3, 1e3, (NX, NY))
         dz_values = np.random.uniform(0, 1e3, (NX, NY))
 
-        hist = ROOT.TH2D("test2d_sym", "test2d_sym", NX, 0, NX, NY, 0, NY)
+        testname = "test2d_sym"
+        hist = ROOT.TH2D(testname, testname, NX, 0, NX, NY, 0, NY)
 
         for ix in range(1, hist.GetNbinsX()+1):
             for iy in range(1, hist.GetNbinsY()+1):
@@ -321,13 +320,16 @@ class TestRootFileReader(TestCase):
                 hist.SetBinError(ibin, dz_values[ix-1][iy-1])
 
         backup_hist = hist.Clone("backup")
-        rfile = ROOT.TFile(fpath, "RECREATE")
-        hist.SetDirectory(rfile)
-        hist.Write("test2d_sym")
-        rfile.Close()
 
-        reader = RootFileReader(fpath)
-        points = reader.read_hist_2d("test2d_sym")
+        # Write to file
+        testfile = make_tmp_root_file(testcase=self)
+        testfile.cd()
+        hist.Write(testname)
+        testfile.Close()
+
+        # Read back
+        reader = RootFileReader(testfile.GetName())
+        points = reader.read_hist_2d(testname)
 
         # Check keys
         self.assertTrue(set(["x", "y", "z", "x_edges", "y_edges", "dz"]) == set(points.keys()))
@@ -352,14 +354,12 @@ class TestRootFileReader(TestCase):
             self.assertTrue(float_compare(backup_hist.GetBinContent(ibin), z))
             self.assertTrue(float_compare(backup_hist.GetBinError(ibin), dz))
         # Clean up
-        os.remove(fpath)
+        self.doCleanups()
 
 
 
     def test_read_hist_2d_range(self):
         """Test the read_hist_2d function with symmetric errors."""
-        fpath = "testfile.root"
-
         # Create test histogram
         NX = 100
         NY = 100
@@ -372,7 +372,8 @@ class TestRootFileReader(TestCase):
         z_values = np.random.uniform(-1e3, 1e3, (xmax-xmin, ymax-ymin))
         dz_values = np.random.uniform(0, 1e3, (xmax-xmin, ymax-ymin))
 
-        hist = ROOT.TH2D("test2d_sym", "test2d_sym", NX, 0, NX, NY, 0, NY)
+        testname = "test2d_sym"
+        hist = ROOT.TH2D(testname, testname, NX, 0, NX, NY, 0, NY)
 
         for ix in range(xmin, xmax):
             for iy in range(ymin, ymax):
@@ -381,39 +382,40 @@ class TestRootFileReader(TestCase):
                 hist.SetBinError(ibin, dz_values[ix-xmin][iy-ymin])
 
         backup_hist = hist.Clone("backup")
-        rfile = ROOT.TFile(fpath, "RECREATE")
-        hist.SetDirectory(rfile)
-        hist.Write("test2d_sym")
-        rfile.Close()
 
-        reader = RootFileReader(fpath)
+        testfile = make_tmp_root_file(testcase=self)
+        hist.SetDirectory(testfile)
+        hist.Write("test2d_sym")
+        testfile.Close()
+
+        reader = RootFileReader(testfile.GetName())
 
         # pass too many axis limits
         with self.assertRaises(TypeError):
-            reader.read_hist_2d("test", xlim=(xmin, xmax), ylim=(ymin, ymax), zlim=(ymin, ymax))
+            reader.read_hist_2d(testname, xlim=(xmin, xmax), ylim=(ymin, ymax), zlim=(ymin, ymax))
         # pass non-existing axis limit/parameter
         with self.assertRaises(TypeError):
-            reader.read_hist_2d("test", zlim=(xmin, xmax))
+            reader.read_hist_2d(testname, zlim=(xmin, xmax))
         # pass wrong order (xmax < xmin)
         with self.assertRaises(AssertionError):
-            reader.read_hist_2d("test", ylim=(xmax, xmin))
+            reader.read_hist_2d(testname, ylim=(xmax, xmin))
         # pass too many parameters as single axis limit
         with self.assertRaises(AssertionError):
-            reader.read_hist_2d("test", ylim=(xmin, xmax, 5))
+            reader.read_hist_2d(testname, ylim=(xmin, xmax, 5))
         # pass wrong type as first item
         with self.assertRaises(AssertionError):
-            reader.read_hist_2d("test", ylim=("5", xmax))
+            reader.read_hist_2d(testname, ylim=("5", xmax))
         # pass wrong type as second item
         with self.assertRaises(AssertionError):
-            reader.read_hist_2d("test", ylim=(xmin, "12"))
+            reader.read_hist_2d(testname, ylim=(xmin, "12"))
         # pass set instance (needs ordered datatype: tuple or list)
         with self.assertRaises(AssertionError):
-            reader.read_hist_2d("test", xlim={xmin, xmax})
+            reader.read_hist_2d(testname, xlim={xmin, xmax})
         # pass wrong instance
         with self.assertRaises(AssertionError):
-            reader.read_hist_2d("test", xlim="some string")
+            reader.read_hist_2d(testname, xlim="some string")
 
-        points = reader.read_hist_2d("test2d_sym", xlim=(xmin, xmax), ylim=(ymin, ymax))
+        points = reader.read_hist_2d(testname, xlim=(xmin, xmax), ylim=(ymin, ymax))
 
         # Check keys
         self.assertTrue(set(["x", "y", "z", "x_edges", "y_edges", "dz"]) == set(points.keys()))
@@ -437,9 +439,9 @@ class TestRootFileReader(TestCase):
             self.assertTrue(float_compare(backup_hist.GetYaxis().GetBinCenter(ibiny.value), y))
             self.assertTrue(float_compare(backup_hist.GetBinContent(ibin), z))
             self.assertTrue(float_compare(backup_hist.GetBinError(ibin), dz))
-        # Clean up
-        os.remove(fpath)
 
+        # Clean up
+        self.doCleanups()
 
     def test_read_hist_2d_asymmetric_errors(self):
         """Test the read_hist_2d function with asymmetric errors."""
@@ -458,13 +460,14 @@ class TestRootFileReader(TestCase):
         backup_hist = hist.Clone("backup")
 
         # Write to file
-        rfile = ROOT.TFile(fpath, "RECREATE")
-        hist.SetDirectory(rfile)
+        testfile = make_tmp_root_file(testcase=self)
+
+        hist.SetDirectory(testfile)
         hist.Write("test2d_asym")
-        rfile.Close()
+        testfile.Close()
 
         # Read back
-        reader = RootFileReader(fpath)
+        reader = RootFileReader(testfile.GetName())
         points = reader.read_hist_2d("test2d_asym")
 
         # Check keys
@@ -487,14 +490,15 @@ class TestRootFileReader(TestCase):
             self.assertTrue(tuple_compare(
                 (-backup_hist.GetBinErrorLow(ibinx.value, ibiny.value),
                  backup_hist.GetBinErrorUp(ibinx.value, ibiny.value)), dz))
+
         # Clean up
-        os.remove(fpath)
+        self.doCleanups()
+
 
     def test_read_tree(self):
         """Test the read_tree function."""
 
         Nfill = 1000
-        fpath = "testfile.root"
         branchname = "testbranch"
         path_to_tree = "testpath"
         # Set up some test data, put into TTree and write to file
@@ -507,13 +511,13 @@ class TestRootFileReader(TestCase):
             number[0] = inumber
             tree.Fill()
 
-        rootfile = ROOT.TFile(fpath, "RECREATE")
+        testfile = make_tmp_root_file(testcase=self)
         tree.Write(path_to_tree)
-        if(rootfile): rootfile.Close()
+        if(testfile): testfile.Close()
 
 
         # Read data back and check consistency
-        reader = RootFileReader(fpath)
+        reader = RootFileReader(testfile.GetName())
         try:
             data_readback = reader.read_tree(path_to_tree, branchname)
         except RuntimeError:
@@ -529,9 +533,12 @@ class TestRootFileReader(TestCase):
         with self.assertRaises(RuntimeError):
             reader.read_tree("some/random/path", "some_random_name")
 
+        # Clean up
+        self.doCleanups()
+
     def test_retrieve_object_failure(self):
         '''Check that retrieve_object fails the way it should.'''
-        path_to_file = make_tmp_root_file(close=True)
+        path_to_file = make_tmp_root_file(close=True, testcase=self)
 
         reader = RootFileReader(path_to_file)
 
@@ -539,7 +546,7 @@ class TestRootFileReader(TestCase):
             reader.retrieve_object("Some/Nonsense/Path")
 
         # Clean up
-        os.remove(path_to_file)
+        self.doCleanups()
 
     def test_retrieve_object_canvas(self):
         '''Check that retrieve_object correctly reads from canvas.'''
@@ -549,7 +556,7 @@ class TestRootFileReader(TestCase):
         # Create test histogram, plot on canvas, save to file
         histogram = ROOT.TH1D("testhist", "testhist", 10, 0, 1)
 
-        tfile = make_tmp_root_file()
+        tfile = make_tmp_root_file(testcase=self)
         path_to_file = tfile.GetName()
 
         canvas = ROOT.TCanvas()
@@ -574,4 +581,4 @@ class TestRootFileReader(TestCase):
             )
 
         # Clean up
-        os.remove(path_to_file)
+        self.doCleanups()
