@@ -24,11 +24,16 @@ class TestRootFileReader(TestCase):
             reader = RootFileReader("/path/to/nowhere/butEndsIn.root")
 
         # Check with existant file that does not end in .root
-        with open("test.txt","w") as testfile:
+        path_to_file = "test.txt"
+        with open(path_to_file,"w") as testfile:
             testfile.write("TEST CONTENT")
 
         with self.assertRaises(RuntimeError):
-            reader = RootFileReader("test.txt")
+            reader = RootFileReader(path_to_file)
+
+        # Clean up
+        os.remove(path_to_file)
+
 
         # Check with wrong input type
         with self.assertRaises(ValueError):
@@ -39,11 +44,14 @@ class TestRootFileReader(TestCase):
             reader = RootFileReader({})
 
         # Finally, try a good call
-        testfile = ROOT.TFile("testfile.root")
+        path_to_file = make_tmp_root_file(close=True)
         try:
-            reader = RootFileReader(testfile)
+            reader = RootFileReader(path_to_file)
         except:
             self.fail("RootFileReader raised an unexpected exception.")
+
+        # Clean up
+        os.remove(path_to_file)
 
     def test_read_graph_tgraph(self):
         """
