@@ -38,6 +38,7 @@ class TestSubmission(TestCase):
 
         testpath = "./testfile.dat"
         test_submission = Submission()
+        self.addCleanup(os.remove, testpath)
 
         # Check with non-existant file
         with self.assertRaises(RuntimeError):
@@ -63,7 +64,7 @@ class TestSubmission(TestCase):
             self.fail("Submission.add_additional_resource raised an unexpected RuntimeError.")
 
         # Clean up
-        os.remove(testpath)
+        self.doCleanups()
 
     def test_create_files(self):
         """Test create_files() for Submission."""
@@ -73,7 +74,6 @@ class TestSubmission(TestCase):
         self.addCleanup(os.remove, "submission.tar.gz")
         self.addCleanup(shutil.rmtree, testdir)
 
-        try:
-            test_submission.create_files(testdir)
-        except TypeError:
-            self.fail("Submission.create_files raised an unexpected TypeError.")
+        test_submission.create_files(testdir)
+
+        self.doCleanups()
