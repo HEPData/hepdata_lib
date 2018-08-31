@@ -303,7 +303,6 @@ class Table(object):
         # Add entry to central submission file
         submission_path = os.path.join(outdir, 'submission.yaml')
         with open(submission_path, 'a+') as submissionfile:
-
             submission = {}
             submission["name"] = self.name
             submission["description"] = self.description
