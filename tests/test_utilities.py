@@ -4,6 +4,7 @@
 
 import string
 import random
+import os
 import ROOT
 
 def float_compare(x_val, y_val, precision=1e-6):
@@ -59,10 +60,17 @@ def get_random_id(length=12):
     """
     return "".join(random.sample(string.ascii_uppercase+string.digits,length))
 
+
+def remove_if_exist(path_to_file):
+    """Remove file if it exists."""
+    if os.path.exists(path_to_file):
+        os.remove(path_to_file)
+
 def make_tmp_root_file(
                        path_to_file='tmp_{RANDID}.root',
                        mode="RECREATE",
-                       close=False
+                       close=False,
+                       testcase=None
                        ):
     """
     Create a temporary ROOT file.
@@ -78,6 +86,9 @@ def make_tmp_root_file(
 
     :param close: If True, close the file immediately and return only the path to the file.
     :type close: bool
+
+    :param testcase: The test case calling this function. If given, the test case addCleanup
+                     function is used to register the temporary file for eventual deletion.
     """
 
     if "{RANDID}" in path_to_file:
@@ -91,6 +102,9 @@ def make_tmp_root_file(
 
     if not rfile:
         raise RuntimeError("Failed to create temporary file: {}".format(path_to_file))
+
+    if testcase:
+        testcase.addCleanup(remove_if_exist, path_to_file)
 
     if(close):
         rfile.Close()
