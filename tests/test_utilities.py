@@ -60,7 +60,7 @@ def get_random_id(length=12):
     return "".join(random.sample(string.ascii_uppercase+string.digits,length))
 
 def make_tmp_root_file(
-                       path_to_file='tmp_{}.root'.format(get_random_id()),
+                       path_to_file='tmp_{RANDID}.root',
                        mode="RECREATE",
                        close=False
                        ):
@@ -69,6 +69,8 @@ def make_tmp_root_file(
 
     :param path_to_file: path where the file should be created.
                          Can be absolute or relative.
+                         If the path contains the token '{RANDID}', it is
+                         replaced with a random alphanumerical ID string.
     :type path_to_file: string
 
     :param mode: File creation mode to use (must be valid ROOT file mode)
@@ -78,8 +80,13 @@ def make_tmp_root_file(
     :type close: bool
     """
 
-    # if not path_to_file:
-        # path_to_file = "{}.root".format(get_random_id())
+    if "{RANDID}" in path_to_file:
+        try:
+            path_to_file = path_to_file.format(RANDID=get_random_id())
+        except IndexError:
+            raise IOError( "String substitution failed. Your input path should not \
+                           have any braces except possibly for the {RANDID} token!")
+
     rfile = ROOT.TFile(path_to_file, mode)
 
     if not rfile:
