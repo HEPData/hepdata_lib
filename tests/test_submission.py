@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 """Test Submission."""
 import os
+import shutil
 from builtins import bytes
 from unittest import TestCase
 from hepdata_lib import Submission, Table, Variable, Uncertainty
@@ -37,6 +38,7 @@ class TestSubmission(TestCase):
 
         testpath = "./testfile.dat"
         test_submission = Submission()
+        self.addCleanup(os.remove, testpath)
 
         # Check with non-existant file
         with self.assertRaises(RuntimeError):
@@ -62,14 +64,16 @@ class TestSubmission(TestCase):
             self.fail("Submission.add_additional_resource raised an unexpected RuntimeError.")
 
         # Clean up
-        os.remove(testpath)
+        self.doCleanups()
 
     def test_create_files(self):
         """Test create_files() for Submission."""
 
+        testdir = "test_output"
         test_submission = Submission()
+        self.addCleanup(os.remove, "submission.tar.gz")
+        self.addCleanup(shutil.rmtree, testdir)
 
-        try:
-            test_submission.create_files("test_output")
-        except TypeError:
-            self.fail("Submission.create_files raised an unexpected TypeError.")
+        test_submission.create_files(testdir)
+
+        self.doCleanups()
