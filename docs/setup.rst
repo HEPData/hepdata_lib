@@ -76,3 +76,21 @@ You can always activate the virtual environment in another shell by calling the 
 
     workon hepdata_git
     python myscript.py # Execute script using development branch
+
+
+Setup on lxplus with CMSSW
+--------------------------
+
+In order to have all relevant libraries available, a straightforward alternative to using your own machine may be lxplus.
+You can use the same instructions as above, but in order to succeed, make sure to use a CMSSW_10_2_3 environment and propagate the correct python environment to your virtual environment (other CMSSW releases may also work, but this one has been tested). In short:
+
+::
+
+    scramv1 project CMSSW CMSSW_10_2_3
+    cd CMSSW_10_2_3/src;
+    cmsenv
+    cd -;
+
+    mkvirtualenv -p $(which python) NameOfVirtualEnvironment
+
+    python -m pip install hepdata_lib
