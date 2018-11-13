@@ -32,7 +32,7 @@ And then point your browser to [http://localhost:8888](http://localhost:8888) an
 
 ## Further examples
 
-There are a few more examples available that can directly be run using the [binder](https://mybinder.org/) links below or using [SWAN](https://swan.cern.ch/) (CERN-only) and selecting the corresponding notebook manually:
+There are a few more examples available that can directly be run using the [binder](https://mybinder.org/) links below or using [SWAN](https://swan.cern.ch/) (CERN-only, please use LCG release LCG_94 or later) and selecting the corresponding notebook manually:
 
 - [Reading in text files](examples/Getting_started.ipynb) [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/clelange/hepdata_lib/master?filepath=examples/Getting_started.ipynb)
 - [Reading in a CMS combine ntuple](examples/combine_limits.ipynb) [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/clelange/hepdata_lib/master?filepath=examples/combine_limits.ipynb)
