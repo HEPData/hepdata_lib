@@ -30,8 +30,14 @@ RUN apt-get update -qq \
         imagemagick \
     && localedef -i en_US -f UTF-8 en_US.UTF-8 \
     && rm -rf /packages /var/lib/apt/lists/* \
-    && pip install --no-cache-dir \
+    && sed -i '/MVG/d' /etc/ImageMagick-6/policy.xml \
+    && sed -i '/PDF/{s/none/read|write/g}' /etc/ImageMagick-6/policy.xml \
+    && sed -i '/PDF/ a <policy domain="coder" rights="read|write" pattern="LABEL" />' /etc/ImageMagick-6/policy.xml \
+    && cat /etc/ImageMagick-6/policy.xml \
+    && python -m pip install --no-cache-dir \
         pylint==1.9.* \
+        ipython==5.7 \
+        ipykernel==4.10 \
         jupyter \
         metakernel \
         zmq \
