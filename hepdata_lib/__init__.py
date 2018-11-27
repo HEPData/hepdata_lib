@@ -252,8 +252,8 @@ class Table(object):
                 print("ImageMagick does not seem to be installed \
                        or is not in the path - not adding any images.")
                 break
-            command = "convert -thumbnail 240x179 {}/{} {}/{}".format(
-                outdir, out_image_file, outdir, thumb_out_image_file)
+            command = "convert -thumbnail 240x179 {outdir}/{image} {outdir}/{thumb}".format(
+                outdir=outdir, image=out_image_file, thumb=thumb_out_image_file)
             helpers.execute_command(command)
             image = {}
             image["description"] = "Image file"
