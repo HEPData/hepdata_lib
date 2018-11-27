@@ -109,7 +109,7 @@ class RootFileReader(object):
 
     def read_hist_2d(self, path_to_hist, **kwargs):
         # pylint: disable=anomalous-backslash-in-string
-        """Read in a TH2.
+        r"""Read in a TH2.
 
         :param path_to_hist: Absolute path in the current TFile.
         :type path_to_hist: str
@@ -144,7 +144,7 @@ class RootFileReader(object):
 
     def read_hist_1d(self, path_to_hist, **kwargs):
         # pylint: disable=anomalous-backslash-in-string
-        """Read in a TH1.
+        r"""Read in a TH1.
 
         :param path_to_hist: Absolute path in the current TFile.
         :type path_to_hist: str
@@ -233,7 +233,7 @@ class RootFileReader(object):
 
 def get_hist_2d_points(hist, **kwargs):
     # pylint: disable=anomalous-backslash-in-string,too-many-locals
-    """
+    r"""
     Get points from a TH2.
 
     :param hist: Histogram to extract points from
@@ -309,7 +309,7 @@ def get_hist_2d_points(hist, **kwargs):
 
 def get_hist_1d_points(hist, **kwargs):
     # pylint: disable=anomalous-backslash-in-string
-    """
+    r"""
     Get points from a TH1.
 
     :param hist: Histogram to extract points from
