@@ -120,12 +120,15 @@ class RootFileReader(object):
                 limit x-axis range to consider (xmin, xmax)
             * *ylim* (``tuple``) --
                 limit y-axis range to consider (ymin, ymax)
+            * *force_symmetric_errors* --
+                Force readout of symmetric errors instead of determining type automatically
 
         :returns: dict -- For a description of the contents,
             check the documentation of the get_hist_2d_points function
         """
         xlim = kwargs.pop('xlim', (None, None))
         ylim = kwargs.pop('ylim', (None, None))
+        force_symmetric_errors = kwargs.pop('force_symmetric_errors', False)
         if kwargs:
             raise TypeError('Unexpected **kwargs: %r' % kwargs)
         assert isinstance(xlim, (tuple, list))
@@ -140,7 +143,8 @@ class RootFileReader(object):
             assert ylim[0] < ylim[1]
 
         hist = self.retrieve_object(path_to_hist)
-        return get_hist_2d_points(hist, xlim=xlim, ylim=ylim)
+        return get_hist_2d_points(hist, xlim=xlim, ylim=ylim,
+                                  force_symmetric_errors=force_symmetric_errors)
 
     def read_hist_1d(self, path_to_hist, **kwargs):
         # pylint: disable=anomalous-backslash-in-string
@@ -153,11 +157,14 @@ class RootFileReader(object):
         :Keyword Arguments:
             * *xlim* (``tuple``) --
                 limit x-axis range to consider (xmin, xmax)
+            * *force_symmetric_errors* --
+                Force readout of symmetric errors instead of determining type automatically
 
         :returns: dict -- For a description of the contents,
             check the documentation of the get_hist_1d_points function
         """
         xlim = kwargs.pop('xlim', (None, None))
+        force_symmetric_errors = kwargs.pop('force_symmetric_errors', False)
         if kwargs:
             raise TypeError('Unexpected **kwargs: %r' % kwargs)
         assert isinstance(xlim, (tuple, list))
@@ -167,7 +174,8 @@ class RootFileReader(object):
             assert xlim[0] < xlim[1]
 
         hist = self.retrieve_object(path_to_hist)
-        return get_hist_1d_points(hist, xlim=xlim)
+        return get_hist_1d_points(hist, xlim=xlim, force_symmetric_errors=force_symmetric_errors)
+
 
     def read_tree(self, path_to_tree, branch_name):
         """Extract a list of values from a tree branch.
@@ -245,6 +253,8 @@ def get_hist_2d_points(hist, **kwargs):
             limit x-axis range to consider (xmin, xmax)
         * *ylim* (``tuple``) --
             limit y-axis range to consider (ymin, ymax)
+        * *force_symmetric_errors* --
+                Force readout of symmetric errors instead of determining type automatically
 
     :returns: dict -- Lists of x/y/z values saved in dictionary.
         Corresponding keys are "x"/"y" for the values of the bin center on the
@@ -258,6 +268,7 @@ def get_hist_2d_points(hist, **kwargs):
     """
     xlim = kwargs.pop('xlim', (None, None))
     ylim = kwargs.pop('ylim', (None, None))
+    force_symmetric_errors = kwargs.pop('force_symmetric_errors', False)
     if kwargs:
         raise TypeError('Unexpected **kwargs: %r' % kwargs)
     assert isinstance(xlim, (tuple, list))
@@ -280,6 +291,8 @@ def get_hist_2d_points(hist, **kwargs):
     iymin = hist.GetYaxis().FindBin(ylim[0]) if ylim[0] is not None else 1
     iymax = hist.GetYaxis().FindBin(ylim[1]) if ylim[1] is not None else hist.GetNbinsY() + 1
     symmetric = (hist.GetBinErrorOption() == r.TH1.kNormal)
+    if force_symmetric_errors:
+        symmetric = True
     for x_bin in range(ixmin, ixmax):
         x_val = hist.GetXaxis().GetBinCenter(x_bin)
         width_x = hist.GetXaxis().GetBinWidth(x_bin)
@@ -319,6 +332,8 @@ def get_hist_1d_points(hist, **kwargs):
     :Keyword Arguments:
         * *xlim* (``tuple``) --
             limit x-axis range to consider (xmin, xmax)
+        * *force_symmetric_errors* --
+                Force readout of symmetric errors instead of determining type automatically
 
     :returns: dict -- Lists of x/y values saved in dictionary.
         Corresponding keys are "x" for the value of the bin center.
@@ -330,6 +345,7 @@ def get_hist_1d_points(hist, **kwargs):
         TH1::GetBinErrorOption() returns TH1::kNormal.
     """
     xlim = kwargs.pop('xlim', (None, None))
+    force_symmetric_errors = kwargs.pop('force_symmetric_errors', False)
     if kwargs:
         raise TypeError('Unexpected **kwargs: %r' % kwargs)
     assert isinstance(xlim, (tuple, list))
@@ -343,6 +359,8 @@ def get_hist_1d_points(hist, **kwargs):
         points[key] = []
 
     symmetric = (hist.GetBinErrorOption() == r.TH1.kNormal)
+    if force_symmetric_errors:
+        symmetric = True
     ixmin = hist.GetXaxis().FindBin(xlim[0]) if xlim[0] is not None else 1
     ixmax = hist.GetXaxis().FindBin(xlim[1]) if xlim[1] is not None else hist.GetNbinsX() + 1
     for x_bin in range(ixmin, ixmax):
