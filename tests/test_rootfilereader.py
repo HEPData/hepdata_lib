@@ -298,6 +298,51 @@ class TestRootFileReader(TestCase):
         self.doCleanups()
 
 
+    def test_read_hist_1d_asymmetric_force_symmetric_errors(self):
+        """Test the read_hist_1d function for a histogram with asymmetric errors
+        forcing symmetric errors to be used."""
+        fpath = "testfile.root"
+
+        # Create test histogram
+        Nbin = 17
+        Nfill = 1000
+        testname = "test1d_asymm"
+        hist = ROOT.TH1D(testname, testname, Nbin, 0, 1)
+        hist.SetBinErrorOption(ROOT.TH1.kPoisson)
+
+        for val in np.random.normal(loc=0.5, scale=0.15, size=Nfill):
+            hist.Fill(val)
+
+        # Extract values
+        x_values = []
+        y_values = []
+        dy_values = []
+        for i in range(1, hist.GetNbinsX()):
+            x_values.append(hist.GetBinCenter(i))
+            y_values.append(hist.GetBinContent(i))
+            dy_values.append(hist.GetBinError(i))
+
+        # Write to file
+        testfile = make_tmp_root_file(testcase=self)
+        testfile.cd()
+        hist.Write(testname)
+        testfile.Close()
+
+        # Read back
+        reader = RootFileReader(testfile.GetName())
+        points = reader.read_hist_1d(testname, force_symmetric_errors=True)
+
+        # Check consistency
+        self.assertTrue(set(["x", "y", "x_edges", "dy"]) == set(points.keys()))
+
+        self.assertTrue(all(float_compare(*tup) for tup in zip(points["x"], x_values)))
+        self.assertTrue(all(float_compare(*tup) for tup in zip(points["y"], y_values)))
+        self.assertTrue(all(float_compare(*tup) for tup in zip(points["dy"], dy_values)))
+
+        # Clean up
+        self.doCleanups()
+
+
     def test_read_hist_2d_symmetric_errors(self):
         """Test the read_hist_2d function with symmetric errors."""
         fpath = "testfile.root"
@@ -444,7 +489,8 @@ class TestRootFileReader(TestCase):
         self.doCleanups()
 
     def test_read_hist_2d_asymmetric_errors(self):
-        """Test the read_hist_2d function with asymmetric errors."""
+        """Test the read_hist_2d function with asymmetric errors
+        forcing symmetric errors to be used."""
         fpath = "testfile.root"
 
         # Create test histogram
@@ -490,6 +536,57 @@ class TestRootFileReader(TestCase):
             self.assertTrue(tuple_compare(
                 (-backup_hist.GetBinErrorLow(ibinx.value, ibiny.value),
                  backup_hist.GetBinErrorUp(ibinx.value, ibiny.value)), dz))
+
+        # Clean up
+        self.doCleanups()
+
+
+    def test_read_hist_2d_asymmetric_force_symmetric_errors(self):
+        """Test the read_hist_2d function with asymmetric errors."""
+        fpath = "testfile.root"
+
+        # Create test histogram
+        NX = 17
+        NY = 17
+        Nfill = 1000
+
+        hist = ROOT.TH2D("test2d_asym", "test2d_asym", NX, 0, 1, NY, 0, 1)
+        hist.SetBinErrorOption(ROOT.TH1.kPoisson)
+        for val in np.random.normal(loc=0.5, scale=0.15, size=(Nfill, 2)):
+            hist.Fill(*val)
+
+        backup_hist = hist.Clone("backup")
+
+        # Write to file
+        testfile = make_tmp_root_file(testcase=self)
+
+        hist.SetDirectory(testfile)
+        hist.Write("test2d_asym")
+        testfile.Close()
+
+        # Read back
+        reader = RootFileReader(testfile.GetName())
+        points = reader.read_hist_2d("test2d_asym", force_symmetric_errors=True)
+
+        # Check keys
+        self.assertTrue(set(["x", "y", "z", "x_edges", "y_edges", "dz"]) == set(points.keys()))
+
+        # Check length
+        for v in points.values():
+            self.assertTrue(len(v) == NX*NY)
+
+        # Look up original bins and compare
+        for x, y, z, dz in zip(points["x"], points["y"], points["z"], points["dz"]):
+            ibin = backup_hist.Fill(x, y, 0)
+            ibinx = ctypes.c_int()
+            ibiny = ctypes.c_int()
+            ibinz = ctypes.c_int()
+            backup_hist.GetBinXYZ(ibin, ibinx, ibiny, ibinz)
+            self.assertTrue(float_compare(backup_hist.GetXaxis().GetBinCenter(ibinx.value), x))
+            self.assertTrue(float_compare(backup_hist.GetYaxis().GetBinCenter(ibiny.value), y))
+            self.assertTrue(float_compare(backup_hist.GetBinContent(ibin), z))
+            self.assertTrue(float_compare(
+                backup_hist.GetBinError(ibinx.value, ibiny.value), dz))
 
         # Clean up
         self.doCleanups()
