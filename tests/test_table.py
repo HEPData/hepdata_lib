@@ -54,7 +54,7 @@ class TestTable(TestCase):
         test_table = Table("Some Table")
         search_path = re.sub("hepdata_lib.*","hepdata_lib", os.getcwd())
 
-        some_pdf = helpers.find_all_matching(search_path,"*.pdf")[0]
+        some_pdf = helpers.find_all_matching(search_path,"*.pdf")[1]
         test_table.add_image(some_pdf)
         testdir = "test_output"
         self.addCleanup(shutil.rmtree, testdir)
