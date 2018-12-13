@@ -134,7 +134,10 @@ class Variable(object):
         Except for debugging purposes, no user should have to call this function.
         """
         tmp = {}
-        tmp["header"] = {"name": self.name, "units": self.units}
+        if self.units != '':
+            tmp["header"] = {"name": self.name, "units": self.units}
+        else:
+            tmp["header"] = {"name": self.name}
 
         if self.qualifiers:
             tmp["qualifiers"] = self.qualifiers
