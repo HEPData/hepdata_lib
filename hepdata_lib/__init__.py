@@ -137,7 +137,6 @@ class Variable(object):
         if self.units != '':
             tmp["header"] = {"name": self.name, "units": self.units}
         else:
-            tmp["header"] = {"name": self.name}
 
         if self.qualifiers:
             tmp["qualifiers"] = self.qualifiers
