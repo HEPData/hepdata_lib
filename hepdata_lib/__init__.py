@@ -137,7 +137,6 @@ class Variable(object):
         tmp["header"] = {"name": self.name}
         if self.units:
             tmp["header"]["units"] = self.units
-            
 
         if self.qualifiers:
             tmp["qualifiers"] = self.qualifiers
