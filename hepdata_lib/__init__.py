@@ -531,24 +531,8 @@ class Uncertainty(object):
 
         """
         if self.is_symmetric:
-            try:
-                assert all([x >= 0 for x in values])
-            except AssertionError:
-                raise ValueError(
-                    "Uncertainty::set_values: Wrong signs detected!\
-                     For symmetric uncertainty, all uncertainty values should be >=0."
-                )
             self._values = values
         else:
-            try:
-                assert all([x[1] >= 0 for x in values])
-                assert all([x[0] <= 0 for x in values])
-            except AssertionError:
-                raise ValueError(
-                    "Uncertainty::set_values: Wrong signs detected!\
-                    For asymmetric uncertainty, first element of uncertainty tuple\
-                    should be <=0, second >=0."
-                )
             self._values = [(float(x[0]), float(x[1])) for x in values]
 
     def set_values_from_intervals(self, intervals, nominal):
