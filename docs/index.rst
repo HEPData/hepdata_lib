@@ -16,9 +16,7 @@ Welcome to hepdata_lib's documentation!
    setup
    usage
    source/modules
-   observables
-   partlist
-   phrases
+   keywords
    contributing
 
 
