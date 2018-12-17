@@ -21,7 +21,7 @@ setup(
     description='Library for getting your data into HEPData',
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',
-    url='https://github.com/clelange/hepdata_lib',
+    url='https://github.com/HEPData/hepdata_lib',
     author='Andreas Albert, Clemens Lange',
     author_email='hepdata-lib@cern.ch',
     classifiers=[
@@ -39,6 +39,6 @@ setup(
     tests_require=['pytest'],
     project_urls={
         'Documentation': 'https://hepdata-lib.readthedocs.io',
-        'Bug Reports': 'https://github.com/clelange/hepdata_lib/issues',
-        'Source': 'https://github.com/clelange/hepdata_lib',
+        'Bug Reports': 'https://github.com/HEPData/hepdata_lib/issues',
+        'Source': 'https://github.com/HEPData/hepdata_lib',
     }, )
