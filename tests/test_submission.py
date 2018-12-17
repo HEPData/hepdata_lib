@@ -81,7 +81,7 @@ class TestSubmission(TestCase):
 
     def test_read_abstract(self):
         """Test read_abstract function."""
-        some_string = string.lowercase
+        some_string = string.ascii_lowercase
 
         testfile = "testfile.txt"
         self.addCleanup(os.remove, testfile)
