@@ -114,7 +114,7 @@ class Variable(object):
 
         lenvar = len(self.values)
         lenunc = len(uncertainty.values)
-        if lenvar and (lenvar is not lenunc):
+        if lenvar and (lenvar != lenunc):
             raise ValueError("Length of uncertainty list ({0})" \
                              "is not the same as length of Variable" \
                              "values list ({1})!.".format(lenunc, lenvar))
