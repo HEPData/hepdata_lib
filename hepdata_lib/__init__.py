@@ -91,6 +91,8 @@ class Variable(object):
 
     def add_qualifier(self, name, value, units=""):
         """Add a qualifier."""
+        if self.is_independent:
+            raise RuntimeError("Qualifiers are not allowed for independent variables.")
         qualifier = {}
         qualifier["name"] = name
         qualifier["value"] = value  # if type(value) == str else float(value)
