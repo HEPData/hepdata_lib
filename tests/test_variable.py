@@ -72,3 +72,26 @@ class TestVariable(TestCase):
             unc2.values = unc.values + [3]
             var.add_uncertainty(unc2)
         self.assertRaises(ValueError, wrong_input_properties)
+
+    def test_add_qualifier(self):
+        """Test the 'add_qualifier' function"""
+
+        # Initialize dependent variable
+        var = Variable("testvar")
+        var.is_binned = False
+        var.values = range(5)
+        var.is_independent = False;
+
+        # This should work fine
+        try:
+            var.add_qualifier("Some Name 1", "Some value 1", "Some unit 1")
+            var.add_qualifier("Some Name 2", "Some value 2")
+        except RuntimeError:
+            self.fail("Variable.add_qualifier raised an unexpected RuntimeError.")
+
+        # For an independent variable, an exception should be raised
+        var.is_independent = True;
+        with self.assertRaises(RuntimeError):
+            var.add_qualifier("Some Name 3", "Some value 3")
+        with self.assertRaises(RuntimeError):
+            var.add_qualifier("Some Name 4", "Some value 4", "Some unit 4")
