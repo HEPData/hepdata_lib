@@ -8,3 +8,8 @@ Module contents
     :members:
     :undoc-members:
     :show-inheritance:
+
+.. automodule:: hepdata_lib.root_utils
+    :members:
+    :undoc-members:
+    :show-inheritance:
