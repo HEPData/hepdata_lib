@@ -163,6 +163,27 @@ If you have the full-size plot available on your drive, you can add it to your e
 
 The library code then takes care of all the necessary steps, like converting the image to the right format and size, and copying it into your submission folder. The conversion relies on the ImageMagick library, and will only work if the ``convert`` command is available on your machine.
 
+Adding keywords to a table
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To make hepdata entries more searchable, keywords can be used to define what information is shown in a table. 
+The keywords are stored as a simply dictionary for each table:
+
+::
+
+    table.keywords["observables"] = ["ACC", "EFF"]
+    table.keywords["reactions"] = ["P P --> GRAVITON --> W+ W-", "P P --> WPRIME --> W+/W- Z0"]
+
+In this example, we specify that the observables shown in a table are acceptance ("ACC") and efficiency ("EFF"). We also specify the reaction we are talking about, in this case graviton or W' production with decays to SM gauge bosons. This code snippet is taken from one of our `examples`_.
+
+Lists of recognized keywords are available from the hepdata documentation for `Observables`_, `Phrases`_, and `Particles`_.
+
+.. _`examples`: https://github.com/clelange/hepdata_lib/blob/master/examples/Getting_started.ipynb
+.. _`Observables`: https://hepdata-submission.readthedocs.io/en/latest/keywords/observables.html
+.. _`Phrases`: https://hepdata-submission.readthedocs.io/en/latest/keywords/phrases.html
+.. _`Particles`: https://hepdata-submission.readthedocs.io/en/latest/keywords/partlist.html
+
+
 
 Uncertainties
 ++++++++++++++++++++++++++++++++
