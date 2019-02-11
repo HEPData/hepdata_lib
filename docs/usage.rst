@@ -152,6 +152,17 @@ That's it! We have successfully created the Table and Variables and stored our r
 After we have done this, the table will be included in the output files the ``Submission.create_files`` function writes (see  :ref:`sec-usage-submission`).
 
 
+Adding a  plot thumb nail to a table
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+HepData supports the addition of thumb nail images to each table. This makes it easier for the consumer of your entry to find what they are looking for, since they can simply look for the table that has the thumb nail of the plot they are interested in.
+If you have the full-size plot available on your drive, you can add it to your entry very easily:
+
+::
+
+    table.add_image("path/to/image.pdf")
+
+The library code then takes care of all the necessary steps, like converting the image to the right format and size, and copying it into your submission folder. The conversion relies on the ImageMagick library, and will only work if the ``convert`` command is available on your machine.
+
 
 Uncertainties
 ++++++++++++++++++++++++++++++++
