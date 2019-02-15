@@ -166,7 +166,8 @@ The library code then takes care of all the necessary steps, like converting the
 Adding keywords to a table
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To make hepdata entries more searchable, keywords can be used to define what information is shown in a table. 
+To make hepdata entries more searchable, keywords should be used to define what information is shown in a table. HEPData keeps track of keywords separately from the rest of the information in an entry, and provides dedicated functionalities to search for and filter by a given set of keywords. If a user is e.g. interested in finding all tables relevant to graviton production, they can do so quite easily if the tables are labelled properly. This procedure becomes much harder, or even impossible, if no keywords are used. It is therefore considered good practice to add a number of sensible keywords to your tables.
+
 The keywords are stored as a simply dictionary for each table:
 
 ::
