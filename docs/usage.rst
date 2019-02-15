@@ -152,6 +152,39 @@ That's it! We have successfully created the Table and Variables and stored our r
 After we have done this, the table will be included in the output files the ``Submission.create_files`` function writes (see  :ref:`sec-usage-submission`).
 
 
+Adding a  plot thumb nail to a table
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+HepData supports the addition of thumb nail images to each table. This makes it easier for the consumer of your entry to find what they are looking for, since they can simply look for the table that has the thumb nail of the plot they are interested in.
+If you have the full-size plot available on your drive, you can add it to your entry very easily:
+
+::
+
+    table.add_image("path/to/image.pdf")
+
+The library code then takes care of all the necessary steps, like converting the image to the right format and size, and copying it into your submission folder. The conversion relies on the ImageMagick library, and will only work if the ``convert`` command is available on your machine.
+
+Adding keywords to a table
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To make hepdata entries more searchable, keywords should be used to define what information is shown in a table. HEPData keeps track of keywords separately from the rest of the information in an entry, and provides dedicated functionalities to search for and filter by a given set of keywords. If a user is e.g. interested in finding all tables relevant to graviton production, they can do so quite easily if the tables are labelled properly. This procedure becomes much harder, or even impossible, if no keywords are used. It is therefore considered good practice to add a number of sensible keywords to your tables.
+
+The keywords are stored as a simply dictionary for each table:
+
+::
+
+    table.keywords["observables"] = ["ACC", "EFF"]
+    table.keywords["reactions"] = ["P P --> GRAVITON --> W+ W-", "P P --> WPRIME --> W+/W- Z0"]
+
+In this example, we specify that the observables shown in a table are acceptance ("ACC") and efficiency ("EFF"). We also specify the reaction we are talking about, in this case graviton or W' production with decays to SM gauge bosons. This code snippet is taken from one of our `examples`_.
+
+Lists of recognized keywords are available from the hepdata documentation for `Observables`_, `Phrases`_, and `Particles`_.
+
+.. _`examples`: https://github.com/clelange/hepdata_lib/blob/master/examples/Getting_started.ipynb
+.. _`Observables`: https://hepdata-submission.readthedocs.io/en/latest/keywords/observables.html
+.. _`Phrases`: https://hepdata-submission.readthedocs.io/en/latest/keywords/phrases.html
+.. _`Particles`: https://hepdata-submission.readthedocs.io/en/latest/keywords/partlist.html
+
+
 
 Uncertainties
 ++++++++++++++++++++++++++++++++

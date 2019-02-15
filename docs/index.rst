@@ -16,7 +16,6 @@ Welcome to hepdata_lib's documentation!
    setup
    usage
    source/modules
-   keywords
    contributing
 
 
