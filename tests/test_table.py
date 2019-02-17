@@ -52,9 +52,12 @@ class TestTable(TestCase):
         """Test the write_images function."""
 
         test_table = Table("Some Table")
-        search_path = re.sub("hepdata_lib.*","hepdata_lib", os.getcwd())
 
+        # Find a PDF input file from our examples
+        search_path = re.sub("hepdata_lib.*","hepdata_lib", os.getcwd())
         some_pdf = helpers.find_all_matching(search_path,"*.pdf")[0]
+
+        # This should work fine
         test_table.add_image(some_pdf)
         testdir = "test_output"
         self.addCleanup(shutil.rmtree, testdir)
@@ -62,6 +65,10 @@ class TestTable(TestCase):
             test_table.write_images(testdir)
         except TypeError:
             self.fail("Table.write_images raised an unexpected TypeError.")
-        with self.assertRaises(TypeError):
-            test_table.write_images(None)
+
+        # Try wrong type of input argument
+        bad_arguments = [None, 5, {}, []]
+        for argument in bad_arguments:
+            with self.assertRaises(TypeError):
+                test_table.write_images(argument)
         self.doCleanups()
