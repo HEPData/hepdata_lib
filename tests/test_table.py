@@ -48,14 +48,40 @@ class TestTable(TestCase):
             test_table.write_yaml(None)
         self.doCleanups()
 
+    def test_add_image(self):
+        some_pdf = get_example_pdf()
+
+        test_table = Table("Some Table")
+
+        # This should work fine
+        try:
+            try:
+                test_table.add_image(some_pdf)
+            except RuntimeError:
+                self.fail("Table.add_image raised an unexpected RuntimeError.")
+        except TypeError:
+                self.fail("Table.add_image raised an unexpected TypeError.")
+
+        # Try wrong argument types
+        wrong_type = [None, 5, {}, []]
+        for argument in wrong_type:
+            with self.assertRaises(TypeError):
+                test_table.add_image(argument)
+
+        # Try non-existing paths:
+        nonexisting = ["/a/b/c/d/e","./daskjl/aksj/asdasd.pdf"]
+        for argument in nonexisting:
+            with self.assertRaises(RuntimeError):
+                test_table.add_image(argument)
+
+
     def test_write_images(self):
         """Test the write_images function."""
 
         test_table = Table("Some Table")
 
         # Find a PDF input file from our examples
-        search_path = re.sub("hepdata_lib.*","hepdata_lib", os.getcwd())
-        some_pdf = helpers.find_all_matching(search_path,"*.pdf")[0]
+        some_pdf = get_example_pdf()
 
         # This should work fine
         test_table.add_image(some_pdf)
@@ -72,3 +98,17 @@ class TestTable(TestCase):
             with self.assertRaises(TypeError):
                 test_table.write_images(argument)
         self.doCleanups()
+
+
+
+def get_example_pdf():
+    '''
+    Find an example PDF file for testing
+
+    Searches the hepdata_lib folder for PDF files
+    which can usually be found in one of the
+    example folders
+    '''
+    search_path = re.sub("hepdata_lib.*","hepdata_lib", os.getcwd())
+    some_pdf = helpers.find_all_matching(search_path,"*.pdf")[0]
+    return some_pdf
