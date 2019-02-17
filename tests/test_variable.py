@@ -100,27 +100,36 @@ class TestVariable(TestCase):
         """Test the make_dict function."""
         var = Variable("testvar")
 
+        # With or without units
         for units in ["", "GeV"]:
             var.units = units
-
+            
+            # Binned
             var.is_binned = False
             var.values = [1,2,3]
             var.make_dict()
-
+            
+            # Unbinned
             var.is_binned = True
             var.values = [(0,1), (1,2), (2,3)]
             var.make_dict()
 
-        var.add_qualifier("testqualifier1", 1, units="GeV")
-        var.add_qualifier("testqualifier2", 1, units="")
-        var.make_dict()
-
+        # With symmetric uncertainty
         unc1 = Uncertainty("unc1")
         unc1.is_symmetric = True
         unc1.values = [random.random() for _ in range(len(var.values))]
         var.add_uncertainty(unc1)
+        var.make_dict()
 
+        # With asymmetric uncertainty
         unc2 = Uncertainty("unc2")
         unc2.is_symmetric = False
         unc2.values = [(-random.random(), random.random()) for _ in range(len(var.values))]
         var.add_uncertainty(unc2)
+        var.make_dict()
+
+        # With qualifiers (which only apply to dependent variables)
+        var.is_independent = False
+        var.add_qualifier("testqualifier1", 1, units="GeV")
+        var.add_qualifier("testqualifier2", 1, units="")
+        var.make_dict()
