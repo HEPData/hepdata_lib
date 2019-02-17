@@ -217,7 +217,7 @@ class Table(object):
                   """
             warnings.warn(msg, DeprecationWarning)
 
-        if type(file_path) is not str:
+        if not isinstance(file_path, str):
             raise TypeError("Expected string argument, instead got: '{}'.".format(type(file_path)))
         if os.path.exists(file_path):
             self.image_files.add(file_path)
