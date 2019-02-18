@@ -243,6 +243,9 @@ class Table(object):
                        Will be created if it doesn't exist.
         :type outdir: string
         """
+        if not isinstance(outdir, str):
+            raise TypeError("Expected string argument, instead got: '{}'.".format(type(outdir)))
+
         for image_file in self.image_files:
             if not os.path.isfile(image_file):
                 raise RuntimeError("File %s does not exist!" % image_file)
