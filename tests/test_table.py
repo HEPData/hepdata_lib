@@ -49,7 +49,8 @@ class TestTable(TestCase):
         self.doCleanups()
 
     def test_add_image(self):
-        some_pdf = get_example_pdf()
+        # Get test PDF
+        some_pdf = "%s/minimal.pdf" % os.path.dirname(__file__)
 
         test_table = Table("Some Table")
 
@@ -80,8 +81,8 @@ class TestTable(TestCase):
 
         test_table = Table("Some Table")
 
-        # Find a PDF input file from our examples
-        some_pdf = get_example_pdf()
+        # Get test PDF
+        some_pdf = "%s/minimal.pdf" % os.path.dirname(__file__)
 
         # This should work fine
         test_table.add_image(some_pdf)
@@ -98,17 +99,3 @@ class TestTable(TestCase):
             with self.assertRaises(TypeError):
                 test_table.write_images(argument)
         self.doCleanups()
-
-
-
-def get_example_pdf():
-    '''
-    Find an example PDF file for testing
-
-    Searches the hepdata_lib folder for PDF files
-    which can usually be found in one of the
-    example folders
-    '''
-    search_path = re.sub("hepdata_lib.*","hepdata_lib", os.getcwd())
-    some_pdf = helpers.find_all_matching(search_path,"*.pdf")[0]
-    return some_pdf
