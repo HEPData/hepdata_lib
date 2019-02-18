@@ -3,6 +3,7 @@
 """Test Submission."""
 import os
 import shutil
+import string
 from builtins import bytes
 from unittest import TestCase
 from hepdata_lib import Submission, Table, Variable, Uncertainty
@@ -75,5 +76,22 @@ class TestSubmission(TestCase):
         self.addCleanup(shutil.rmtree, testdir)
 
         test_submission.create_files(testdir)
+
+        self.doCleanups()
+
+    def test_read_abstract(self):
+        """Test read_abstract function."""
+        some_string = string.ascii_lowercase
+
+        testfile = "testfile.txt"
+        self.addCleanup(os.remove, testfile)
+
+        with open(testfile, "w") as f:
+            f.write(some_string)
+
+        test_submission = Submission()
+        test_submission.read_abstract(testfile)
+
+        self.assertEqual(test_submission.comment, some_string)
 
         self.doCleanups()
