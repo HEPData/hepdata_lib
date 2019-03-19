@@ -1,7 +1,7 @@
 # hepdata_lib
 
 [![DOI](https://zenodo.org/badge/129248575.svg)](https://zenodo.org/badge/latestdoi/129248575)
-[![PyPI version](https://badge.fury.io/py/hepdata_lib.svg)](https://badge.fury.io/py/hepdata_lib)
+[![PyPI version](https://badge.fury.io/py/hepdata-lib.svg)](https://badge.fury.io/py/hepdata-lib)
 [![Build Status](https://travis-ci.org/HEPData/hepdata_lib.svg?branch=master)](https://travis-ci.org/HEPData/hepdata_lib)
 [![Coverage Status](https://coveralls.io/repos/github/HEPData/hepdata_lib/badge.svg?branch=master)](https://coveralls.io/github/HEPData/hepdata_lib?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/hepdata-lib/badge/)](http://hepdata-lib.readthedocs.io/)
