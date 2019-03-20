@@ -87,10 +87,23 @@ You can use the same instructions as above, but in order to succeed, make sure t
 ::
 
     scramv1 project CMSSW CMSSW_10_2_3
-    cd CMSSW_10_2_3/src;
+    cd CMSSW_10_2_3/src
     cmsenv
-    cd -;
+    cd -
 
-    mkvirtualenv -p $(which python) NameOfVirtualEnvironment
+    virtualenv -p $(which python) hepdata_lib_env
+    cd hepdata_lib_env
+    source bin/activate  # if not using zsh/bash but csh: source bin/activate.csh
 
     python -m pip install hepdata_lib
+
+Whenever you log back on to lxplus, do the following:
+
+::
+
+    cd CMSSW_10_2_3/src
+    cmsenv
+    cd -
+
+    cd hepdata_lib_env
+    source bin/activate  # if not using zsh/bash but csh: source bin/activate.csh
