@@ -103,12 +103,12 @@ class TestVariable(TestCase):
         # With or without units
         for units in ["", "GeV"]:
             var.units = units
-            
+
             # Binned
             var.is_binned = False
             var.values = [1,2,3]
             var.make_dict()
-            
+
             # Unbinned
             var.is_binned = True
             var.values = [(0,1), (1,2), (2,3)]
@@ -133,3 +133,20 @@ class TestVariable(TestCase):
         var.add_qualifier("testqualifier1", 1, units="GeV")
         var.add_qualifier("testqualifier2", 1, units="")
         var.make_dict()
+
+    def test_constructor(self):
+        """Test the constructor of the Variable class."""
+
+        binned_values = [(1,2),(2,3),(3,4)]
+        unbinned_values = [1,2,3,4]
+
+        # Should work fine
+        var = Variable("testvar", is_binned=True, values=binned_values)
+
+        # Wrong type of argument
+        with self.assertRaises(ValueError):
+            var = Variable("testvar", is_binned=True, values=unbinned_values)
+
+        # Other way around
+        with self.assertRaises(ValueError):
+            var = Variable("testvar", is_binned=False, values=binned_values)
