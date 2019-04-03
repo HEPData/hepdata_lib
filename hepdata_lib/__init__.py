@@ -78,7 +78,7 @@ class Variable(object):
             # Check that the input is well-formed
             try:
                 assert all([len(x) == 2 for x in value_list])
-            except (TypeError, ValueError):
+            except (AssertionError, TypeError, ValueError):
                 raise ValueError("For binned Variables, values should be tuples of length two: \
                                  (lower bin edge, upper bin edge)."
                                 )
