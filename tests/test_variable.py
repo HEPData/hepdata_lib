@@ -139,9 +139,19 @@ class TestVariable(TestCase):
 
         binned_values = [(1,2),(2,3),(3,4)]
         unbinned_values = [1,2,3,4]
+        binned_values_wrong_length = [(1,2,3),(4,5,6)]
 
-        # Should work fine
-        var = Variable("testvar", is_binned=True, values=binned_values)
+        # Should work fine: Binned
+        try:
+            var = Variable("testvar", is_binned=True, values=binned_values)
+        except ValueError:
+            self.fail("Variable constructor raised unexpected ValueError.")
+
+        # Should work fine: Unbinned
+        try:
+            var = Variable("testvar", is_binned=False, values=unbinned_values)
+        except ValueError:
+            self.fail("Variable constructor raised unexpected ValueError.")
 
         # Wrong type of argument
         with self.assertRaises(ValueError):
@@ -150,3 +160,7 @@ class TestVariable(TestCase):
         # Other way around
         with self.assertRaises(ValueError):
             var = Variable("testvar", is_binned=False, values=binned_values)
+
+        # Tuples, but wrong length
+        with self.assertRaises(ValueError):
+            var = Variable("testvar", is_binned=False, values=binned_values_wrong_length)
