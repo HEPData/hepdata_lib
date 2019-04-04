@@ -53,7 +53,8 @@ class Variable(object):
     # pylint: disable=too-many-instance-attributes
     # Eight is reasonable in this case.
 
-    def __init__(self, name, is_independent=True, is_binned=True, units=""):
+    def __init__(self, name, is_independent=True, is_binned=True, units="", values=None):
+        # pylint: disable=too-many-arguments
         self.name = name
         self.is_independent = is_independent
         self.is_binned = is_binned
@@ -61,7 +62,7 @@ class Variable(object):
         self.units = units
         # needed to make pylint happy, see https://github.com/PyCQA/pylint/issues/409
         self._values = None
-        self.values = []
+        self.values = values if values else []
         self.uncertainties = []
         self.digits = 5
 
@@ -74,9 +75,23 @@ class Variable(object):
     def values(self, value_list):
         """Value Setter."""
         if self.is_binned:
+            # Check that the input is well-formed
+            try:
+                assert all([len(x) == 2 for x in value_list])
+            except (AssertionError, TypeError, ValueError):
+                raise ValueError("For binned Variables, values should be tuples of length two: \
+                                 (lower bin edge, upper bin edge)."
+                                )
+
+            # All good
             self._values = [(float(x[0]), float(x[1])) for x in value_list]
         else:
-            self._values = [x if isinstance(x, str) else float(x) for x in value_list]
+            # Check that the input is well-formed
+            try:
+                parsed_values = [x if isinstance(x, str) else float(x) for x in value_list]
+            except (TypeError, ValueError):
+                raise ValueError("Malformed input for unbinned variable: ", value_list)
+            self._values = parsed_values
 
     def scale_values(self, factor):
         """Multiply each value by constant factor. Also applies to uncertainties."""
