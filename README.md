@@ -37,6 +37,7 @@ There are a few more examples available that can directly be run using the [bind
 - [Reading in text files](examples/Getting_started.ipynb) [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/HEPData/hepdata_lib/master?filepath=examples/Getting_started.ipynb)
 - [Reading in a CMS combine ntuple](examples/combine_limits.ipynb) [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/HEPData/hepdata_lib/master?filepath=examples/combine_limits.ipynb)
 - [Reading in ROOT histograms](examples/reading_histograms.ipynb) [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/HEPData/hepdata_lib/master?filepath=examples/reading_histograms.ipynb)
+- [Reading a correlation matrix](examples/correlation.ipynb) [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/HEPData/hepdata_lib/master?filepath=examples/correlation.ipynb)
 
 ## External dependencies
 
