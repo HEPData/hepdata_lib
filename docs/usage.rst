@@ -35,7 +35,7 @@ which loads column-wise data from plain-text files and returns it as a ``numpy.a
 A detailed example is available here_.
 For documentation on the `loadtxt` function, please refer the `numpy documentation`_.
 
-.. _here: https://github.com/clelange/hepdata_lib/blob/master/examples/Getting_started.ipynb
+.. _here: https://github.com/HEPData/hepdata_lib/blob/master/examples/Getting_started.ipynb
 .. _numpy documentation: https://docs.scipy.org/doc/numpy/reference/generated/numpy.loadtxt.html
 
 
@@ -76,7 +76,7 @@ For detailed descriptions of the extraction logic and returned data, please refe
 
 An `example notebook`_ shows how to read histograms from a ROOT file.
 
-.. _example notebook: https://github.com/clelange/hepdata_lib/blob/master/examples/reading_histograms.ipynb
+.. _example notebook: https://github.com/HEPData/hepdata_lib/blob/master/examples/reading_histograms.ipynb
 
 .. _sec-usage-writing:
 
@@ -202,6 +202,9 @@ In some cases, you may want to define information based on multiple parameters, 
 
 Note that you can add as many dependent Variables as you would like, and that you can also make the independent variables unbinned.
 
+One common use case with more than one independent Variable is that of correlation matrices. A detailed example implementation of this case is `available here`_.
+
+.. _available here: https://github.com/HEPData/hepdata_lib/blob/master/examples/correlation.ipynb
 
 Adding a  plot thumb nail to a table
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -230,7 +233,7 @@ In this example, we specify that the observables shown in a table are acceptance
 
 Lists of recognized keywords are available from the hepdata documentation for `Observables`_, `Phrases`_, and `Particles`_.
 
-.. _`examples`: https://github.com/clelange/hepdata_lib/blob/master/examples/Getting_started.ipynb
+.. _`examples`: https://github.com/HEPData/hepdata_lib/blob/master/examples/Getting_started.ipynb
 .. _`Observables`: https://hepdata-submission.readthedocs.io/en/latest/keywords/observables.html
 .. _`Phrases`: https://hepdata-submission.readthedocs.io/en/latest/keywords/phrases.html
 .. _`Particles`: https://hepdata-submission.readthedocs.io/en/latest/keywords/partlist.html
