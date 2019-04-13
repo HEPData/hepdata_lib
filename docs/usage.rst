@@ -135,7 +135,6 @@ Let's see what this looks like in code:
                     is_independent=False,
                     is_binned=False,
                     units="fb")
-
     limit.values = [ 10, 5, 2 ]
 
     table = Table("Graviton limits")
@@ -150,6 +149,56 @@ That's it! We have successfully created the Table and Variables and stored our r
 
 
 After we have done this, the table will be included in the output files the ``Submission.create_files`` function writes (see  :ref:`sec-usage-submission`).
+
+Binned Variables
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The above example uses unbinned Variables, which means that every point is simply a single number reflecting a localized value. In many cases, it is useful to use binned Variables, e.g. to represent the x axis of a histogram.
+In this case, everything works the same way as in the unbinned case, except that we have to specify ``is_binned=True`` in the Variable constructor, and change how we format the list of values:
+
+::
+
+    mass_binned = Variable("Same mass as before, but this time it's binned",
+                           is_binned=True,
+                           is_independent=True)
+    mass_binned.values = [ (0.5, 1.5), (1.5, 2.5), (2.5, 3.5) ]
+
+The list of values has an entry for each bin of the Variable. The entry is a tuple, where the first entry represents the lower edge of the bin, while the second entry represents the upper edge of the bin. You can simply plug this definition into the code snippet of the unbinned case above to go from an unbinned mass to a binned value. Note that binning a Variable only really makes sense for independent variables.
+
+Two-dimensional plots
+^^^^^^^^^^^^^^^^^^^^^^^
+
+In some cases, you may want to define information based on multiple parameters, e.g. in the case of a two-dimensional histogram (TH2 in ROOT). This can be easily accomplished by defining two independent Variables in the same Table:
+
+::
+
+    table = Table()
+
+    x = Variable("Variable on the x axis",
+                 is_independent=True,
+                 is_binned=True)
+    # x.values = [ ... ]
+
+    y = Variable("Variable on the y axis",
+                 is_independent=True,
+                 is_binned=True)
+    # x.values = [ ... ]
+
+    v1 = Variable("A variable depending on x and y",
+                  is_independent=False,
+                  is_binned=False)
+    # v1.values = [ ... ]
+
+    v2 = Variable("Another variable depending on x and y",
+                  is_independent=False,
+                  is_binned=False)
+    # v2.values = [ ... ]
+
+    table.add_variable(x)
+    table.add_variable(y)
+    table.add_variable(v1)
+    table.add_variable(v2)
+
+Note that you can add as many dependent Variables as you would like, and that you can also make the independent variables unbinned.
 
 
 Adding a  plot thumb nail to a table
