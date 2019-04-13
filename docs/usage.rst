@@ -96,9 +96,9 @@ Following the HEPData data model, the hepdata_lib implements four main classes f
 The Submission object
 +++++++++++++++++++++++++++++++
 
-The Submission object is the central object where all threads come together. The Submission object represents the whole HEPData entry and thus carries the top-level meta data that is equally valid for all the tables and variables you may want to enter. The object is also used to create the physical submission files you will upload to the HEPData web interface.
+The Submission object is the central object where all threads come together. It represents the whole HEPData entry and thus carries the top-level meta data that is equally valid for all the tables and variables you may want to enter. The object is also used to create the physical submission files you will upload to the HEPData web interface.
 
-When using the hepdata_lib to make an entry, you **always need to create a Submission object**.
+When using hepdata_lib to make an entry, you **always need to create a Submission object**.
 The most bare-bone submission consists of only a Submission object with no data in it:
 
 ::
@@ -108,7 +108,9 @@ The most bare-bone submission consists of only a Submission object with no data 
     outdir="./output"
     sub.create_files(outdir)
 
-The ``create_files`` function writes all the YAML output files you need and packs them up in a ``tar.gz`` file ready to be uploaded.
+The ``create_files`` function writes all the YAML output files you need and packs them up in a ``tar.gz`` file ready to be uploaded. 
+
+**Please note**: creating the output files also creates a ``submission`` folder containing the individual files going into the tarball. This folder exists merely for convenience, in order to make it easy to inspect each individual file. It is not recommended to attempt to manually manage or edit the files in the folder, and there is no guarantee that ``hepdata_lib`` will handle any of the changes you make in a graceful manner. As far as we are aware, there is no use case where manual editing of the files is necessary. If you have such a use case, please report it in a Github issue.
 
 
 .. _sec-usage-tab-var:
