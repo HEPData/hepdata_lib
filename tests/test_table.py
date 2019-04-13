@@ -10,6 +10,30 @@ from hepdata_lib import Table, Variable, Uncertainty, helpers
 
 class TestTable(TestCase):
     """Test the Table class."""
+
+    def test_name_checks(self):
+        """Test the table name checks."""
+
+        # This should work fine
+        good_name = "64 characters or fewer"
+        try:
+            good_table = Table(good_name)
+        except ValueError:
+            self.fail("Table initializer raised unexpected ValueError.")
+
+        self.assertEqual(good_name, good_table.name)
+
+        # Check name that is too long
+        too_long_name = "x"*100
+
+        # In the initializer
+        with self.assertRaises(ValueError):
+            bad_table = Table(too_long_name)
+
+        # Using the setter
+        with self.assertRaises(ValueError):
+            good_table.name = too_long_name
+
     def test_add_variable(self):
         """Test the add_variable function."""
 
