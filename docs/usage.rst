@@ -35,7 +35,7 @@ which loads column-wise data from plain-text files and returns it as a ``numpy.a
 A detailed example is available here_.
 For documentation on the `loadtxt` function, please refer the `numpy documentation`_.
 
-.. _here: https://github.com/clelange/hepdata_lib/blob/master/examples/Getting_started.ipynb
+.. _here: https://github.com/HEPData/hepdata_lib/blob/master/examples/Getting_started.ipynb
 .. _numpy documentation: https://docs.scipy.org/doc/numpy/reference/generated/numpy.loadtxt.html
 
 
@@ -76,7 +76,7 @@ For detailed descriptions of the extraction logic and returned data, please refe
 
 An `example notebook`_ shows how to read histograms from a ROOT file.
 
-.. _example notebook: https://github.com/clelange/hepdata_lib/blob/master/examples/reading_histograms.ipynb
+.. _example notebook: https://github.com/HEPData/hepdata_lib/blob/master/examples/reading_histograms.ipynb
 
 .. _sec-usage-writing:
 
@@ -96,9 +96,9 @@ Following the HEPData data model, the hepdata_lib implements four main classes f
 The Submission object
 +++++++++++++++++++++++++++++++
 
-The Submission object is the central object where all threads come together. The Submission object represents the whole HEPData entry and thus carries the top-level meta data that is equally valid for all the tables and variables you may want to enter. The object is also used to create the physical submission files you will upload to the HEPData web interface.
+The Submission object is the central object where all threads come together. It represents the whole HEPData entry and thus carries the top-level meta data that is equally valid for all the tables and variables you may want to enter. The object is also used to create the physical submission files you will upload to the HEPData web interface.
 
-When using the hepdata_lib to make an entry, you **always need to create a Submission object**.
+When using hepdata_lib to make an entry, you **always need to create a Submission object**.
 The most bare-bone submission consists of only a Submission object with no data in it:
 
 ::
@@ -108,7 +108,9 @@ The most bare-bone submission consists of only a Submission object with no data 
     outdir="./output"
     sub.create_files(outdir)
 
-The ``create_files`` function writes all the YAML output files you need and packs them up in a ``tar.gz`` file ready to be uploaded.
+The ``create_files`` function writes all the YAML output files you need and packs them up in a ``tar.gz`` file ready to be uploaded. 
+
+**Please note**: creating the output files also creates a ``submission`` folder containing the individual files going into the tarball. This folder exists merely for convenience, in order to make it easy to inspect each individual file. It is not recommended to attempt to manually manage or edit the files in the folder, and there is no guarantee that ``hepdata_lib`` will handle any of the changes you make in a graceful manner. As far as we are aware, there is no use case where manual editing of the files is necessary. If you have such a use case, please report it in a Github issue.
 
 
 .. _sec-usage-tab-var:
@@ -135,7 +137,6 @@ Let's see what this looks like in code:
                     is_independent=False,
                     is_binned=False,
                     units="fb")
-
     limit.values = [ 10, 5, 2 ]
 
     table = Table("Graviton limits")
@@ -151,6 +152,59 @@ That's it! We have successfully created the Table and Variables and stored our r
 
 After we have done this, the table will be included in the output files the ``Submission.create_files`` function writes (see  :ref:`sec-usage-submission`).
 
+Binned Variables
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The above example uses unbinned Variables, which means that every point is simply a single number reflecting a localized value. In many cases, it is useful to use binned Variables, e.g. to represent the x axis of a histogram.
+In this case, everything works the same way as in the unbinned case, except that we have to specify ``is_binned=True`` in the Variable constructor, and change how we format the list of values:
+
+::
+
+    mass_binned = Variable("Same mass as before, but this time it's binned",
+                           is_binned=True,
+                           is_independent=True)
+    mass_binned.values = [ (0.5, 1.5), (1.5, 2.5), (2.5, 3.5) ]
+
+The list of values has an entry for each bin of the Variable. The entry is a tuple, where the first entry represents the lower edge of the bin, while the second entry represents the upper edge of the bin. You can simply plug this definition into the code snippet of the unbinned case above to go from an unbinned mass to a binned value. Note that binning a Variable only really makes sense for independent variables.
+
+Two-dimensional plots
+^^^^^^^^^^^^^^^^^^^^^^^
+
+In some cases, you may want to define information based on multiple parameters, e.g. in the case of a two-dimensional histogram (TH2 in ROOT). This can be easily accomplished by defining two independent Variables in the same Table:
+
+::
+
+    table = Table()
+
+    x = Variable("Variable on the x axis",
+                 is_independent=True,
+                 is_binned=True)
+    # x.values = [ ... ]
+
+    y = Variable("Variable on the y axis",
+                 is_independent=True,
+                 is_binned=True)
+    # y.values = [ ... ]
+
+    v1 = Variable("A variable depending on x and y",
+                  is_independent=False,
+                  is_binned=False)
+    # v1.values = [ ... ]
+
+    v2 = Variable("Another variable depending on x and y",
+                  is_independent=False,
+                  is_binned=False)
+    # v2.values = [ ... ]
+
+    table.add_variable(x)
+    table.add_variable(y)
+    table.add_variable(v1)
+    table.add_variable(v2)
+
+Note that you can add as many dependent Variables as you would like, and that you can also make the independent variables unbinned.
+
+One common use case with more than one independent Variable is that of correlation matrices. A detailed example implementation of this case is `available here`_.
+
+.. _available here: https://github.com/HEPData/hepdata_lib/blob/master/examples/correlation.ipynb
 
 Adding a  plot thumb nail to a table
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -179,7 +233,7 @@ In this example, we specify that the observables shown in a table are acceptance
 
 Lists of recognized keywords are available from the hepdata documentation for `Observables`_, `Phrases`_, and `Particles`_.
 
-.. _`examples`: https://github.com/clelange/hepdata_lib/blob/master/examples/Getting_started.ipynb
+.. _`examples`: https://github.com/HEPData/hepdata_lib/blob/master/examples/Getting_started.ipynb
 .. _`Observables`: https://hepdata-submission.readthedocs.io/en/latest/keywords/observables.html
 .. _`Phrases`: https://hepdata-submission.readthedocs.io/en/latest/keywords/phrases.html
 .. _`Particles`: https://hepdata-submission.readthedocs.io/en/latest/keywords/partlist.html
