@@ -203,7 +203,10 @@ class Table(object):
     the location within the paper, etc.
     """
 
+    # pylint: disable=too-many-instance-attributes
+
     def __init__(self, name):
+        self._name = None
         self.name = name
         self.variables = []
         self.description = "Example description"
@@ -211,6 +214,18 @@ class Table(object):
         self.keywords = {}
         self.additional_resources = []
         self.image_files = set([])
+
+    @property
+    def name(self):
+        """Name getter."""
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        """Name setter."""
+        if len(name) > 64:
+            raise ValueError("Table name must not be longer than 64 characters.")
+        self._name = name
 
     def add_image(self, file_path, outdir=None):
         """
