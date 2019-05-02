@@ -183,7 +183,7 @@ In some cases, you may want to define information based on multiple parameters, 
     y = Variable("Variable on the y axis",
                  is_independent=True,
                  is_binned=True)
-    # x.values = [ ... ]
+    # y.values = [ ... ]
 
     v1 = Variable("A variable depending on x and y",
                   is_independent=False,
