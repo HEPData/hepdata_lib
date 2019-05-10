@@ -49,20 +49,30 @@ def find_all_matching(path, pattern):
     return result
 
 
-def relative_round(value, relative_digits):
-    """Rounds to a given relative precision"""
-    if value == 0:
-        return 0
-    if isinstance(value, str) or np.isnan(value):
-        return value
-
-    value_precision = math.ceil(math.log10(abs(value)))
-
-    absolute_digits = -value_precision + relative_digits
-    if absolute_digits < 0:
-        absolute_digits = 0
-
-    return round(value, int(absolute_digits))
+def relative_round(value, relative_digits):                                                                                                                                           
+    """Rounds to a given relative precision"""                                                                                                                                        
+    return_list = []                                                                                                                                                                  
+                                                                                                                                                                                      
+    if value == 0:                                                                                                                                                                    
+        return value                                                                                                                                                                  
+    if isinstance(value, str):                                                                                                                                                        
+        return value                                                                                                                                                                  
+    if not isinstance(value, tuple) and np.isnan(value):                                                                                                                              
+        return value                                                                                                                                                                  
+    if isinstance(value, tuple):                                                                                                                                                      
+        value = list(value)                                                                                                                                                           
+    else:                                                                                                                                                                             
+        value = [value]                                                                                                                                                               
+                                                                                                                                                                                      
+    for item in value:                                                                                                                                                                
+        if abs(item)!=0.0: value_precision = math.ceil(math.log10(abs(item)))                                                                                                         
+        else: value_precision = 0                                                                                                                                                     
+        absolute_digits = -value_precision + relative_digits                                                                                                                          
+        if absolute_digits < 0: absolute_digits = 0                                                                                                                                   
+        return_list.append(round(item, int(absolute_digits)))                                                                                                                         
+                                                                                                                                                                                      
+    if len(return_list) is 1: return return_list[0]                                                                                                                                   
+    else: return tuple(return_list)
 
 
 def check_file_existence(path_to_file):
