@@ -15,6 +15,7 @@ Welcome to hepdata_lib's documentation!
    README
    setup
    usage
+   dev
    source/modules
    contributing
 
