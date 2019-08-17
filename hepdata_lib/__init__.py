@@ -285,7 +285,7 @@ class Table(object):
                 os.path.splitext(image_file)[0].rsplit("/", 1)[1])
             thumb_out_image_file = "thumb_" + out_image_file
             # first convert to png, then create thumbnail
-            command = "convert -flatten -fuzz 1% -trim +repage {} {}/{}".format(
+            command = "convert -flatten -density 300 -fuzz 1% -trim +repage {} {}/{}".format(
                 image_file, outdir, out_image_file)
             command_ok = helpers.execute_command(command)
             if not command_ok:
