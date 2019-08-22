@@ -23,6 +23,10 @@ elif [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
     curl -O https://root.cern.ch/download/root_v6.12.06.Linux-ubuntu14-x86_64-gcc4.8.tar.gz
     tar xzf root_v6.12.06.Linux-ubuntu14-x86_64-gcc4.8.tar.gz
 
+    sudo sed -i '/MVG/d' /etc/ImageMagick-6/policy.xml
+    sudo sed -i '/PDF/{s/none/read|write/g}' /etc/ImageMagick-6/policy.xml
+    sudo sed -i '/PDF/ a <policy domain="coder" rights="read|write" pattern="LABEL" />' /etc/ImageMagick-6/policy.xml
+
     pip install --upgrade enum34 pytest_pylint configparser astroid coveralls
 
     sudo apt update
