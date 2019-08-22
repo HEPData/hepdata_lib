@@ -45,7 +45,7 @@ Dumper.add_representer(str,
 # Display deprecation warnings
 warnings.filterwarnings("always", category=DeprecationWarning, module="hepdata_lib")
 
-__version__ = "0.2.7"
+__version__ = "0.2.8"
 
 class Variable(object):
     """A Variable is a wrapper for a list of values + some meta data."""
