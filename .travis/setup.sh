@@ -12,10 +12,10 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     brew install ossp-uuid davix isl libmpc gcc fftw freetype fontconfig webp gd graphviz gsl lz4 tbb xrootd
     echo "Installing ROOT"
     # travis_wait 45 brew install root
-    curl -O https://clange.web.cern.ch/clange/root-v6.14.02.tar.gz
-    tar xzf root-v6.14.02.tar.gz
+    curl -O https://clange.web.cern.ch/clange/root-v6.18.00.tar.gz
+    tar xzf root-v6.18.00.tar.gz
     mkdir -p /usr/local/Cellar/root
-    mv 6.14.02 /usr/local/Cellar/root/
+    mv 6.18.00 /usr/local/Cellar/root/
 
     pip3 install --upgrade enum34 pytest_pylint configparser astroid coveralls
 
