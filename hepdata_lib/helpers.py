@@ -51,16 +51,16 @@ def find_all_matching(path, pattern):
 
 def relative_round(value, relative_digits):
     """Rounds to a given relative precision"""
-    if value == 0:
-        return 0
-    if isinstance(value, str) or np.isnan(value):
+
+    if value == 0 or isinstance(value, str) or np.isnan(value) or np.isinf(value):
         return value
 
-    value_precision = math.ceil(math.log10(abs(value)))
+    if isinstance(value, tuple):
+        return (relative_round(x, relative_digits) for x in value)
 
-    absolute_digits = -value_precision + relative_digits
-    if absolute_digits < 0:
-        absolute_digits = 0
+    precision = math.ceil(math.log10(abs(value)))
+
+    absolute_digits = - precision + relative_digits
 
     return round(value, int(absolute_digits))
 
