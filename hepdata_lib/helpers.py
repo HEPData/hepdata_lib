@@ -52,7 +52,7 @@ def find_all_matching(path, pattern):
 def relative_round(value, relative_digits):
     """Rounds to a given relative precision"""
 
-    if value==0 or isinstance(value, str) or np.isnan(value) or np.isinf(value):
+    if value == 0 or isinstance(value, str) or np.isnan(value) or np.isinf(value):
         return value
 
     if isinstance(value, tuple):
