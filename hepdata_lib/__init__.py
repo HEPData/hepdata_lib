@@ -8,9 +8,9 @@ import math
 import os
 import shutil
 import subprocess
+import tarfile
 import warnings
 from collections import defaultdict
-
 import yaml
 
 # try to use LibYAML bindings if possible
@@ -520,7 +520,6 @@ class Submission(object):
         self.copy_files(outdir)
 
         # Put everything into a tarfile
-        import tarfile
         tar = tarfile.open("submission.tar.gz", "w:gz")
         for yaml_file in helpers.find_all_matching(outdir, "*.yaml"):
             tar.add(yaml_file)
