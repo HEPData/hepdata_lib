@@ -2,8 +2,8 @@
 
 [![DOI](https://zenodo.org/badge/129248575.svg)](https://zenodo.org/badge/latestdoi/129248575)
 [![PyPI version](https://badge.fury.io/py/hepdata-lib.svg)](https://badge.fury.io/py/hepdata-lib)
-[![Build Status](https://travis-ci.org/HEPData/hepdata_lib.svg?branch=master)](https://travis-ci.org/HEPData/hepdata_lib)
-[![Coverage Status](https://coveralls.io/repos/github/HEPData/hepdata_lib/badge.svg?branch=master)](https://coveralls.io/github/HEPData/hepdata_lib?branch=master)
+[![Actions Status](https://github.com/SirVheod/hepdata_lib/workflows/tests/badge.svg)](https://github.com/SirVheod/hepdata_lib/actions)
+[![Coverage Status](https://coveralls.io/repos/github/SirVheod/hepdata_lib/badge.svg?branch=master)](https://coveralls.io/github/SirVheod/hepdata_lib?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/hepdata-lib/badge/)](http://hepdata-lib.readthedocs.io/)
 [![Docker Hub](https://images.microbadger.com/badges/image/clelange/hepdata_lib.svg)](https://hub.docker.com/r/clelange/hepdata_lib/)
 
