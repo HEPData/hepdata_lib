@@ -1,0 +1,69 @@
+
+name: tests
+#Running tests on all branches
+on: [push,pull_request]
+
+jobs:  
+  # This is a job for linux python3 tests
+  linuxpy3:
+      runs-on: [ubuntu-18.04]
+      container:
+          image: 'rootproject/root:latest'
+      steps:
+        - uses: actions/checkout@v2
+        - name: Test with pytest
+          env:
+            COVERALLS_REPO_TOKEN : ${{ secrets.COVERALLS }}
+          run: |
+            yum install -y python-pip ghostscript 
+            python -m pip install pytest
+            python -m pip install coveralls
+            python setup.py test
+            coveralls
+
+ # This is a job for macOS python3 tests
+  macospy3:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Test with pytest
+        run: |
+          brew update
+          brew cask uninstall --force oclint
+          brew upgrade python cmake libpng libtiff
+          brew install --force ossp-uuid davix fftw fontconfig gd graphviz gsl lz4 tbb xrootd
+          curl -O https://clange.web.cern.ch/clange/root-v6.18.00.tar.gz
+          tar xzf root-v6.18.00.tar.gz
+          mkdir -p /usr/local/Cellar/root
+          mv 6.18.00 /usr/local/Cellar/root/
+          cd /usr/local/Cellar/root/6.18.00
+          export PATH=${PWD}/bin:${PATH}
+          export PYTHONPATH=${PWD}/lib/root:${PYTHONPATH}
+          export LD_LIBRARY_PATH=${PWD}/lib/root:${LD_LIBRARY_PATH}
+          echo ${PYTHONPATH}
+          cd -
+          python3 setup.py test && python3 -m pip install -e . && python3 -m pylint hepdata_lib/*.py
+
+  
+ # This is a job for linux python2.7 tests
+  linuxpy27:
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Test with pytest
+      run: |
+        sudo apt-get install python2.7
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools
+        curl -O https://root.cern.ch/download/root_v6.20.00.Linux-ubuntu16-x86_64-gcc5.4.tar.gz
+        tar xzf root_v6.20.00.Linux-ubuntu16-x86_64-gcc5.4.tar.gz
+        python -m pip install numpy==1.16.5
+        sudo sed -i '/MVG/d' /etc/ImageMagick-6/policy.xml
+        sudo sed -i '/PDF/{s/none/read|write/g}' /etc/ImageMagick-6/policy.xml
+        sudo sed -i '/PDF/ a <policy domain="coder" rights="read|write" pattern="LABEL" />' /etc/ImageMagick-6/policy.xml
+        python -m pip install --upgrade enum34 pytest_pylint configparser astroid coveralls
+        sudo apt update
+        sudo apt install -y ghostscript    
+        source root/bin/thisroot.sh
+        python setup.py test
+
