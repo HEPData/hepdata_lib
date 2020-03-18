@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 """Test RootFileReader."""
+from __future__ import print_function
 from unittest import TestCase
 from array import array
 import os
@@ -8,7 +9,7 @@ import ctypes
 import numpy as np
 import ROOT
 from test_utilities import float_compare, tuple_compare, histogram_compare_1d, make_tmp_root_file
-from hepdata_lib.root_utils import RootFileReader, get_hist_2d_points
+from hepdata_lib.root_utils import RootFileReader, get_hist_2d_points # pylint: disable=unused-import
 
 
 class TestRootFileReader(TestCase):
@@ -21,32 +22,32 @@ class TestRootFileReader(TestCase):
 
         # Check with nonexistant file that ends in .root
         with self.assertRaises(RuntimeError):
-            reader = RootFileReader("/path/to/nowhere/butEndsIn.root")
+            _reader = RootFileReader("/path/to/nowhere/butEndsIn.root")
 
         # Check with existant file that does not end in .root
         path_to_file = "test.txt"
         self.addCleanup(os.remove, path_to_file)
 
-        with open(path_to_file,"w") as testfile:
+        with open(path_to_file, "w") as testfile:
             testfile.write("TEST CONTENT")
 
         with self.assertRaises(RuntimeError):
-            reader = RootFileReader(path_to_file)
+            _reader = RootFileReader(path_to_file)
 
         # Check with wrong input type
         with self.assertRaises(ValueError):
-            reader = RootFileReader(5)
+            _reader = RootFileReader(5)
         with self.assertRaises(ValueError):
-            reader = RootFileReader([])
+            _reader = RootFileReader([])
         with self.assertRaises(ValueError):
-            reader = RootFileReader({})
+            _reader = RootFileReader({})
 
         # Finally, try a good call
         path_to_file = make_tmp_root_file(close=True, testcase=self)
 
         try:
-            reader = RootFileReader(path_to_file)
-        except:
+            _reader = RootFileReader(path_to_file)
+        except: # pylint: disable=W0702
             self.fail("RootFileReader raised an unexpected exception.")
 
         # Clean up
@@ -85,6 +86,7 @@ class TestRootFileReader(TestCase):
         self.doCleanups()
 
     def test_read_graph_tgrapherrors(self):
+        # pylint: disable-msg=too-many-locals
         """
         Test the behavior of the read_graph function
         when reading a TGraphErrors from file.
@@ -121,12 +123,13 @@ class TestRootFileReader(TestCase):
         self.doCleanups()
 
     def test_read_graph_tgrapherrors2(self):
+        # pylint: disable-msg=too-many-locals
         """
         Test the behavior of the read_graph function
         when reading a TGraphAsymmErrors from file.
         """
         N = 20
-        filepath = "testfile.root"
+        _filepath = "testfile.root"
         name = "testgraph"
 
         x = np.random.uniform(-1e3, 1e3, N)
@@ -256,7 +259,7 @@ class TestRootFileReader(TestCase):
 
     def test_read_hist_1d_asymmetric_errors(self):
         """Test the read_hist_1d function for a histogram with asymmetric errors."""
-        fpath = "testfile.root"
+        _fpath = "testfile.root"
 
         # Create test histogram
         Nbin = 17
@@ -301,7 +304,7 @@ class TestRootFileReader(TestCase):
     def test_read_hist_1d_asymmetric_force_symmetric_errors(self):
         """Test the read_hist_1d function for a histogram with asymmetric errors
         forcing symmetric errors to be used."""
-        fpath = "testfile.root"
+        _fpath = "testfile.root"
 
         # Create test histogram
         Nbin = 17
@@ -344,8 +347,9 @@ class TestRootFileReader(TestCase):
 
 
     def test_read_hist_2d_symmetric_errors(self):
+        # pylint: disable-msg=too-many-locals
         """Test the read_hist_2d function with symmetric errors."""
-        fpath = "testfile.root"
+        _fpath = "testfile.root"
 
         # Create test histogram
         NX = 100
@@ -404,6 +408,8 @@ class TestRootFileReader(TestCase):
 
 
     def test_read_hist_2d_range(self):
+        # pylint: disable-msg=too-many-statements
+        # pylint: disable-msg=too-many-locals
         """Test the read_hist_2d function with symmetric errors."""
         # Create test histogram
         NX = 100
@@ -488,10 +494,10 @@ class TestRootFileReader(TestCase):
         # Clean up
         self.doCleanups()
 
-    def test_read_hist_2d_asymmetric_errors(self):
+    def test_read_hist_2d_asymmetric_errors(self): # pylint: disable-msg=too-many-locals
         """Test the read_hist_2d function with asymmetric errors
         forcing symmetric errors to be used."""
-        fpath = "testfile.root"
+        _fpath = "testfile.root"
 
         # Create test histogram
         NX = 17
@@ -536,14 +542,15 @@ class TestRootFileReader(TestCase):
             self.assertTrue(tuple_compare(
                 (-backup_hist.GetBinErrorLow(ibinx.value, ibiny.value),
                  backup_hist.GetBinErrorUp(ibinx.value, ibiny.value)), dz))
-
+            # pylint: enable-msg=too-many-locals
         # Clean up
         self.doCleanups()
 
 
     def test_read_hist_2d_asymmetric_force_symmetric_errors(self):
+        # pylint: disable-msg=too-many-locals
         """Test the read_hist_2d function with asymmetric errors."""
-        fpath = "testfile.root"
+        _fpath = "testfile.root"
 
         # Create test histogram
         NX = 17
@@ -601,7 +608,7 @@ class TestRootFileReader(TestCase):
         # Set up some test data, put into TTree and write to file
         data = np.random.normal(loc=0.5, scale=0.15, size=Nfill)
 
-        number = array("f",[0])
+        number = array("f", [0])
         tree = ROOT.TTree()
         tree.Branch(branchname, number, "test/F")
         for inumber in data:
@@ -610,8 +617,8 @@ class TestRootFileReader(TestCase):
 
         testfile = make_tmp_root_file(testcase=self)
         tree.Write(path_to_tree)
-        if(testfile): testfile.Close()
-
+        if testfile:
+            testfile.Close()
 
         # Read data back and check consistency
         reader = RootFileReader(testfile.GetName())
@@ -620,7 +627,8 @@ class TestRootFileReader(TestCase):
         except RuntimeError:
             self.fail("RootFileReader.read_tree raised an unexpected RuntimeError!")
         self.assertIsInstance(data_readback, list)
-        self.assertTrue(all([float_compare(values[0], values[1]) for values in zip(data, data_readback)]))
+        self.assertTrue(all([float_compare(values[0], values[1])
+                             for values in zip(data, data_readback)]))
 
         # Try reading a nonexistant branch from an existing tree
         with self.assertRaises(RuntimeError):
@@ -662,7 +670,8 @@ class TestRootFileReader(TestCase):
 
         reference = histogram.Clone("reference")
         reference.SetDirectory(0)
-        if(tfile): tfile.Close()
+        if tfile:
+            tfile.Close()
 
         # Read it back
         reader = RootFileReader(path_to_file)

@@ -80,7 +80,7 @@ class TestVariable(TestCase):
         var = Variable("testvar")
         var.is_binned = False
         var.values = range(5)
-        var.is_independent = False;
+        var.is_independent = False
 
         # This should work fine
         try:
@@ -90,12 +90,12 @@ class TestVariable(TestCase):
             self.fail("Variable.add_qualifier raised an unexpected RuntimeError.")
 
         # For an independent variable, an exception should be raised
-        var.is_independent = True;
+        var.is_independent = True
         with self.assertRaises(RuntimeError):
             var.add_qualifier("Some Name 3", "Some value 3")
         with self.assertRaises(RuntimeError):
             var.add_qualifier("Some Name 4", "Some value 4", "Some unit 4")
-
+    # pylint: disable=R0201
     def test_make_dict(self):
         """Test the make_dict function."""
         var = Variable("testvar")
@@ -106,12 +106,12 @@ class TestVariable(TestCase):
 
             # Binned
             var.is_binned = False
-            var.values = [1,2,3]
+            var.values = [1, 2, 3]
             var.make_dict()
 
             # Unbinned
             var.is_binned = True
-            var.values = [(0,1), (1,2), (2,3)]
+            var.values = [(0, 1), (1, 2), (2, 3)]
             var.make_dict()
 
         # With symmetric uncertainty
@@ -137,30 +137,31 @@ class TestVariable(TestCase):
     def test_constructor(self):
         """Test the constructor of the Variable class."""
 
-        binned_values = [(1,2),(2,3),(3,4)]
-        unbinned_values = [1,2,3,4]
-        binned_values_wrong_length = [(1,2,3),(4,5,6)]
+        binned_values = [(1, 2), (2, 3), (3, 4)]
+        unbinned_values = [1, 2, 3, 4]
+        binned_values_wrong_length = [(1, 2, 3), (4, 5, 6)]
 
         # Should work fine: Binned
         try:
-            var = Variable("testvar", is_binned=True, values=binned_values)
+
+            _var = Variable("testvar", is_binned=True, values=binned_values)
         except ValueError:
             self.fail("Variable constructor raised unexpected ValueError.")
 
         # Should work fine: Unbinned
         try:
-            var = Variable("testvar", is_binned=False, values=unbinned_values)
+            _var = Variable("testvar", is_binned=False, values=unbinned_values)
         except ValueError:
             self.fail("Variable constructor raised unexpected ValueError.")
 
         # Wrong type of argument
         with self.assertRaises(ValueError):
-            var = Variable("testvar", is_binned=True, values=unbinned_values)
+            _var = Variable("testvar", is_binned=True, values=unbinned_values)
 
         # Other way around
         with self.assertRaises(ValueError):
-            var = Variable("testvar", is_binned=False, values=binned_values)
+            _var = Variable("testvar", is_binned=False, values=binned_values)
 
         # Tuples, but wrong length
         with self.assertRaises(ValueError):
-            var = Variable("testvar", is_binned=False, values=binned_values_wrong_length)
+            _var = Variable("testvar", is_binned=False, values=binned_values_wrong_length)

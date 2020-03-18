@@ -399,7 +399,23 @@ good-names=i,
            k,
            ex,
            Run,
-           _
+           _,
+           f,
+           N,
+           x,
+           y,
+           g,
+           z,
+           v,
+           iy,
+           ix,
+           dz,
+           NX,
+           NY,
+           Nfill,
+           dx,
+           dy,
+           Nbin
 
 # Include a hint for the correct naming format with invalid-name
 include-naming-hint=no
@@ -443,7 +459,6 @@ variable-naming-style=snake_case
 # Regular expression matching correct variable names. Overrides variable-
 # naming-style
 #variable-rgx=
-
 
 [IMPORTS]
 

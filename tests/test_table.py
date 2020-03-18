@@ -1,12 +1,12 @@
 # !/usr/bin/env python
 # -*- coding:utf-8 -*-
 """Test Table."""
-import re
+import re # pylint: disable=unused-import
 import os
 import shutil
 from unittest import TestCase
 
-from hepdata_lib import Table, Variable, Uncertainty, helpers
+from hepdata_lib import Table, Variable, Uncertainty, helpers # pylint: disable=unused-import
 
 class TestTable(TestCase):
     """Test the Table class."""
@@ -28,7 +28,7 @@ class TestTable(TestCase):
 
         # In the initializer
         with self.assertRaises(ValueError):
-            bad_table = Table(too_long_name)
+            _bad_table = Table(too_long_name)
 
         # Using the setter
         with self.assertRaises(ValueError):
@@ -73,6 +73,7 @@ class TestTable(TestCase):
         self.doCleanups()
 
     def test_add_image(self):
+        """Get test PDF"""
         # Get test PDF
         some_pdf = "%s/minimal.pdf" % os.path.dirname(__file__)
 
@@ -85,7 +86,7 @@ class TestTable(TestCase):
             except RuntimeError:
                 self.fail("Table.add_image raised an unexpected RuntimeError.")
         except TypeError:
-                self.fail("Table.add_image raised an unexpected TypeError.")
+            self.fail("Table.add_image raised an unexpected TypeError.")
 
         # Try wrong argument types
         wrong_type = [None, 5, {}, []]
@@ -94,7 +95,7 @@ class TestTable(TestCase):
                 test_table.add_image(argument)
 
         # Try non-existing paths:
-        nonexisting = ["/a/b/c/d/e","./daskjl/aksj/asdasd.pdf"]
+        nonexisting = ["/a/b/c/d/e", "./daskjl/aksj/asdasd.pdf"]
         for argument in nonexisting:
             with self.assertRaises(RuntimeError):
                 test_table.add_image(argument)
