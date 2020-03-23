@@ -5,7 +5,6 @@ from unittest import TestCase
 
 import numpy as np
 
-import test_utilities
 from hepdata_lib.helpers import relative_round
 
 
@@ -17,7 +16,7 @@ class TestHelpers(TestCase):
         eigenvalues = [np.inf, 0, 'astring']
         for prec in range(10):
             for eig in eigenvalues:
-                self.assertTrue(relative_round(eig, prec)==eig)
+                self.assertTrue(relative_round(eig, prec) == eig)
             self.assertTrue(np.isnan(relative_round(np.nan, prec)))
 
         # Test format is
@@ -30,4 +29,4 @@ class TestHelpers(TestCase):
         ]
         for original, digits, result in values:
             rounded = relative_round(original, digits)
-            self.assertTrue(rounded==result)
+            self.assertTrue(rounded == result)
