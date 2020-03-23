@@ -16,11 +16,10 @@ jobs:
             COVERALLS_REPO_TOKEN : ${{ secrets.COVERALLS }}
           run: |
             yum install -y python-pip ghostscript 
-            python -m pip install pytest
-            python -m pip install coveralls
-            python setup.py test
+            python -m pip install pytest_pylint configparser astroid pyyml coveralls papermill nteract-scrapbook
+            python setup.py test && python -m pylint hepdata_lib/*.py && python -m pylint tests/*.py
             coveralls
-
+            python notebook_tests.py
  # This is a job for macOS python3 tests
   macospy3:
     runs-on: macos-latest
@@ -42,8 +41,7 @@ jobs:
           export LD_LIBRARY_PATH=${PWD}/lib/root:${LD_LIBRARY_PATH}
           echo ${PYTHONPATH}
           cd -
-          python3 setup.py test && python3 -m pip install -e . && python3 -m pylint hepdata_lib/*.py
-
+          python3 setup.py test && python3 -m pip install -e . && python3 -m pylint hepdata_lib/*.py && python3 -m pylint tests/*.py
   
  # This is a job for linux python2.7 tests
   linuxpy27:
@@ -61,9 +59,8 @@ jobs:
         sudo sed -i '/MVG/d' /etc/ImageMagick-6/policy.xml
         sudo sed -i '/PDF/{s/none/read|write/g}' /etc/ImageMagick-6/policy.xml
         sudo sed -i '/PDF/ a <policy domain="coder" rights="read|write" pattern="LABEL" />' /etc/ImageMagick-6/policy.xml
-        python -m pip install --upgrade enum34 pytest_pylint configparser astroid coveralls
+        python -m pip install --upgrade enum34 pytest_pylint configparser astroid future
         sudo apt update
         sudo apt install -y ghostscript    
         source root/bin/thisroot.sh
-        python setup.py test
-
+        python setup.py test && python -m pylint hepdata_lib/*.py && python -m pylint tests/*.py
