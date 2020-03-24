@@ -98,6 +98,7 @@ class TestVariable(TestCase):
     # pylint: disable=R0201
     def test_make_dict(self):
         """Test the make_dict function."""
+	# pylint: disable=no-self-use
         var = Variable("testvar")
 
         # With or without units

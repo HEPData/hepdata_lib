@@ -47,9 +47,10 @@ class TestRootFileReader(TestCase):
 
         try:
             _reader = RootFileReader(path_to_file)
-        except: # pylint: disable=W0702
+        # pylint: disable=W0702
+        except:
             self.fail("RootFileReader raised an unexpected exception.")
-
+        # pylint: enable=W0702
         # Clean up
         self.doCleanups()
 
