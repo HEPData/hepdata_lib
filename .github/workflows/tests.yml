@@ -17,7 +17,7 @@ jobs:
             python -m pip install pytest_pylint configparser astroid pyyml
             python setup.py test
             python -m pylint hepdata_lib/*.py
-            python -m pylint tests/*.py --rcfile=tests/pylintrc_test
+            python -m pylint tests/*.py --rcfile=tests/pylintrc
 
  # This is a job for macOS python3 tests
   macospy3:
@@ -43,7 +43,7 @@ jobs:
           python3 setup.py test
           python3 -m pip install -e .
           python3 -m pylint hepdata_lib/*.py
-          python3 -m pylint tests/*.py --rcfile=tests/pylintrc_test
+          python3 -m pylint tests/*.py --rcfile=tests/pylintrc
   
  # This is a job for linux python2.7 tests
   linuxpy27:
@@ -67,4 +67,4 @@ jobs:
         source root/bin/thisroot.sh
         python setup.py test
         python -m pylint hepdata_lib/*.py
-        python -m pylint tests/*.py --rcfile=tests/pylintrc_test
+        python -m pylint tests/*.py --rcfile=tests/pylintrc
