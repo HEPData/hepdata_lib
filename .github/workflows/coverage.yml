@@ -1,7 +1,9 @@
 name: coverage
 
-on: [push]
-
+on:
+  push:
+    branches:
+      - master
 jobs:  
   # This is a job for linux python3 tests and coveralls
   linuxpy3:
