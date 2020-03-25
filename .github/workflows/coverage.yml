@@ -1,0 +1,20 @@
+name: coverage
+
+on: [push]
+
+jobs:  
+  # This is a job for linux python3 tests and coveralls
+  linuxpy3:
+      runs-on: [ubuntu-18.04]
+      container:
+          image: 'rootproject/root:latest'
+      steps:
+        - uses: actions/checkout@v2
+        - name: Test with pytest
+          env:
+            COVERALLS_REPO_TOKEN : ${{ secrets.COVERALLS }}
+          run: |
+            yum install -y python-pip ghostscript 
+            python -m pip install pytest_pylint configparser astroid pyyml coveralls
+            python setup.py test
+            coveralls
