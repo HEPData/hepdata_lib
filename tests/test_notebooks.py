@@ -1,10 +1,11 @@
+"""Test notebooks."""
 import sys
-import os
-import papermill as pm
 import pytest
+import papermill as pm
 
 @pytest.fixture()
 def common_kwargs(tmpdir):
+    """Set common_kwargs"""
     outputnb = tmpdir.join('output.ipynb')
     return {
         'output_path': str(outputnb),
@@ -12,15 +13,18 @@ def common_kwargs(tmpdir):
         'cwd' : str('examples')
     }
 
-def test_correlation(common_kwargs):
+def test_correlation(common_kwargs):# pylint: disable=redefined-outer-name
+    """Tests examples/correlation.ipynb"""
     pm.execute_notebook('examples/correlation.ipynb', **common_kwargs)
 
-def test_Getting_started(common_kwargs):
+def test_getting_started(common_kwargs):# pylint: disable=redefined-outer-name
+    """Tests examples/Getting_started.ipynb"""
     pm.execute_notebook('examples/Getting_started.ipynb', **common_kwargs)
 
-def test_reading_histograms(common_kwargs):
+def test_reading_histograms(common_kwargs):# pylint: disable=redefined-outer-name
+    """Tests examples/reading_histograms.ipynb"""
     pm.execute_notebook('examples/reading_histograms.ipynb', **common_kwargs)
 
-def test_combine_limits(common_kwargs):
+def test_combine_limits(common_kwargs):# pylint: disable=redefined-outer-name
+    """Tests examples/combine_limits.ipynb"""
     pm.execute_notebook('examples/combine_limits.ipynb', **common_kwargs)
-

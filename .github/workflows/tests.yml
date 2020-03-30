@@ -14,7 +14,7 @@ jobs:
         - name: Test with pytest
           run: |
             yum install -y python-pip ghostscript 
-            python -m pip install pytest_pylint configparser astroid pyyml
+            python -m pip install pytest_pylint configparser astroid pyyml papermill
             python setup.py test
             python -m pylint hepdata_lib/*.py
             python -m pylint tests/*.py --rcfile=tests/pylintrc
@@ -42,6 +42,7 @@ jobs:
           cd -
           python3 setup.py test
           python3 -m pip install -e .
+          python3 -m pip install papermill
           python3 -m pylint hepdata_lib/*.py
           python3 -m pylint tests/*.py --rcfile=tests/pylintrc
   
@@ -61,7 +62,7 @@ jobs:
         sudo sed -i '/MVG/d' /etc/ImageMagick-6/policy.xml
         sudo sed -i '/PDF/{s/none/read|write/g}' /etc/ImageMagick-6/policy.xml
         sudo sed -i '/PDF/ a <policy domain="coder" rights="read|write" pattern="LABEL" />' /etc/ImageMagick-6/policy.xml
-        python -m pip install --upgrade enum34 pytest_pylint configparser astroid future
+        python -m pip install --upgrade enum34 pytest_pylint configparser astroid future ipykernel papermill
         sudo apt update
         sudo apt install -y ghostscript    
         source root/bin/thisroot.sh
