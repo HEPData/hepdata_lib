@@ -40,9 +40,9 @@ jobs:
           export LD_LIBRARY_PATH=${PWD}/lib/root:${LD_LIBRARY_PATH}
           echo ${PYTHONPATH}
           cd -
+          python3 -m pip install pytest ipykernel papermill
           python3 setup.py test
           python3 -m pip install -e .
-          python3 -m pip install papermill
           python3 -m pylint hepdata_lib/*.py
           python3 -m pylint tests/*.py --rcfile=tests/pylintrc
   
