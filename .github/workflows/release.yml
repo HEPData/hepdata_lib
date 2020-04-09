@@ -1,0 +1,141 @@
+name: release
+
+# Triggers when new issue is opened
+on:
+  issues:
+    types: [opened]
+
+jobs:
+
+  # Action to bump version and push tag
+  Bump-version:
+    if: startsWith(github.event.issue.title, 'release') && (${{ github.event.issue.body }} == "patch" ||
+        ${{ github.event.issue.body }} == "minor" || ${{ github.event.issue.body }} == "major")
+    runs-on: [ubuntu-latest]
+    strategy:
+      matrix:
+        python-version: [3.6]
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@master
+        # Check for permissions
+      - uses: scherermichael/action-has-permission@master
+        id: check
+        with:
+          required-permission: write
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Python ${{ matrix.python-version }}
+        if: steps.check.outputs.has-permission
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Bump version
+      - uses: geertvdc/setup-hub@master
+      - name: Bump version and tag
+        if: steps.check.outputs.has-permission
+        run: |
+          git config --global user.email ${{ github.actor }}@users.noreply.github.com
+          git config --global user.name ${{ github.actor }}
+          git pull
+          python -m pip install --upgrade bumpversion
+          bumpversion ${{ github.event.issue.body }}
+      
+      # Push tags
+      - name: Push changes
+        if: steps.check.outputs.has-permission
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tags: true
+          branch: master
+
+  # Action to build and publish distribution to PyPI and TestPyPI
+  build-and-publish:
+    needs: Bump-version
+    name: Build and publish Python distribution to PyPI and TestPyPI
+    runs-on: ubuntu-18.04
+    env:
+      version: 0.0.0  
+    container:
+      image: 'rootproject/root:latest'
+    steps:
+    - uses: actions/checkout@master
+    - uses: scherermichael/action-has-permission@master
+      id: check2
+      with:
+        required-permission: write
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: geertvdc/setup-hub@master
+
+    # Build package
+    - name: Create package
+      id: version
+      if: steps.check2.outputs.has-permission
+      run: |
+        git config --global user.email ${{ github.actor }}@users.noreply.github.com
+        git config --global user.name ${{ github.actor }}
+        git pull
+        yum install -y python-pip ghostscript
+        python -m pip install pytest_pylint configparser astroid pyyml papermill future
+        echo "::set-output name=version::$(python -c "from hepdata_lib import __version__; print(__version__)")"
+        python -m pip install wheel
+        python setup.py sdist bdist_wheel
+        
+    # Publish package to test PyPI
+    - name: Publish distribution to Test PyPI
+      if: steps.check2.outputs.has-permission
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+       password: ${{ secrets.test_pypi_password }}
+       repository_url: https://test.pypi.org/legacy/
+
+    # Sleep
+    - name: Sleep for 300 seconds
+      uses: jakejarvis/wait-action@master
+      with:
+        time: '300s'
+        
+    # Run tests
+    - name: Test with pytest
+      run: |
+        pip install --index-url https://test.pypi.org/simple/ hepdata_lib==${{ steps.version.outputs.version }}
+        python setup.py test
+        python -m pylint hepdata_lib/*.py
+        python -m pylint tests/*.py --rcfile=tests/pylintrc
+        
+    # Add automatic comment on the issue
+    - name: Create comment
+      if: steps.check2.outputs.has-permission
+      uses: jungwinter/comment@v1
+      id: create
+      with:
+         type: create
+         body: |
+           Test PyPI release version: ${{ steps.version.outputs.version }}
+           - https://test.pypi.org/project/hepdata-lib/${{ steps.version.outputs.version }}/
+         issue_number: ${{ github.event.issue.number }}
+         token: ${{ secrets.GITHUB_TOKEN }}
+
+    # Publish to PyPI
+    - name: Publish distribution to PyPI
+      if: steps.check2.outputs.has-permission
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.pypi_password }}
+
+    # Add automatic comment on the issue
+    - name: Create comment
+      if: steps.check2.outputs.has-permission
+      uses: jungwinter/comment@v1
+      id: create2
+      with:
+         type: create
+         body: |
+           PyPI release version: ${{ steps.version.outputs.version }}
+           - https://pypi.org/project/hepdata-lib/
+         issue_number: ${{ github.event.issue.number }}
+         token: ${{ secrets.GITHUB_TOKEN }}
