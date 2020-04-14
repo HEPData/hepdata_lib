@@ -70,12 +70,12 @@ You should then find the new version at `this location`_. You need to be a maint
 .. _this location: https://pypi.org/project/hepdata_lib/
 .. _python packaging documentation: https://packaging.python.org/tutorials/packaging-projects/
 
-Opening an issue
+Creating a new release automatically via an issue
 -----------------------------
 
 Opening an new issue automatically creates a new release if:
 
-- The title of the issue starts with the word "release"
-- The body of the issue contains only one of the following words: "patch", "minor" or "major" 
+- The title of the issue starts with the word "release" (not case-sensitive).
+- The body of the issue contains only one of the following words: "patch", "minor" or "major".
 
-Remember to set the following github secrets: "test_pypi_password" and "pypi_password"
+Remember to set the following github secrets: "test_pypi_password" and "pypi_password". This also uses the API token feature of PyPI.
