@@ -78,4 +78,4 @@ Opening an new issue automatically creates a new release if:
 - The title of the issue starts with the word "release" (not case-sensitive).
 - The body of the issue contains only one of the following words: "patch", "minor" or "major".
 
-Remember to set the following github secrets: "test_pypi_password" and "pypi_password". This also uses the API token feature of PyPI.
+Remember to set the following github secrets: "test_pypi_password" , "pypi_password" and your personal access token to "access_token". This also uses the API token feature of PyPI.

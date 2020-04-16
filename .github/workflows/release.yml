@@ -19,6 +19,9 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@master
+        with:
+          persist-credentials: false
+
         # Check for permissions
       - uses: scherermichael/action-has-permission@master
         id: check
@@ -48,7 +51,7 @@ jobs:
         if: steps.check.outputs.has-permission
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.access_token }}
           tags: true
           branch: master
 
