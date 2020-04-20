@@ -29,7 +29,7 @@ For using `hepdata_lib`, you don't even need to install it, but can use the [bin
 You can also use the Docker image:
 
 ```shell
-docker run --rm -it -p 8888:8888 -v ${PWD}/home/hepdata clelange/hepdata_lib
+docker run --rm -it -p 8888:8888 -v ${PWD}:/home/hepdata clelange/hepdata_lib
 ```
 
 And then point your browser to [http://localhost:8888](http://localhost:8888) and use the token that is printed out. The output will end up in your current working directory (`${PWD}`).
@@ -37,7 +37,7 @@ And then point your browser to [http://localhost:8888](http://localhost:8888) an
 If you prefer a shell, instead run:
 
 ```shell
-docker run --rm -it -p 8888:8888 -v ${PWD}/home/hepdata clelange/hepdata_lib bash
+docker run --rm -it -p 8888:8888 -v ${PWD}:/home/hepdata clelange/hepdata_lib bash
 ```
 
 If on CERN LXPLUS or anywhere else where there is Singularity available but not Docker, you can still use the docker image:
