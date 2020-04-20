@@ -1,7 +1,6 @@
-FROM rootproject/root-ubuntu16:6.12
+FROM rootproject/root:latest
 
 ENV MAGICK_HOME=/usr
-ENV ROOT_VERSION=6.12/07
 
 LABEL maintainer="Clemens Lange clemens.lange@cern.ch"
 
@@ -12,36 +11,34 @@ ARG VCS_URL
 LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.name="hepdata_lib Docker image" \
       org.label-schema.description="Provide environment in which to run hepdata_lib" \
-      org.label-schema.url="https://github.com/clelange/hepdata_lib" \
+      org.label-schema.url="https://github.com/HEPData/hepdata_lib" \
       org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.vcs-url=$VCS_URL \
       org.label-schema.vendor="CERN" \
-      org.label-schema.version=$ROOT_VERSION \
       org.label-schema.schema-version="1.0"
 
 USER root
 
-RUN apt-get update -qq \
+RUN dnf check-update -q || true \
     && ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
-    && apt-get -y install \
-        python-dev \
-        python-numpy \
-        python-pip \
-        imagemagick \
-    && localedef -i en_US -f UTF-8 en_US.UTF-8 \
-    && rm -rf /packages /var/lib/apt/lists/* \
+    && dnf -y install \
+        which \
+        python3-numpy \
+        python3-pip \
+        ImageMagick \
+    && dnf clean all \
     && sed -i '/MVG/d' /etc/ImageMagick-6/policy.xml \
     && sed -i '/PDF/{s/none/read|write/g}' /etc/ImageMagick-6/policy.xml \
     && sed -i '/PDF/ a <policy domain="coder" rights="read|write" pattern="LABEL" />' /etc/ImageMagick-6/policy.xml \
     && cat /etc/ImageMagick-6/policy.xml \
     && python -m pip install --no-cache-dir \
-        pylint==1.9.* \
-        ipython==5.7 \
-        ipykernel==4.10 \
+        pylint \
+        ipython \
+        ipykernel \
         jupyter \
         metakernel \
         zmq \
-        notebook==5.* \
+        notebook \
         hepdata_lib
 
 ENV PYTHONPATH /usr/local/lib/:/usr/local/lib/root/
@@ -49,7 +46,8 @@ ENV PYTHONPATH /usr/local/lib/:/usr/local/lib/root/
 ENV NB_USER hepdata
 ENV NB_UID 1000
 RUN useradd --create-home --home-dir /home/${NB_USER} \
-    --uid ${NB_UID} ${NB_USER}
+    --uid ${NB_UID} ${NB_USER} \
+     && sudo usermod -aG wheel ${NB_USER}
 ENV HOME /home/${NB_USER}
 WORKDIR /home/${NB_USER}
 USER ${NB_USER}
