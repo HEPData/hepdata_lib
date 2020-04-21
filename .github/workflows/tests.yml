@@ -26,18 +26,14 @@ jobs:
       - uses: actions/checkout@v2
       - name: Test with pytest
         run: |
+          ROOT_VERSION=6.20.04_1
           brew update
-          brew install root
-          # brew cask uninstall --force oclint
-          # brew upgrade python cmake libpng libtiff
-          # brew install --force ossp-uuid davix fftw fontconfig gd graphviz gsl lz4 tbb xrootd
-          # curl -O https://clange.web.cern.ch/clange/root-v6.18.00.tar.gz
-          # tar xzf root-v6.18.00.tar.gz
-          # mkdir -p /usr/local/Cellar/root
-          # mv 6.18.00 /usr/local/Cellar/root/
-          ROOT_CELLAR=$(brew --cellar root)
-          ROOT_PATH=${ROOT_CELLAR}/$(ls ${ROOT_CELLAR})
-          cd ${ROOT_PATH}
+          brew install fontconfig gd gettext libffi glib jasper netpbm gts graphviz gsl libxml2 openblas numpy tbb xrootd
+          curl -O https://clange.web.cern.ch/clange/root-v${ROOT_VERSION}.tar.gz
+          tar xzf root-v${ROOT_VERSION}.tar.gz
+          mkdir -p /usr/local/Cellar/root
+          mv ${ROOT_VERSION} /usr/local/Cellar/root/
+          cd /usr/local/Cellar/root/${ROOT_VERSION}
           export PATH=${PWD}/bin:${PATH}
           export PYTHONPATH=${PWD}/lib/root:${PYTHONPATH}
           export LD_LIBRARY_PATH=${PWD}/lib/root:${LD_LIBRARY_PATH}
