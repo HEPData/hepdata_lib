@@ -35,7 +35,7 @@ jobs:
           mkdir -p /usr/local/Cellar/root
           mv ${ROOT_VERSION} /usr/local/Cellar/root/
           cd /usr/local/Cellar/root/${ROOT_VERSION}
-          export PATH=${PWD}/bin:${PATH}
+          export PATH=${PWD}/bin:$(brew --cellar python@3.8)/$(ls $(brew --cellar python@3.8))/bin:${PATH}
           export PYTHONPATH=${PWD}/lib/root:${PYTHONPATH}
           export LD_LIBRARY_PATH=${PWD}/lib/root:${LD_LIBRARY_PATH}
           echo ${PYTHONPATH}
