@@ -9,8 +9,8 @@ jobs:
 
   # Action to bump version and push tag
   Bump-version:
-    if: startsWith(github.event.issue.title, 'release') && (${{ github.event.issue.body }} == "patch" ||
-        ${{ github.event.issue.body }} == "minor" || ${{ github.event.issue.body }} == "major")
+    if: startsWith(github.event.issue.title, 'release') && (startsWith(github.event.issue.body, 'patch') ||
+        startsWith(github.event.issue.body, 'minor') || startsWith(github.event.issue.body, 'major'))
     runs-on: [ubuntu-latest]
     strategy:
       matrix:
@@ -45,7 +45,7 @@ jobs:
           git pull
           python -m pip install --upgrade bumpversion
           bumpversion ${{ github.event.issue.body }}
-      
+
       # Push tags
       - name: Push changes
         if: steps.check.outputs.has-permission
@@ -61,7 +61,7 @@ jobs:
     name: Build and publish Python distribution to PyPI and TestPyPI
     runs-on: ubuntu-18.04
     env:
-      version: 0.0.0  
+      version: 0.0.0
     container:
       image: 'rootproject/root:latest'
     steps:
@@ -87,7 +87,7 @@ jobs:
         echo "::set-output name=version::$(python -c "from hepdata_lib import __version__; print(__version__)")"
         python -m pip install wheel
         python setup.py sdist bdist_wheel
-        
+
     # Publish package to test PyPI
     - name: Publish distribution to Test PyPI
       if: steps.check2.outputs.has-permission
@@ -102,7 +102,7 @@ jobs:
       uses: jakejarvis/wait-action@master
       with:
         time: '300s'
-        
+
     # Run tests
     - name: Test with pytest
       run: |
@@ -110,7 +110,7 @@ jobs:
         python setup.py test
         python -m pylint hepdata_lib/*.py
         python -m pylint tests/*.py --rcfile=tests/pylintrc
-        
+
     # Add automatic comment on the issue
     - name: Create comment
       if: steps.check2.outputs.has-permission
