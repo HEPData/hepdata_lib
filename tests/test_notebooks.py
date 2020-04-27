@@ -28,3 +28,7 @@ def test_reading_histograms(common_kwargs):# pylint: disable=redefined-outer-nam
 def test_combine_limits(common_kwargs):# pylint: disable=redefined-outer-name
     """Tests examples/combine_limits.ipynb"""
     pm.execute_notebook('examples/combine_limits.ipynb', **common_kwargs)
+
+def test_c_file(common_kwargs):# pylint: disable=redefined-outer-name
+    """Tests examples/read_c_file.ipynb"""
+    pm.execute_notebook('examples/read_c_file.ipynb', **common_kwargs)

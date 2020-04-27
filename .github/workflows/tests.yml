@@ -17,6 +17,7 @@ jobs:
             python -m pip install pytest_pylint configparser astroid pyyml papermill
             python setup.py test
             python -m pylint hepdata_lib/*.py
+            export PYTHONPATH=$PYTHONPATH:/hepdata_lib/hepdata_lib
             python -m pylint tests/*.py --rcfile=tests/pylintrc
 
  # This is a job for macOS python3 tests
