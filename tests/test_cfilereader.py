@@ -148,17 +148,6 @@ class TestCFileReader(TestCase):
         with self.assertRaises(IndexError):
             reader.find_graphs()
 
-        # Test comment at the end of line
-        with open(c_file, "w") as testfile:
-            testfile.write('TGraph *graph = new TGraph(5,Graph0_fx1,Graph0_fy1);' +
-                           '\ngraph->SetName("Graph0"); //comment')
-        reader = CFileReader(c_file)
-        objects = reader.find_graphs()
-        test1 = objects[0]
-        test2 = objects[1]
-        self.assertTrue(test1 == names)
-        self.assertTrue(test2 == graphs)
-
         # Test with line in comment
         with open(c_file, "w") as testfile:
             testfile.write('//TGraph *graph = new TGraph(5,Graph0_fx1,Graph0_fy1);' +

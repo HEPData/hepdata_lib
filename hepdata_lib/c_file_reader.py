@@ -49,11 +49,8 @@ class CFileReader(object):
         """Function to read the .C file"""
 
         found_graphs = self.find_graphs()
-        print(found_graphs)
         graphs = found_graphs[0]
-	print(graphs)
         graph_names = found_graphs[1]
-        print(graph_names)
         y_values = ['d']
         x_values = ['d']
         list_of_tgraphs = []
