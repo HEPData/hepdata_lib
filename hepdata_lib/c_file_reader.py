@@ -49,13 +49,17 @@ class CFileReader(object):
         """Function to read the .C file"""
 
         found_graphs = self.find_graphs()
+        print(found_graphs)
         graphs = found_graphs[0]
+	print(graphs)
         graph_names = found_graphs[1]
+        print(graph_names)
         y_values = ['d']
         x_values = ['d']
         list_of_tgraphs = []
         count = 0
 
+        # Creating and adding TGraphs to a dictionary
         while count < len(graphs) -1:
             x_values = self.read_graph(graphs[count])
             y_values = self.read_graph(graphs[count+1])
@@ -111,8 +115,13 @@ class CFileReader(object):
             if(("SetName(" in line) and ("(" in line) and
                (ignore == 0) and (line.startswith('//') is False)):
                 if start == 1:
-                    names.append(line.split('"', 1)[1].split('"')[0])
+                    try:
+                        names.append(line.split('"', 1)[1].split('"')[0])
+                    except IndexError:
+                        names = 'null'
+                        raise IndexError("index out of range")
                 start = 0
+
         for item in objects:
             for subitem in item.split(","):
                 if subitem.isdigit() is False:
@@ -129,6 +138,7 @@ class CFileReader(object):
         ignore = 0
         c_file.seek(0, 0)
 
+        # Finding values from the correct object
         for line in c_file.readlines():
             if line.startswith('/*') or '/*' in line:
                 ignore = 1

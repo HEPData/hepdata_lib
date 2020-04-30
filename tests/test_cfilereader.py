@@ -122,51 +122,64 @@ class TestCFileReader(TestCase):
                            '\ngraph->SetName("Graph0");')
         reader = CFileReader(c_file)
         objects = reader.find_graphs()
+        test1 = objects[0]
+        test2 = objects[1]
         names = ["Graph0_fx1", "Graph0_fy1"]
-        graphs = ['Graph0']
-
-        self.assertListEqual(objects[0], names)
-        self.assertListEqual(objects[1], graphs)
+        graphs = ["Graph0"]
+        self.assertTrue(test1 == names)
+        self.assertTrue(test2 == graphs)
 
         # Test with whitespaces
         with open(c_file, "w") as testfile:
             testfile.write('TGraph *graph = new TGraph(5   ,Graph0_fx1  ,Graph0_fy1);' +
-                           '\ngraph->SetName("Graph0"    );')
+                           '\ngraph->SetName("Graph0"   );')
+        reader = CFileReader(c_file)
         objects = reader.find_graphs()
-        self.assertFalse(objects[0] == names)
-        self.assertFalse(objects[1] == graphs)
+        test1 = objects[0]
+        test2 = objects[1]
+        self.assertFalse(test1 == names)
+        self.assertTrue(test2 == graphs)
 
         # Test with line breaks
         with open(c_file, "w") as testfile:
-            testfile.write('TGraph *graph = new TGraph(5,\nGraph0_fx1,Graph0_fy1);' +
-                           '\ngraph->SetName("Graph0");')
-        objects = reader.find_graphs()
-        self.assertFalse(objects[0] == names)
-        self.assertFalse(objects[1] == graphs)
+            testfile.write('TGraph *graph = new TGraph(5,\n Graph0_fx1, Graph0_fy1);' +
+                           '\ngraph->SetName(\n"Graph0");')
+        reader = CFileReader(c_file)
+        with self.assertRaises(IndexError):
+            reader.find_graphs()
 
         # Test comment at the end of line
         with open(c_file, "w") as testfile:
-            testfile.write('TGraph *graph = new TGraph(5,\nGraph0_fx1,Graph0_fy1);' +
+            testfile.write('TGraph *graph = new TGraph(5,Graph0_fx1,Graph0_fy1);' +
                            '\ngraph->SetName("Graph0"); //comment')
+        reader = CFileReader(c_file)
         objects = reader.find_graphs()
-        self.assertFalse(objects[0] == names)
-        self.assertFalse(objects[1] == graphs)
+        test1 = objects[0]
+        test2 = objects[1]
+        self.assertTrue(test1 == names)
+        self.assertTrue(test2 == graphs)
 
         # Test with line in comment
         with open(c_file, "w") as testfile:
-            testfile.write('//TGraph *graph = new TGraph(5,\nGraph0_fx1,Graph0_fy1);' +
-                           '\ngraph->SetName("Graph0");')
+            testfile.write('//TGraph *graph = new TGraph(5,Graph0_fx1,Graph0_fy1);' +
+                           '\n//graph->SetName("Graph0");')
+        reader = CFileReader(c_file)
         objects = reader.find_graphs()
-        self.assertFalse(objects[0] == names)
-        self.assertFalse(objects[1] == graphs)
+        test1 = objects[0]
+        test2 = objects[1]
+        self.assertFalse(test1 == names)
+        self.assertFalse(test2 == graphs)
 
         # Test with comment block
         with open(c_file, "w") as testfile:
-            testfile.write('TGraph *graph = new TGraph(/*5,\nGraph0_fx1,Graph0_fy1);' +
+            testfile.write('TGraph *graph = new TGraph(/*5,Graph0_fx1,Graph0_fy1);' +
                            '\ngraph->SetName("Graph0"*/);')
+        reader = CFileReader(c_file)
         objects = reader.find_graphs()
-        self.assertFalse(objects[0] == names)
-        self.assertFalse(objects[1] == graphs)
+        test1 = objects[0]
+        test2 = objects[1]
+        self.assertFalse(test1 == names)
+        self.assertFalse(test2 == graphs)
 
         self.addCleanup(os.remove, c_file)
         self.doCleanups()
