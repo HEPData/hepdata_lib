@@ -156,12 +156,6 @@ class TestCFileReader(TestCase):
         self.addCleanup(os.remove, c_file)
         self.doCleanups()
 
-    #def test_create_tgraph_dict(self):
-    #    """Test create pyroot TGraph dict"""
-
-    #def test_create_tgrapherrors_dict(self):
-    #    """Test to create pyroot TGraphErrors dict"""
-
     def test_find_graphs(self):
         """Test function to find TGraph variable names"""
 
@@ -178,25 +172,6 @@ class TestCFileReader(TestCase):
         graphs = ["Graph0"]
         self.assertTrue(test1 == names)
         self.assertTrue(test2 == graphs)
-
-        # Test with whitespaces
-        with open(c_file, "w") as testfile:
-            testfile.write('TGraph *graph = new TGraph(5   ,Graph0_fx1  ,Graph0_fy1);' +
-                           '\ngraph->SetName("Graph0"   );')
-        reader = CFileReader(c_file)
-        objects = reader.find_graphs()
-        test1 = objects[0]
-        test2 = objects[1]
-        self.assertFalse(test1 == names)
-        self.assertTrue(test2 == graphs)
-
-        # Test with line breaks
-        with open(c_file, "w") as testfile:
-            testfile.write('TGraph *graph = new TGraph(5,\n Graph0_fx1, Graph0_fy1);' +
-                           '\ngraph->SetName(\n"Graph0");')
-        reader = CFileReader(c_file)
-        with self.assertRaises(IndexError):
-            reader.find_graphs()
 
         # Test with whole line in comment
         with open(c_file, "w") as testfile:
@@ -223,6 +198,25 @@ class TestCFileReader(TestCase):
 
         self.addCleanup(os.remove, c_file)
         self.doCleanups()
+
+        # Test with whitespaces
+        with open(c_file, "w") as testfile:
+            testfile.write('TGraph *graph = new TGraph(5   ,Graph0_fx1  ,Graph0_fy1);' +
+                           '\ngraph->SetName("Graph0"   );')
+        reader = CFileReader(c_file)
+        objects = reader.find_graphs()
+        test1 = objects[0]
+        test2 = objects[1]
+        self.assertFalse(test1 == names)
+        self.assertTrue(test2 == graphs)
+
+        # Test with line breaks
+        with open(c_file, "w") as testfile:
+            testfile.write('TGraph *graph = new TGraph(5,\n Graph0_fx1, Graph0_fy1);' +
+                           '\ngraph->SetName(\n"Graph0");')
+        reader = CFileReader(c_file)
+        with self.assertRaises(IndexError):
+            reader.find_graphs()
 
     def test_read_graph(self):
         """Test function to read values"""

@@ -50,17 +50,22 @@ class CFileReader(object):
 
         found_graphs = self.find_graphs()
         graphs = found_graphs[0]
-        graph_names = found_graphs[1]
+        tgraph_names = found_graphs[1]
         tgraph_errors = found_graphs[2]
+        error_names = found_graphs[3]
         list_of_tgraphs = []
-
         # Creating and adding TGraphs to a dictionary
         dict_of_graphs = self.create_tgraph_dict(graphs, list_of_tgraphs)
-        list_of_tgraphs = dict_of_graphs
+        list_of_tgraphs = zip(tgraph_names, dict_of_graphs)
+
         # Creating and adding TGraphsErrors to a dictionary
-        dict_of_graphs = self.create_tgrapherrors_dict(tgraph_errors, list_of_tgraphs)
-        graph_object = zip(graph_names, dict_of_graphs)
-        all_graphs = dict(graph_object)
+        dict_of_graphs = self.create_tgrapherrors_dict(tgraph_errors)
+        list_of_errors = zip(error_names, dict_of_graphs)
+
+        graph_object = {}
+        graph_object.update(list_of_tgraphs)
+        graph_object.update(list_of_errors)
+        all_graphs = graph_object
 
         return all_graphs
 
@@ -98,14 +103,14 @@ class CFileReader(object):
 
         return list_of_tgraphs
 
-    def create_tgrapherrors_dict(self, graph_list, list_of_graphs):
+    def create_tgrapherrors_dict(self, graph_list):
         """Function to create pyroot TGraphErrors dict"""
         # pylint: disable=no-self-use
         y_values = []
         x_values = []
         dy_values = []
         dx_values = []
-        list_of_tgraphs = list_of_graphs
+        list_of_tgraphs = []
         count = 0
         while count < len(graph_list) -1:
             xvalues = self.read_graph(graph_list[count])
@@ -243,15 +248,17 @@ class CFileReader(object):
     def find_graphs(self):
         """Find all TGraphs in .C file"""
         # pylint: disable=too-many-branches
+        # pylint: disable=too-many-statements
         c_file = self.cfile
-        names = []
+        tgraph_names = []
+        tgrapherror_names = []
         normal_objects = []
         error_objects = []
         tgraphs = []
         tgraph_errors = []
         start = 0
         ignore = 0
-
+        counter = 0
         for line in c_file.readlines():
             checkline = self.check_for_comments(line)
             ignore = checkline[1]
@@ -260,7 +267,7 @@ class CFileReader(object):
             line = checkline[2]
             if(("TGraphErrors(" in line) and ("(" in line) and
                (ignore == 0)):
-                start = 1
+                start = 2
                 error_objects.append(line.split('(', 1)[1].split(')')[0])
                 continue
             if(("TGraph(" in line) and ("(" in line) and
@@ -268,14 +275,35 @@ class CFileReader(object):
                 start = 1
                 normal_objects.append(line.split('(', 1)[1].split(')')[0])
                 continue
-            if(("SetName(" in line) and ("(" in line) and ignore == 0):
+            if(("SetName(" in line) and ("(" in line) and (ignore == 0) and (counter < 5)):
                 if start == 1:
                     try:
-                        names.append(line.split('"', 1)[1].split('"')[0])
+                        tgraph_names.append(line.split('"', 1)[1].split('"')[0])
                     except IndexError:
-                        names = 'null'
+                        tgraph_names = 'null'
                         raise IndexError("index out of range")
+                    start = 0
+                    counter = 0
+                if start == 2:
+                    try:
+                        tgrapherror_names.append(line.split('"', 1)[1].split('"')[0])
+                    except IndexError:
+                        tgrapherror_names = 'null'
+                        raise IndexError("index out of range")
+                    start = 0
+                    counter = 0
+            if start == 1:
+                counter += 1
+            if start == 2:
+                counter += 1
+            if ((start == 1) and (counter >= 5)):
+                tgraph_names.append("tgraph")
                 start = 0
+                counter = 0
+            if ((start == 2) and (counter >= 5)):
+                tgrapherror_names.append("tgraph")
+                start = 0
+                counter = 0
 
         for item in normal_objects:
             for subitem in item.split(","):
@@ -286,7 +314,7 @@ class CFileReader(object):
                 if subitem.isdigit() is False:
                     tgraph_errors.append(subitem)
 
-        return tgraphs, names, tgraph_errors
+        return tgraphs, tgraph_names, tgraph_errors, tgrapherror_names
 
     def read_graph(self, graphname):
         """Function to read values of a graph"""
@@ -321,5 +349,5 @@ class CFileReader(object):
                 except ValueError:
                     values.append(float(i))
             except ValueError:
-                raise ValueError("Value is not a number!")
+                raise ValueError("Value is not a number in variable:", graphname)
         return values
