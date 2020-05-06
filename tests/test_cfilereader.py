@@ -3,11 +3,8 @@
 """Test CFileReader."""
 from __future__ import print_function
 from unittest import TestCase
-from array import array
 import os
 import numpy as np
-from ROOT import TGraph
-import hepdata_lib.root_utils as ru
 from hepdata_lib.c_file_reader import CFileReader
 
 class TestCFileReader(TestCase):
@@ -21,6 +18,9 @@ class TestCFileReader(TestCase):
         # Check with nonexistant file that ends in .C
         with self.assertRaises(RuntimeError):
             _reader = CFileReader("/path/to/nowhere/butEndsIn.C")
+        # Check with lowercase .c
+        with self.assertRaises(RuntimeError):
+            _reader = CFileReader("/path/to/nowhere/butEndsIn.c")
 
         # Check with existant file that does not end in .C
         _file = "text.txt"
@@ -62,23 +62,34 @@ class TestCFileReader(TestCase):
         test_file = "test.C"
         with open(test_file, "w") as testfile:
             testfile.write('Double_t Graph0_fx1[5] = {' +
-                           '\n1.2,\n1.3};' +
+                           '\n1,\n2};' +
                            '\nDouble_t Graph0_fy1[5] = { ' +
-                           '\n0.1666473,\n0.1284744};\nTGraph *graph =' +
+                           '\n3,\n2};\nTGraph *graph =' +
                            'new TGraph(5,Graph0_fx1,Graph0_fy1);\n' +
                            'graph->SetName' +
                            '("Graph0");\nDouble_t Graph0_fx2[5] =' +
-                           '{ \n1.2,\n1.3};' +
-                           '\nDouble_t Graph0_fy2[5] = { \n0.1666473,' +
-                           '\n0.1284744};' +
+                           '{ \n1.2,\n2.2};' +
+                           '\nDouble_t Graph0_fy2[5] = { \n0.123345,' +
+                           '\n0.343564};' +
                            '\nTGraph *graph = new TGraph(5,' +
                            'Graph0_fx2,Graph0_fy2);' +
-                           '\ngraph->SetName("Graph1");')
-
-        graph0_x = [1.2, 1.3]
-        graph0_y = [0.1666473, 0.1284744]
-        graph1_x = [1.2, 1.3]
-        graph1_y = [0.1666473, 0.1284744]
+                           '\ngraph->SetName("Graph1");\n' +
+                           'Double_t Graph2_fx1001[30] = {\n' +
+                           '1.2,\n1.3};\nDouble_t Graph2_fy1001[30] = {\n' +
+                           '0.03306888,\n0.0234779};\nDouble_t \n' +
+                           'Graph2_fex1001[30] = {0,\n0};' +
+                           'Double_t Graph2_fey1001[30] = {\n0,\n0};' +
+                           'TGraphErrors(30,Graph2_fx1001,Graph2_fy1001,' +
+                           'Graph2_fex1001,Graph2_fey1001);\n' +
+                           'gre->SetName("Graph2");')
+        graph0_x = [1, 2]
+        graph0_y = [3, 2]
+        graph1_x = [1.2, 2.2]
+        graph1_y = [0.123345, 0.343564]
+        graph0_x = [1, 2]
+        graph0_y = [3, 2]
+        graph2_x = [1.2, 1.3]
+        graph2_y = [0.03306888, 0.0234779]
         reader = CFileReader(test_file)
         tgraphs = reader.get_graphs()
 
@@ -86,31 +97,70 @@ class TestCFileReader(TestCase):
         self.assertTrue(tgraphs["Graph0"]["y"] == graph0_y)
         self.assertTrue(tgraphs["Graph1"]["x"] == graph1_x)
         self.assertTrue(tgraphs["Graph1"]["y"] == graph1_y)
+        self.assertTrue(tgraphs["Graph2"]["x"] == graph2_x)
+        self.assertTrue(tgraphs["Graph2"]["y"] == graph2_y)
+
+        # Testing with invalid x and y values
+        with open(test_file, "w") as testfile:
+            testfile.write('Double_t Graph0_fx1[5] = {' +
+                           '\ntest,\ntest};' +
+                           '\nDouble_t Graph0_fy1[5] = { ' +
+                           '\ntest,\ntest};\nTGraph *graph =' +
+                           'new TGraph(5,Graph0_fx1,Graph0_fy1);\n' +
+                           'graph->SetName("Graph0");')
+        reader = CFileReader(test_file)
+        with self.assertRaises(ValueError):
+            reader.get_graphs()
 
         self.addCleanup(os.remove, test_file)
+        self.doCleanups()
+
+    def test_create_tgrapherrors(self):
+        """Test function to create pyroot TGraph object"""
+
+        # Create a valid pyroot TGraphErrors object
+        _length = 10
+        x_value = np.random.uniform(-1e3, 1e3, _length)
+        y_value = np.random.uniform(-1e3, 1e3, _length)
+        dx_value = np.random.uniform(0, 0, _length)
+        dy_value = np.random.uniform(0, 0, _length)
+
+        c_file = "test.C"
+        with open(c_file, "w") as testfile:
+            testfile.write('test')
+        reader = CFileReader(c_file)
+        graph = reader.create_tgrapherrors(x_value, y_value, dx_value, dy_value)
+
+        self.assertTrue(set(graph.keys()) == set(["x", "y", "dx", "dy"]))
+        self.assertTrue(all(graph["x"] == x_value))
+        self.assertTrue(all(graph["y"] == y_value))
+        self.addCleanup(os.remove, c_file)
         self.doCleanups()
 
     def test_create_tgraph(self):
         """Test function to create pyroot TGraph object"""
 
         # Create a valid pyroot TGraph object
-        x_values = array('d')
-        y_values = array('d')
-        _length = 2
+        _length = 10
         x_value = np.random.uniform(-1e3, 1e3, _length)
         y_value = np.random.uniform(-1e3, 1e3, _length)
-
-        for value in range(_length):
-            x_values.append(x_value[value])
-            y_values.append(y_value[value])
-        t_object = TGraph(_length, x_values, y_values)
-        graph = ru.get_graph_points(t_object)
+        c_file = "test.C"
+        with open(c_file, "w") as testfile:
+            testfile.write('test')
+        reader = CFileReader(c_file)
+        graph = reader.create_tgraph(x_value, y_value)
 
         self.assertTrue(set(graph.keys()) == set(["x", "y"]))
         self.assertTrue(all(graph["x"] == x_value))
         self.assertTrue(all(graph["y"] == y_value))
-
+        self.addCleanup(os.remove, c_file)
         self.doCleanups()
+
+    #def test_create_tgraph_dict(self):
+    #    """Test create pyroot TGraph dict"""
+
+    #def test_create_tgrapherrors_dict(self):
+    #    """Test to create pyroot TGraphErrors dict"""
 
     def test_find_graphs(self):
         """Test function to find TGraph variable names"""
@@ -148,7 +198,7 @@ class TestCFileReader(TestCase):
         with self.assertRaises(IndexError):
             reader.find_graphs()
 
-        # Test with line in comment
+        # Test with whole line in comment
         with open(c_file, "w") as testfile:
             testfile.write('//TGraph *graph = new TGraph(5,Graph0_fx1,Graph0_fy1);' +
                            '\n//graph->SetName("Graph0");')
@@ -161,13 +211,14 @@ class TestCFileReader(TestCase):
 
         # Test with comment block
         with open(c_file, "w") as testfile:
-            testfile.write('TGraph *graph = new TGraph(/*5,Graph0_fx1,Graph0_fy1);' +
-                           '\ngraph->SetName("Graph0"*/);')
+            testfile.write('TGraph *graph = new TGraph(5,Graph0_fx1,Graph0_fy1);' +
+                           '\n/*graph->SetName("Graph0"*/);')
         reader = CFileReader(c_file)
         objects = reader.find_graphs()
         test1 = objects[0]
         test2 = objects[1]
-        self.assertFalse(test1 == names)
+        self.assertTrue(test1 == names)
+        self.assertListEqual(test1, names)
         self.assertFalse(test2 == graphs)
 
         self.addCleanup(os.remove, c_file)
@@ -192,6 +243,17 @@ class TestCFileReader(TestCase):
         self.assertListEqual(test_xvalues, x_values)
         self.assertListEqual(test_yvalues, y_values)
 
+        # Testing with invalid values
+        with open(c_file, "w") as testfile:
+            testfile.write('Double_t Graph0_fx1[5] = { ' +
+                           '\ntest,\n%&/};\n' +
+                           'Double_t Graph0_fy1[5] = { \n!"#,\n' +
+                           '"testing"};')
+        with self.assertRaises(ValueError):
+            reader.read_graph(graph_names[0])
+        with self.assertRaises(ValueError):
+            reader.read_graph(graph_names[1])
+
         # Testing lines that end in comment
         with open(c_file, "w") as testfile:
             testfile.write('Double_t Graph0_fx1[5] = { //Comment ' +
@@ -215,11 +277,10 @@ class TestCFileReader(TestCase):
         y_values = reader.read_graph(graph_names[1])
         self.assertListEqual(test_xvalues, x_values)
         self.assertListEqual(test_yvalues, y_values)
-        self.doCleanups()
 
         # Testing lines with comment block
         with open(c_file, "w") as testfile:
-            testfile.write('Double_t Graph0_fx1[5] = {/*  ' +
+            testfile.write('/*Double_t Graph0_fx1[5] = { ' +
                            '\n1.2,\n1.3*/};\n' +
                            'Double_t Graph0_fy1[5] = { \n0.1666473,\n' +
                            '0.1284744};')
@@ -229,4 +290,5 @@ class TestCFileReader(TestCase):
         y_values = reader.read_graph(graph_names[1])
         self.assertListEqual(test_xvalues, x_values)
         self.assertListEqual(test_yvalues, y_values)
+        self.addCleanup(os.remove, c_file)
         self.doCleanups()
