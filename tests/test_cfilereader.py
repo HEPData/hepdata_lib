@@ -286,3 +286,55 @@ class TestCFileReader(TestCase):
         self.assertListEqual(test_yvalues, y_values)
         self.addCleanup(os.remove, c_file)
         self.doCleanups()
+
+    def test_check_for_comments(self):
+        """Test function to read values"""
+
+        # Test with a clean line
+        test_line = "This is just a test"
+        c_file = "test.C"
+        with open(c_file, "w") as testfile:
+            testfile.write('test')
+        reader = CFileReader(c_file)
+        line_test = reader.check_for_comments(test_line)
+
+        self.assertTrue(line_test[0] is False)
+        self.assertTrue(line_test[1] == 0)
+        self.assertTrue(line_test[2] == test_line)
+
+        # Test with a comment block starting in the middle
+        test_line = "This is /*just a test"
+        c_file = "test.C"
+        with open(c_file, "w") as testfile:
+            testfile.write('test')
+        reader = CFileReader(c_file)
+        line_test = reader.check_for_comments(test_line)
+        self.assertTrue(line_test[0] is False)
+        self.assertTrue(line_test[1] == 1)
+        self.assertTrue(line_test[2] == "This is")
+
+        # Test with a comment block that ends in mid line
+        test_line = "This is */ just a test"
+        c_file = "test.C"
+        with open(c_file, "w") as testfile:
+            testfile.write('test')
+        reader = CFileReader(c_file)
+        line_test = reader.check_for_comments(test_line)
+
+        self.assertTrue(line_test[0] is False)
+        self.assertTrue(line_test[1] == 0)
+        self.assertTrue(line_test[2] == " just a test")
+
+        # Test with whole line in a comment
+        test_line = "//This is just a test"
+        c_file = "test.C"
+        with open(c_file, "w") as testfile:
+            testfile.write('test')
+        reader = CFileReader(c_file)
+        line_test = reader.check_for_comments(test_line)
+        self.assertTrue(line_test[0])
+        self.assertTrue(line_test[1] == 0)
+        self.assertTrue(line_test[2] == test_line)
+
+        self.addCleanup(os.remove, c_file)
+        self.doCleanups()

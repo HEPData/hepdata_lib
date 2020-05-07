@@ -48,12 +48,14 @@ class CFileReader(object):
     def get_graphs(self):
         """Parse the .C file trying to find TGraph objects"""
 
+        # Getting tgraph variables and names
         found_graphs = self.find_graphs()
         graphs = found_graphs[0]
         tgraph_names = found_graphs[1]
         tgraph_errors = found_graphs[2]
         error_names = found_graphs[3]
         list_of_tgraphs = []
+
         # Creating and adding TGraphs to a dictionary
         dict_of_graphs = self.create_tgraph_dict(graphs, list_of_tgraphs)
         list_of_tgraphs = zip(tgraph_names, dict_of_graphs)
@@ -62,16 +64,20 @@ class CFileReader(object):
         dict_of_graphs = self.create_tgrapherrors_dict(tgraph_errors)
         list_of_errors = zip(error_names, dict_of_graphs)
 
+        # Combining dictionaries
         graph_object = {}
         graph_object.update(list_of_tgraphs)
         graph_object.update(list_of_errors)
         all_graphs = graph_object
 
+        # Returning a complete dictionary
         return all_graphs
 
     def create_tgraph_dict(self, graph_list, list_of_tgraphs):
         """Function to create pyroot TGraph dict"""
         # pylint: disable=no-self-use
+
+        # Adding tgraphs into a dictionary
         y_values = []
         x_values = []
         graphs = graph_list
@@ -106,6 +112,8 @@ class CFileReader(object):
     def create_tgrapherrors_dict(self, graph_list):
         """Function to create pyroot TGraphErrors dict"""
         # pylint: disable=no-self-use
+
+        # Adding TGraphErrors into a dictionary
         y_values = []
         x_values = []
         dy_values = []
@@ -158,6 +166,8 @@ class CFileReader(object):
     def create_tgrapherrors(self, x_value, y_value, dx_value, dy_value):
         """Function to create pyroot TGraphErrors object"""
         # pylint: disable=no-self-use
+
+        # Creating pyroot TGraphErrors object
         x_values = array('i')
         y_values = array('i')
         dx_values = array('i')
@@ -189,6 +199,8 @@ class CFileReader(object):
     def create_tgraph(self, x_value, y_value):
         """Function to create pyroot TGraph object"""
         # pylint: disable=no-self-use
+
+        # Creating pyroot TGraph object
         x_values = array('i')
         y_values = array('i')
         length = len(x_value)
@@ -210,6 +222,7 @@ class CFileReader(object):
     def check_for_comments(self, line):
         """Check line for comment"""
         # pylint: disable=no-self-use
+
         _line = line
         ignoreline = 0
         continueline = False
@@ -224,7 +237,7 @@ class CFileReader(object):
             return continueline, ignoreline, _line
 
         if '/*' in _line:
-            _line = _line.split('//', 1)[0]
+            _line = _line.split('/*', 1)[0]
             _line = _line.rstrip()
             continueline = False
             ignoreline = 1
@@ -259,6 +272,7 @@ class CFileReader(object):
         start = 0
         ignore = 0
         counter = 0
+        #Parsing .C file for variables and names
         for line in c_file.readlines():
             checkline = self.check_for_comments(line)
             ignore = checkline[1]
@@ -292,6 +306,8 @@ class CFileReader(object):
                         raise IndexError("index out of range")
                     start = 0
                     counter = 0
+
+            #Adding a default name, if no name is found
             if start == 1:
                 counter += 1
             if start == 2:
