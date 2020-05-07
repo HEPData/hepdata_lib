@@ -214,6 +214,8 @@ class CFileReader(object):
         for value in range(length):
             x_values.append(x_value[value])
             y_values.append(y_value[value])
+        print(x_values)
+        print(y_values)
         t_object = TGraph(length, x_values, y_values)
         graph = ru.get_graph_points(t_object)
 
@@ -282,12 +284,20 @@ class CFileReader(object):
             if(("TGraphErrors(" in line) and ("(" in line) and
                (ignore == 0)):
                 start = 2
-                error_objects.append(line.split('(', 1)[1].split(')')[0])
+                splitline = line.split('(', 1)[1].split(')')[0]
+                splitlines = splitline.split(',')
+                for i in splitlines:
+                    j = i.replace(' ','')
+                    error_objects.append(j)
                 continue
             if(("TGraph(" in line) and ("(" in line) and
                (ignore == 0)):
                 start = 1
-                normal_objects.append(line.split('(', 1)[1].split(')')[0])
+                splitline = line.split('(', 1)[1].split(')')[0]
+                splitlines = splitline.split(',')
+                for i in splitlines:
+                    j = i.replace(' ','')
+                    normal_objects.append(j)
                 continue
             if(("SetName(" in line) and ("(" in line) and (ignore == 0) and (counter < 5)):
                 if start == 1:
@@ -349,9 +359,28 @@ class CFileReader(object):
             if checkline[0] is True:
                 continue
             line = checkline[2]
-            if((graphname in line) and ("{" in line) and ignore == 0):
+            if((graphname in line) and ("{" in line) and ignore == 0
+                    and (not "}" in line)):
+                splitline = line.split('{', 1)[1].split(',')[0].replace(' ','')
+                try:
+                    try:
+                        objects.append(int(splitline))
+                        print(objects)
+                    except ValueError:
+                        objects.append(float(splitline))
+                        print(objects)
+                except ValueError:
+                    start = 1
+                    continue
                 start = 1
                 continue
+            if((graphname in line) and ("{" in line) and ignore == 0
+                    and ("}" in line)):
+                splitline = line.split('{', 1)[1].split('}')[0]
+                splitlines = splitline.split(',')
+                for i in splitlines:
+                    j = i.replace(' ','')
+                    objects.append(j)
             if "}" in line:
                 if start == 1:
                     objects.append(line.split("}")[0])
