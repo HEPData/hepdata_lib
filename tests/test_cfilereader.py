@@ -15,14 +15,14 @@ class TestCFileReader(TestCase):
         Test the behavior of the CFileReader setters.
         """
 
-        # Check with nonexistant file that ends in .C
+        # Check with nonexistent file that ends in .C
         with self.assertRaises(RuntimeError):
             _reader = CFileReader("/path/to/nowhere/butEndsIn.C")
         # Check with lowercase .c
         with self.assertRaises(RuntimeError):
             _reader = CFileReader("/path/to/nowhere/butEndsIn.c")
 
-        # Check with existant file that does not end in .C
+        # Check with existent file that does not end in .C
         _file = "text.txt"
         with open(_file, "w") as testfile:
             testfile.write("TEST CONTENT")
@@ -39,19 +39,30 @@ class TestCFileReader(TestCase):
         with self.assertRaises(ValueError):
             _reader = CFileReader({})
 
-        # Finally, try a good call
+        # Finally, try with good calls
         _cfile = "test.C"
         with open(_cfile, "w") as testfile:
-            testfile.write("TGraph* c = new TGraph(60, Graph1, Graph2)")
+            testfile.write("TGraph* c = new TGraph(60, x_values, y_values)")
 
         self.addCleanup(os.remove, _cfile)
 
+        # Use file name for opening
         try:
             _reader = CFileReader(_cfile)
         # pylint: disable=W0702
         except:
             self.fail("CFileReader raised an unexpected exception.")
         # pylint: enable=W0702
+
+        # Use opened file (io.TextIOBase)
+        try:
+            with open(_cfile, "r") as testfile:
+                _reader = CFileReader(testfile)
+        # pylint: disable=W0702
+        except:
+            self.fail("CFileReader raised an unexpected exception.")
+        # pylint: enable=W0702
+
         # Clean up
         self.doCleanups()
 
