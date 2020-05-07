@@ -66,33 +66,31 @@ class TestCFileReader(TestCase):
         # Clean up
         self.doCleanups()
 
+
     def test_get_graphs(self):
         """Test function for getting TGraphs from .C file"""
 
         # Test create a valid dictionary of TGraphs
         test_file = "test.C"
         with open(test_file, "w") as testfile:
-            testfile.write('Double_t Graph0_fx1[5] = {' +
-                           '\n1,\n2};' +
-                           '\nDouble_t Graph0_fy1[5] = { ' +
-                           '\n3,\n2};\nTGraph *graph =' +
-                           'new TGraph(5,Graph0_fx1,Graph0_fy1);\n' +
-                           'graph->SetName' +
-                           '("Graph0");\nDouble_t Graph0_fx2[5] =' +
-                           '{ \n1.2,\n2.2};' +
-                           '\nDouble_t Graph0_fy2[5] = { \n0.123345,' +
-                           '\n0.343564};' +
-                           '\nTGraph *graph = new TGraph(5,' +
-                           'Graph0_fx2,Graph0_fy2);' +
-                           '\ngraph->SetName("Graph1");\n' +
-                           'Double_t Graph2_fx1001[30] = {\n' +
-                           '1.2,\n1.3};\nDouble_t Graph2_fy1001[30] = {\n' +
-                           '0.03306888,\n0.0234779};\nDouble_t \n' +
-                           'Graph2_fex1001[30] = {0,\n0};' +
-                           'Double_t Graph2_fey1001[30] = {\n0,\n0};' +
-                           'TGraphErrors(30,Graph2_fx1001,Graph2_fy1001,' +
-                           'Graph2_fex1001,Graph2_fey1001);\n' +
-                           'gre->SetName("Graph2");')
+            testfile.write(
+                'void test() {\n'
+                'Double_t Graph0_fx1[2] = {1,2};\n' +
+                'Double_t Graph0_fy1[2] = { \n3,\n2};' +
+                'TGraph *graph = new TGraph(2,Graph0_fx1,Graph0_fy1);\n' +
+                'graph->SetName("Graph0");\n' +
+                'Double_t Graph0_fx2[5] ={ 1.2, 2.2 };\n' +
+                'Double_t Graph0_fy2[5] = { \n0.123345, \n0.343564};\n' +
+                'graph = new TGraph( 5, Graph0_fx2,Graph0_fy2);\n' +
+                'graph->SetName("Graph1");\n' +
+                'Double_t Graph2_fx1001[30] = {1.2,\n1.3};\n' +
+                'Double_t Graph2_fy1001[30] = {0.03306888,\n0.0234779};\n' +
+                'Double_t Graph2_fex1001[30] = {0,\n0};' +
+                'Double_t Graph2_fey1001[30] = {  0 ,0  };' +
+                'TGraphErrors gre = TGraphErrors(30,Graph2_fx1001,Graph2_fy1001,' +
+                'Graph2_fex1001,Graph2_fey1001);\n' +
+                'gre.SetName("Graph2");}'
+            )
         graph0_x = [1, 2]
         graph0_y = [3, 2]
         graph1_x = [1.2, 2.2]
