@@ -1,8 +1,6 @@
 """.C file reader"""
 
-import os
 import io
-import re
 from array import array
 from ROOT import TGraph, TGraphErrors
 import hepdata_lib.root_utils as ru
@@ -37,7 +35,7 @@ class CFileReader(object):
                     )
             if check_file_existence(cfile):
                 self._cfile = open(cfile, "r")
-        elif isinstance(cfile, io.TextIOBase):
+        elif isinstance(cfile, file):
             self._cfile = cfile
         else:
             raise ValueError(
@@ -262,6 +260,7 @@ class CFileReader(object):
         """Find all TGraphs in .C file"""
         # pylint: disable=too-many-branches
         # pylint: disable=too-many-statements
+        # pylint: disable=too-many-locals
         c_file = self.cfile
         tgraph_names = []
         tgrapherror_names = []
@@ -285,7 +284,7 @@ class CFileReader(object):
                 splitline = line.split('(', 1)[1].split(')')[0]
                 splitlines = splitline.split(',')
                 for i in splitlines:
-                    j = i.replace(' ','')
+                    j = i.replace(' ', '')
                     error_objects.append(j)
                 continue
             if(("TGraph(" in line) and ("(" in line) and
@@ -294,7 +293,7 @@ class CFileReader(object):
                 splitline = line.split('(', 1)[1].split(')')[0]
                 splitlines = splitline.split(',')
                 for i in splitlines:
-                    j = i.replace(' ','')
+                    j = i.replace(' ', '')
                     normal_objects.append(j)
                 continue
             if(("SetName(" in line) and ("(" in line) and (ignore == 0) and (counter < 5)):
@@ -342,7 +341,8 @@ class CFileReader(object):
 
     def read_graph(self, graphname):
         """Function to read values of a graph"""
-
+        # pylint: disable=too-many-branches
+        # pylint: disable=too-many-statements
         c_file = self.cfile
         objects = []
         values = []
@@ -358,16 +358,16 @@ class CFileReader(object):
                 continue
             line = checkline[2]
             if((graphname in line) and ("{" in line) and ignore == 0
-                    and (not "}" in line)):
+               and (not "}" in line)):
                 splitline = line.split(graphname, 1)[1]
-                splitline = splitline.split('{', 1)[1].split(',')[0].replace(' ','')
+                splitline = splitline.split('{', 1)[1].split(',')[0].replace(' ', '')
                 try:
                     try:
-                        test = float(splitline)
+                        _test = float(splitline)
                         objects.append(splitline)
                         start = 1
                     except ValueError:
-                        test = int(splitline)
+                        _test = int(splitline)
                         objects.append(splitline)
                         start = 1
                 except ValueError:
@@ -376,7 +376,7 @@ class CFileReader(object):
                 start = 1
                 continue
             if((graphname in line) and ("{" in line) and ignore == 0
-                    and ("}" in line)):
+               and ("}" in line)):
                 if start == 1:
                     splitline = line.split("}", 1)[0]
                     objects.append(splitline)
@@ -385,8 +385,8 @@ class CFileReader(object):
                     splitline = splitline.split('{', 1)[1].split('}')[0]
                     splitlines = splitline.split(',')
                     for i in splitlines:
-                        j = i.replace(' ','')
-                        objects.append(j)   
+                        j = i.replace(' ', '')
+                        objects.append(j)
                 else:
                     continue
             if "}" in line:
@@ -394,11 +394,11 @@ class CFileReader(object):
                     splitline = line.split("}", 1)[0]
                     try:
                         try:
-                            test = float(splitline)
+                            _test = float(splitline)
                             objects.append(splitline)
                             start = 0
                         except ValueError:
-                            test = int(splitline)
+                            _test = int(splitline)
                             objects.append(splitline)
                             start = 0
                     except ValueError:
