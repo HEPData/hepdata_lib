@@ -108,10 +108,11 @@ class TestCFileReader(TestCase):
         self.assertTrue(tgraphs["Graph0"]["y"] == graph0_y)
         self.assertTrue(tgraphs["Graph1"]["x"] == graph1_x)
         self.assertTrue(tgraphs["Graph1"]["y"] == graph1_y)
-        #self.assertTrue(tgraphs["Graph2"]["x"] == graph2_x)
-        #self.assertTrue(tgraphs["Graph2"]["y"] == graph2_y)
-        #self.assertTrue(tgraphs["Graph2"]["dx"] == graph2_dx)
-        #self.assertTrue(tgraphs["Graph2"]["dy"] == graph2_dy)
+        self.assertTrue(tgraphs["Graph2"]["x"] == graph2_x)
+        self.assertTrue(tgraphs["Graph2"]["y"] == graph2_y)
+        self.assertTrue(tgraphs["Graph2"]["dx"] == graph2_dx)
+        self.assertTrue(tgraphs["Graph2"]["dy"] == graph2_dy)
+
         # Testing with invalid x and y values
         with open(test_file, "w") as testfile:
             testfile.write(

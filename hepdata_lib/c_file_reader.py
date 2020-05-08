@@ -1,6 +1,8 @@
 """.C file reader"""
 
+import os
 import io
+import re
 from array import array
 from ROOT import TGraph, TGraphErrors
 import hepdata_lib.root_utils as ru
@@ -41,7 +43,6 @@ class CFileReader(object):
             raise ValueError(
                 "CFileReader: Encountered unknown type of variable passed as cfile argument: "
                 + str(type(cfile)))
-
         if not self._cfile:
             raise IOError("CFileReader: File not opened properly.")
 
@@ -134,9 +135,9 @@ class CFileReader(object):
                         x_values.append(value)
                     for value in yvalues:
                         y_values.append(value)
-                    for value in xvalues:
+                    for value in dxvalues:
                         dx_values.append(value)
-                    for value in yvalues:
+                    for value in dyvalues:
                         dy_values.append(value)
                 elif(any(not isinstance(x, int) for x in xvalues)
                      or any(not isinstance(x, int) for x in xvalues)
@@ -146,9 +147,9 @@ class CFileReader(object):
                         x_values.append(float(value))
                     for value in yvalues:
                         y_values.append(float(value))
-                    for value in xvalues:
+                    for value in dxvalues:
                         dx_values.append(float(value))
-                    for value in yvalues:
+                    for value in dyvalues:
                         dy_values.append(float(value))
             except ValueError:
                 raise IndexError("Invalid values. Int or float required.")
@@ -166,7 +167,6 @@ class CFileReader(object):
     def create_tgrapherrors(self, x_value, y_value, dx_value, dy_value):
         """Function to create pyroot TGraphErrors object"""
         # pylint: disable=no-self-use
-
         # Creating pyroot TGraphErrors object
         x_values = array('i')
         y_values = array('i')
@@ -214,8 +214,6 @@ class CFileReader(object):
         for value in range(length):
             x_values.append(x_value[value])
             y_values.append(y_value[value])
-        print(x_values)
-        print(y_values)
         t_object = TGraph(length, x_values, y_values)
         graph = ru.get_graph_points(t_object)
 
@@ -361,14 +359,17 @@ class CFileReader(object):
             line = checkline[2]
             if((graphname in line) and ("{" in line) and ignore == 0
                     and (not "}" in line)):
-                splitline = line.split('{', 1)[1].split(',')[0].replace(' ','')
+                splitline = line.split(graphname, 1)[1]
+                splitline = splitline.split('{', 1)[1].split(',')[0].replace(' ','')
                 try:
                     try:
-                        objects.append(int(splitline))
-                        print(objects)
+                        test = float(splitline)
+                        objects.append(splitline)
+                        start = 1
                     except ValueError:
-                        objects.append(float(splitline))
-                        print(objects)
+                        test = int(splitline)
+                        objects.append(splitline)
+                        start = 1
                 except ValueError:
                     start = 1
                     continue
@@ -376,14 +377,33 @@ class CFileReader(object):
                 continue
             if((graphname in line) and ("{" in line) and ignore == 0
                     and ("}" in line)):
-                splitline = line.split('{', 1)[1].split('}')[0]
-                splitlines = splitline.split(',')
-                for i in splitlines:
-                    j = i.replace(' ','')
-                    objects.append(j)
+                if start == 1:
+                    splitline = line.split("}", 1)[0]
+                    objects.append(splitline)
+                splitline = line.split(graphname, 1)[1]
+                if ("{" in splitline) and ("}" in splitline):
+                    splitline = splitline.split('{', 1)[1].split('}')[0]
+                    splitlines = splitline.split(',')
+                    for i in splitlines:
+                        j = i.replace(' ','')
+                        objects.append(j)   
+                else:
+                    continue
             if "}" in line:
                 if start == 1:
-                    objects.append(line.split("}")[0])
+                    splitline = line.split("}", 1)[0]
+                    try:
+                        try:
+                            test = float(splitline)
+                            objects.append(splitline)
+                            start = 0
+                        except ValueError:
+                            test = int(splitline)
+                            objects.append(splitline)
+                            start = 0
+                    except ValueError:
+                        start = 0
+                        continue
                 start = 0
             if start == 1:
                 objects.append(line.split(",")[0])
