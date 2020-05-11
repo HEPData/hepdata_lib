@@ -37,8 +37,7 @@ class CFileReader(object):
             if check_file_existence(cfile):
                 self._cfile = open(cfile, "r")
         elif six.PY2:
-            # pylint:disable=invalid-name,used-before-assignment
-            if isinstance(cfile, file):
+            if isinstance(cfile, file): # pylint:disable=E0602
                 self._cfile = cfile
             else:
                 raise ValueError(
