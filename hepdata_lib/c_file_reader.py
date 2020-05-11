@@ -2,6 +2,7 @@
 
 import io
 from array import array
+import six
 from ROOT import TGraph, TGraphErrors
 import hepdata_lib.root_utils as ru
 from hepdata_lib.helpers import check_file_existence
@@ -35,12 +36,20 @@ class CFileReader(object):
                     )
             if check_file_existence(cfile):
                 self._cfile = open(cfile, "r")
-        elif isinstance(cfile, file):
-            self._cfile = cfile
-        else:
-            raise ValueError(
-                "CFileReader: Encountered unknown type of variable passed as cfile argument: "
-                + str(type(cfile)))
+        elif six.PY2:
+            if isinstance(cfile, file):
+                self._cfile = cfile
+            else:
+                raise ValueError(
+                    "CFileReader: Encountered unknown type of variable passed as cfile argument: "
+                    + str(type(cfile)))
+        elif not six.PY2:
+            if isinstance(cfile, io.TextIOBase):
+                self._cfile = cfile
+            else:
+                raise ValueError(
+                    "CFileReader: Encountered unknown type of variable passed as cfile argument: "
+                    + str(type(cfile)))
         if not self._cfile:
             raise IOError("CFileReader: File not opened properly.")
 
@@ -165,6 +174,7 @@ class CFileReader(object):
     def create_tgrapherrors(self, x_value, y_value, dx_value, dy_value):
         """Function to create pyroot TGraphErrors object"""
         # pylint: disable=no-self-use
+
         # Creating pyroot TGraphErrors object
         x_values = array('i')
         y_values = array('i')
@@ -261,6 +271,7 @@ class CFileReader(object):
         # pylint: disable=too-many-branches
         # pylint: disable=too-many-statements
         # pylint: disable=too-many-locals
+
         c_file = self.cfile
         tgraph_names = []
         tgrapherror_names = []
@@ -343,6 +354,7 @@ class CFileReader(object):
         """Function to read values of a graph"""
         # pylint: disable=too-many-branches
         # pylint: disable=too-many-statements
+
         c_file = self.cfile
         objects = []
         values = []
