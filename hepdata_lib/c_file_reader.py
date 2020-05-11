@@ -37,13 +37,14 @@ class CFileReader(object):
             if check_file_existence(cfile):
                 self._cfile = open(cfile, "r")
         elif six.PY2:
+            # pylint:disable=invalid-name,used-before-assignment
             if isinstance(cfile, file):
                 self._cfile = cfile
             else:
                 raise ValueError(
                     "CFileReader: Encountered unknown type of variable passed as cfile argument: "
                     + str(type(cfile)))
-        elif not six.PY2:
+        else:
             if isinstance(cfile, io.TextIOBase):
                 self._cfile = cfile
             else:
