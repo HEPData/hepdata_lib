@@ -35,7 +35,7 @@ def dict_constructor(loader, node):
     """construct dict."""
     return defaultdict(loader.construct_pairs(node))
 
-
+yaml.add_representer(defaultdict, SafeRepresenter.represent_dict)
 Dumper.add_representer(defaultdict, dict_representer)
 Loader.add_constructor(MAPPING_TAG, dict_constructor)
 
