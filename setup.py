@@ -38,7 +38,7 @@ setup(
     zip_safe=False,
     install_requires=DEPS,
     setup_requires=['pytest-runner', 'pytest-cov'],
-    tests_require=['pytest', 'papermill'],
+    tests_require=['pytest', 'papermill', 'six'],
     project_urls={
         'Documentation': 'https://hepdata-lib.readthedocs.io',
         'Bug Reports': 'https://github.com/HEPData/hepdata_lib/issues',
