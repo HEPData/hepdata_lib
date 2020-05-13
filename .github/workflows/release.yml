@@ -30,7 +30,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up Python ${{ matrix.python-version }}
-        if: "! steps.check.outputs.has-permission"
+        if: steps.check.outputs.has-permission
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
@@ -38,17 +38,16 @@ jobs:
       # Bump version
       - uses: geertvdc/setup-hub@master
       - name: Bump version and tag
-        if: "! steps.check.outputs.has-permission"
+        if: steps.check.outputs.has-permission
         run: |
           git config --global user.email ${{ github.actor }}@users.noreply.github.com
           git config --global user.name ${{ github.actor }}
           git pull
           python -m pip install --upgrade bumpversion
           bumpversion ${{ github.event.issue.body }}
-
       # Push tags
       - name: Push changes
-        if: "! steps.check.outputs.has-permission"
+        if: steps.check.outputs.has-permission
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.access_token }}
@@ -77,7 +76,7 @@ jobs:
     # Build package
     - name: Create package
       id: version
-      if: "! steps.check2.outputs.has-permission"
+      if: steps.check2.outputs.has-permission
       run: |
         git config --global user.email ${{ github.actor }}@users.noreply.github.com
         git config --global user.name ${{ github.actor }}
@@ -87,10 +86,9 @@ jobs:
         echo "::set-output name=version::$(python -c "from hepdata_lib import __version__; print(__version__)")"
         python -m pip install wheel
         python setup.py sdist bdist_wheel
-
     # Publish package to test PyPI
     - name: Publish distribution to Test PyPI
-      if: "! steps.check2.outputs.has-permission"
+      if: steps.check2.outputs.has-permission
       uses: pypa/gh-action-pypi-publish@master
       with:
        user: __token__
@@ -99,23 +97,20 @@ jobs:
 
     # Sleep
     - name: Sleep for 300 seconds
-      if: "! steps.check2.outputs.has-permission"
       uses: jakejarvis/wait-action@master
       with:
         time: '300s'
 
     # Run tests
     - name: Test with pytest
-      if: "! steps.check2.outputs.has-permission"
       run: |
         pip install --index-url https://test.pypi.org/simple/ hepdata_lib==${{ steps.version.outputs.version }}
         python setup.py test
         python -m pylint hepdata_lib/*.py
         python -m pylint tests/*.py --rcfile=tests/pylintrc
-
     # Add automatic comment on the issue
     - name: Create comment
-      if: "! steps.check2.outputs.has-permission"
+      if: steps.check2.outputs.has-permission
       uses: jungwinter/comment@v1
       id: create
       with:
@@ -128,7 +123,7 @@ jobs:
 
     # Publish to PyPI
     - name: Publish distribution to PyPI
-      if: "! steps.check2.outputs.has-permission"
+      if: steps.check2.outputs.has-permission
       uses: pypa/gh-action-pypi-publish@master
       with:
         user: __token__
@@ -136,7 +131,7 @@ jobs:
 
     # Add automatic comment on the issue
     - name: Create comment
-      if: "! steps.check2.outputs.has-permission"
+      if: steps.check2.outputs.has-permission
       uses: jungwinter/comment@v1
       id: create2
       with:
