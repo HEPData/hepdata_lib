@@ -144,3 +144,9 @@ jobs:
            - https://pypi.org/project/hepdata-lib/
          issue_number: ${{ github.event.issue.number }}
          token: ${{ secrets.GITHUB_TOKEN }}
+
+    # Close issue
+    - name: Close Issue
+      uses: peter-evans/close-issue@v1
+      with:
+        issue-number: ${{ github.event.issue.number }}
