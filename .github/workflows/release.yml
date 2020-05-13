@@ -45,6 +45,7 @@ jobs:
           git pull
           python -m pip install --upgrade bumpversion
           bumpversion ${{ github.event.issue.body }}
+
       # Push tags
       - name: Push changes
         if: steps.check.outputs.has-permission
@@ -86,6 +87,7 @@ jobs:
         echo "::set-output name=version::$(python -c "from hepdata_lib import __version__; print(__version__)")"
         python -m pip install wheel
         python setup.py sdist bdist_wheel
+
     # Publish package to test PyPI
     - name: Publish distribution to Test PyPI
       if: steps.check2.outputs.has-permission
@@ -108,6 +110,7 @@ jobs:
         python setup.py test
         python -m pylint hepdata_lib/*.py
         python -m pylint tests/*.py --rcfile=tests/pylintrc
+
     # Add automatic comment on the issue
     - name: Create comment
       if: steps.check2.outputs.has-permission
@@ -141,6 +144,8 @@ jobs:
            - https://pypi.org/project/hepdata-lib/
          issue_number: ${{ github.event.issue.number }}
          token: ${{ secrets.GITHUB_TOKEN }}
+
+    # Close issue
     - name: Close Issue
       uses: peter-evans/close-issue@v1
       with:
