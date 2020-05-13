@@ -15,9 +15,9 @@ import yaml
 
 # try to use LibYAML bindings if possible
 try:
-    from yaml import CLoader as Loader, CDumper as Dumper
+    from yaml import CLoader as Loader, CSafeDumper as Dumper
 except ImportError:
-    from yaml import Loader, Dumper
+    from yaml import Loader, SafeDumper as Dumper
 from yaml.representer import SafeRepresenter
 
 from hepdata_lib import helpers
@@ -35,7 +35,7 @@ def dict_constructor(loader, node):
     """construct dict."""
     return defaultdict(loader.construct_pairs(node))
 
-
+yaml.add_representer(defaultdict, SafeRepresenter.represent_dict)
 Dumper.add_representer(defaultdict, dict_representer)
 Loader.add_constructor(MAPPING_TAG, dict_constructor)
 
