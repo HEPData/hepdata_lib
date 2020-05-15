@@ -3,7 +3,6 @@
 import io
 from array import array
 import six
-from decimal import Decimal
 from ROOT import TGraph, TGraphErrors
 import hepdata_lib.root_utils as ru
 from hepdata_lib.helpers import check_file_existence
@@ -96,10 +95,10 @@ class CFileReader(object):
             yvalues = self.read_graph(graphs[count+1])
 
             try:
-                    for value in xvalues:
-                        x_values.append(value)
-                    for value in yvalues:
-                        y_values.append(value)
+                for value in xvalues:
+                    x_values.append(value)
+                for value in yvalues:
+                    y_values.append(value)
             except ValueError:
                 raise IndexError("Invalid values. Int or float required.")
 
@@ -130,14 +129,14 @@ class CFileReader(object):
             dyvalues = self.read_graph(graph_list[count+3])
 
             try:
-                    for value in xvalues:
-                        x_values.append(value)
-                    for value in yvalues:
-                        y_values.append(value)
-                    for value in dxvalues:
-                        dx_values.append(value)
-                    for value in dyvalues:
-                        dy_values.append(value)
+                for value in xvalues:
+                    x_values.append(value)
+                for value in yvalues:
+                    y_values.append(value)
+                for value in dxvalues:
+                    dx_values.append(value)
+                for value in dyvalues:
+                    dy_values.append(value)
             except ValueError:
                 raise IndexError("Invalid values. Int or float required.")
 
@@ -183,7 +182,7 @@ class CFileReader(object):
         try:
             t_object = TGraphErrors(length, x_values, y_values, dx_values, dy_values)
         except TypeError:
-             raise TypeError("Invalid value in TGraphErrors constructor!")
+            raise TypeError("Invalid value in TGraphErrors constructor!")
         graph = ru.get_graph_points(t_object)
 
         return graph
@@ -209,7 +208,7 @@ class CFileReader(object):
         try:
             t_object = TGraph(length, x_values, y_values)
         except TypeError:
-             raise TypeError("Invalid value in TGraph constructor!")
+            raise TypeError("Invalid value in TGraph constructor!")
         graph = ru.get_graph_points(t_object)
 
         return graph

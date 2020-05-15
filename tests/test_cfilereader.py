@@ -126,22 +126,6 @@ class TestCFileReader(TestCase):
         with self.assertRaises(ValueError):
             reader.get_graphs()
 
-        # Testing TGraphErrors with int values only
-        with open(test_file, "w") as testfile:
-            testfile.write(
-                'void test() {\n' +
-                'Double_t Graph2_fx1001[30] = {1,\n2};\n' +
-                'Double_t Graph2_fy1001[30] = {3,\n2};\n' +
-                'Double_t Graph2_fex1001[30] = {0,\n0};' +
-                'Double_t Graph2_fey1001[30] = {  0 ,0  };' +
-                'TGraphErrors gre = TGraphErrors(30,Graph2_fx1001,Graph2_fy1001,' +
-                'Graph2_fex1001,Graph2_fey1001);\n' +
-                'gre.SetName("Graph2");}')
-
-        reader = CFileReader(test_file)
-        with self.assertRaises(TypeError):
-            reader.get_graphs()
-
         # Testing graphs with half float falf int values
         with open(test_file, "w") as testfile:
             testfile.write(
@@ -207,6 +191,16 @@ class TestCFileReader(TestCase):
         self.assertTrue(set(graph.keys()) == set(["x", "y", "dx", "dy"]))
         self.assertTrue(all(graph["x"] == x_value))
         self.assertTrue(all(graph["y"] == y_value))
+
+        # Testing TGraphErrors with int values only
+        x_value = [1, 2, 3]
+        y_value = [3, 2, 1]
+        dx_value = [0, 0, 0]
+        dy_value = [0, 0, 0]
+        reader = CFileReader(c_file)
+        with self.assertRaises(TypeError):
+            reader.create_tgrapherrors(x_value, y_value, dx_value, dy_value)
+
         self.addCleanup(os.remove, c_file)
         self.doCleanups()
 
