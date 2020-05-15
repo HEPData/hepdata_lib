@@ -26,13 +26,13 @@ jobs:
             
         # Save notebooks
         - name: Save notebooks
-          if: always()
+          if: ${{ always() }}
           run: |
             python -m jupyter nbconvert --ExecutePreprocessor.timeout=600 --ExecutePreprocessor.allow_errors=True --to html --execute examples/*.ipynb
             
         # Upload notebooks
         - name: Upload notebooks
-          if: always()
+          if: ${{ always() }}
           uses: actions/upload-artifact@v2
           with:
             name: notebooks py3
@@ -40,7 +40,7 @@ jobs:
 
         # Run pylint
         - name: Run pylint
-          if: always()
+          if: ${{ always() }}
           run: |
             python -m pip install -e .
             python -m pylint hepdata_lib/*.py
@@ -78,7 +78,7 @@ jobs:
           
       # Save notebooks
       - name: Save notebooks
-        if: always()
+        if: ${{ always() }}
         run: |
           cd /usr/local/Cellar/root/${ROOT_VERSION}
           export PATH=${PWD}/bin:$(brew --cellar python@3.8)/$(ls $(brew --cellar python@3.8))/bin:${PATH}
@@ -90,7 +90,7 @@ jobs:
           
       # Upload notebooks
       - name: Upload notebooks
-        if: always()
+        if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
           name: notebooks macOS
@@ -98,7 +98,7 @@ jobs:
           
       # Run Pylint
       - name: Run Pylint
-        if: always()
+        if: ${{ always() }}
         run: |
           python3 -m pip install pytest ipykernel papermill
           python3 -m pip install -e .
@@ -135,7 +135,7 @@ jobs:
         
     # Save notebooks
     - name: Save notebooks
-      if: always()
+      if: ${{ always() }}
       run: |
         source root/bin/thisroot.sh
         export PATH=$PATH:~/.local/bin
@@ -143,7 +143,7 @@ jobs:
         jupyter nbconvert --ExecutePreprocessor.timeout=600 --ExecutePreprocessor.kernel_name=python2 --ExecutePreprocessor.allow_errors=True --to html --execute examples/*.ipynb
     # Upload notebooks
     - name: Upload notebooks
-      if: always()
+      if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
         name: notebooks py27
@@ -151,7 +151,7 @@ jobs:
         
     # Run pylint
     - name: Run Pylint
-      if: always()
+      if: ${{ always() }}
       run: |      
         python -m pylint hepdata_lib/*.py
         python -m pylint tests/*.py --rcfile=tests/pylintrc
