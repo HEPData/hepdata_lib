@@ -28,7 +28,7 @@ jobs:
         - name: Save notebooks
           if: always()
           run: |
-            python -m jupyter nbconvert --to html examples/*.ipynb
+            python -m jupyter nbconvert --to html --execute examples/*.ipynb
 
         # Upload notebooks
         - name: Upload notebooks
@@ -81,7 +81,7 @@ jobs:
         if: always()
         run: |
           python3 -m pip install nbconvert
-          python3 -m jupyter nbconvert --to html examples/*.ipynb
+          python3 -m jupyter nbconvert --to html --execute examples/*.ipynb
 
       # Upload notebooks
       - name: Upload notebooks
@@ -134,7 +134,7 @@ jobs:
       run: |
         export PATH=$PATH:~/.local/bin
         source ~/.bash_profile
-        python -m jupyter nbconvert --to html examples/*.ipynb
+        python -m jupyter nbconvert --to html --execute examples/*.ipynb
 
     # Upload notebooks
     - name: Upload notebooks
