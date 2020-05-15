@@ -11,12 +11,37 @@ jobs:
           image: 'rootproject/root:latest'
       steps:
         - uses: actions/checkout@v2
-        - name: Test with pytest
+
+        # Install dependencies
+        - name: Install dependencies
           run: |
             yum install -y python-pip ghostscript
-            python -m pip install pytest_pylint configparser astroid pyyml papermill
+            python -m pip install pytest_pylint configparser astroid pyyml papermill nbconvert
+
+        # Run pytest
+        - name: Run pytest
+          run: |
             python -m pip install -e .
             python setup.py test
+
+        # Save notebooks
+        - name: Save notebooks
+          if: always()
+          run: |
+            python -m jupyter nbconvert --to html examples/*.ipynb
+
+        # Upload notebooks
+        - name: Upload notebooks
+          if: always()
+          uses: actions/upload-artifact@v2
+          with:
+            name: notebooks py3
+            path: examples/*.html
+
+        # Run pylint
+        - name: Run pylint
+          if: always()
+          run: |
             python -m pip install -e .
             python -m pylint hepdata_lib/*.py
             python -m pylint tests/*.py --rcfile=tests/pylintrc
@@ -26,12 +51,18 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Test with pytest
+        
+      # Install dependencies
+      - name: Install dependencies
         run: |
-          ROOT_VERSION=6.20.04_1
           brew update
           brew install fontconfig gd gettext libffi glib jasper netpbm gts graphviz gsl libxml2 openblas numpy tbb xrootd || true
           brew install python@3.8 openssl@1.1 || true
+          
+      # Run pytest
+      - name: Run pytest
+        run: |
+          ROOT_VERSION=6.20.04_1
           curl -O https://clange.web.cern.ch/clange/root-v${ROOT_VERSION}.tar.gz
           tar xzf root-v${ROOT_VERSION}.tar.gz
           mkdir -p /usr/local/Cellar/root
@@ -44,6 +75,27 @@ jobs:
           cd -
           python3 -m pip install pytest ipykernel papermill
           python3 setup.py test
+          
+      # Save notebooks
+      - name: Save notebooks
+        if: always()
+        run: |
+          python3 -m pip install nbconvert
+          python3 -m jupyter nbconvert --to html examples/*.ipynb
+
+      # Upload notebooks
+      - name: Upload notebooks
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: notebooks macOS
+          path: examples/*.html
+          
+      # Run Pylint
+      - name: Run Pylint
+        if: always()
+        run: |
+          python3 -m pip install pytest ipykernel papermill
           python3 -m pip install -e .
           python3 -m pylint hepdata_lib/*.py
           python3 -m pylint tests/*.py --rcfile=tests/pylintrc
@@ -53,7 +105,9 @@ jobs:
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
-    - name: Test with pytest
+      
+    # Install dependencies
+    - name: Install dependencies
       run: |
         sudo apt-get install python2.7
         python -m pip install --upgrade pip
@@ -64,10 +118,35 @@ jobs:
         sudo sed -i '/MVG/d' /etc/ImageMagick-6/policy.xml
         sudo sed -i '/PDF/{s/none/read|write/g}' /etc/ImageMagick-6/policy.xml
         sudo sed -i '/PDF/ a <policy domain="coder" rights="read|write" pattern="LABEL" />' /etc/ImageMagick-6/policy.xml
-        python -m pip install --upgrade enum34 pytest_pylint configparser astroid future ipykernel papermill
+        python -m pip install --upgrade enum34 pytest_pylint configparser astroid future ipykernel papermill nbconvert
         sudo apt update
         sudo apt install -y ghostscript
+        
+    # Run pytest
+    - name: Run pytest
+      run: |
         source root/bin/thisroot.sh
         python setup.py test
+        
+    # Save notebooks
+    - name: Save notebooks
+      if: always()
+      run: |
+        export PATH=$PATH:~/.local/bin
+        source ~/.bash_profile
+        python -m jupyter nbconvert --to html examples/*.ipynb
+
+    # Upload notebooks
+    - name: Upload notebooks
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        name: notebooks py27
+        path: examples/*.html
+        
+    # Run pylint
+    - name: Run Pylint
+      if: always()
+      run: |      
         python -m pylint hepdata_lib/*.py
         python -m pylint tests/*.py --rcfile=tests/pylintrc
