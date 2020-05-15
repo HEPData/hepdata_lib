@@ -3,6 +3,7 @@
 import io
 from array import array
 import six
+from decimal import Decimal
 from ROOT import TGraph, TGraphErrors
 import hepdata_lib.root_utils as ru
 from hepdata_lib.helpers import check_file_existence
@@ -93,21 +94,15 @@ class CFileReader(object):
         while count < len(graphs) -1:
             xvalues = self.read_graph(graphs[count])
             yvalues = self.read_graph(graphs[count+1])
+
             try:
-                if (all(isinstance(x, int) for x in xvalues)
-                        and all(isinstance(x, int) for x in yvalues)):
                     for value in xvalues:
                         x_values.append(value)
                     for value in yvalues:
                         y_values.append(value)
-                elif(any(not isinstance(x, int) for x in xvalues)
-                     or any(not isinstance(x, int) for x in yvalues)):
-                    for value in xvalues:
-                        x_values.append(float(value))
-                    for value in yvalues:
-                        y_values.append(float(value))
             except ValueError:
                 raise IndexError("Invalid values. Int or float required.")
+
             tgraph = self.create_tgraph(x_values, y_values)
             tgraph = dict(tgraph)
             list_of_tgraphs.append(tgraph)
@@ -133,11 +128,8 @@ class CFileReader(object):
             yvalues = self.read_graph(graph_list[count+1])
             dxvalues = self.read_graph(graph_list[count+2])
             dyvalues = self.read_graph(graph_list[count+3])
+
             try:
-                if (all(isinstance(x, int) for x in xvalues)
-                        and all(isinstance(x, int) for x in yvalues)
-                        and all(isinstance(x, int) for x in dxvalues)
-                        and all(isinstance(x, int) for x in dyvalues)):
                     for value in xvalues:
                         x_values.append(value)
                     for value in yvalues:
@@ -146,20 +138,9 @@ class CFileReader(object):
                         dx_values.append(value)
                     for value in dyvalues:
                         dy_values.append(value)
-                elif(any(not isinstance(x, int) for x in xvalues)
-                     or any(not isinstance(x, int) for x in xvalues)
-                     or any(not isinstance(x, int) for x in dxvalues)
-                     or any(not isinstance(x, int) for x in dyvalues)):
-                    for value in xvalues:
-                        x_values.append(float(value))
-                    for value in yvalues:
-                        y_values.append(float(value))
-                    for value in dxvalues:
-                        dx_values.append(float(value))
-                    for value in dyvalues:
-                        dy_values.append(float(value))
             except ValueError:
                 raise IndexError("Invalid values. Int or float required.")
+
             tgraph_error = self.create_tgrapherrors(x_values, y_values, dx_values, dy_values)
             tgraph_error = dict(tgraph_error)
             list_of_tgraphs.append(tgraph_error)
@@ -199,7 +180,10 @@ class CFileReader(object):
             y_values.append(y_value[value])
             dx_values.append(dx_value[value])
             dy_values.append(dy_value[value])
-        t_object = TGraphErrors(length, x_values, y_values, dx_values, dy_values)
+        try:
+            t_object = TGraphErrors(length, x_values, y_values, dx_values, dy_values)
+        except TypeError:
+             raise TypeError("Invalid value in TGraphErrors constructor!")
         graph = ru.get_graph_points(t_object)
 
         return graph
@@ -222,7 +206,10 @@ class CFileReader(object):
         for value in range(length):
             x_values.append(x_value[value])
             y_values.append(y_value[value])
-        t_object = TGraph(length, x_values, y_values)
+        try:
+            t_object = TGraph(length, x_values, y_values)
+        except TypeError:
+             raise TypeError("Invalid value in TGraph constructor!")
         graph = ru.get_graph_points(t_object)
 
         return graph

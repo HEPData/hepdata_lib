@@ -126,6 +126,65 @@ class TestCFileReader(TestCase):
         with self.assertRaises(ValueError):
             reader.get_graphs()
 
+        # Testing TGraphErrors with int values only
+        with open(test_file, "w") as testfile:
+            testfile.write(
+                'void test() {\n' +
+                'Double_t Graph2_fx1001[30] = {1,\n2};\n' +
+                'Double_t Graph2_fy1001[30] = {3,\n2};\n' +
+                'Double_t Graph2_fex1001[30] = {0,\n0};' +
+                'Double_t Graph2_fey1001[30] = {  0 ,0  };' +
+                'TGraphErrors gre = TGraphErrors(30,Graph2_fx1001,Graph2_fy1001,' +
+                'Graph2_fex1001,Graph2_fey1001);\n' +
+                'gre.SetName("Graph2");}')
+
+        reader = CFileReader(test_file)
+        with self.assertRaises(TypeError):
+            reader.get_graphs()
+
+        # Testing graphs with half float falf int values
+        with open(test_file, "w") as testfile:
+            testfile.write(
+                'void test() {\n' +
+                'Double_t Graph0_fx1[2] = {1,2};\n' +
+                'Double_t Graph0_fy1[2] = { \n3.23423,\n2.23423};' +
+                'TGraph *graph = new TGraph(2,Graph0_fx1,Graph0_fy1);\n' +
+                'graph->SetName("Graph0");\n' +
+                'Double_t Graph2_fx1001[30] = {1,\n2};\n' +
+                'Double_t Graph2_fy1001[30] = {3.2,\n2.1};\n' +
+                'Double_t Graph2_fex1001[30] = {0,\n0};\n' +
+                'Double_t Graph2_fey1001[30] = {  0 ,0  };\n' +
+                'TGraphErrors gre = TGraphErrors(30,Graph2_fx1001,Graph2_fy1001,' +
+                'Graph2_fex1001,Graph2_fey1001);\n' +
+                'gre.SetName("Graph2");}')
+
+        reader = CFileReader(test_file)
+        tgraphs = reader.get_graphs()
+        self.assertTrue(tgraphs["Graph0"]["x"] == [1.0, 2.0])
+        self.assertTrue(tgraphs["Graph0"]["y"] == [3.23423, 2.23423])
+        self.assertTrue(tgraphs["Graph2"]["x"] == [1.0, 2.0])
+        self.assertTrue(tgraphs["Graph2"]["y"] == [3.2, 2.1])
+        self.assertTrue(tgraphs["Graph2"]["dx"] == [0, 0])
+        self.assertTrue(tgraphs["Graph2"]["dy"] == [0, 0])
+
+        # Testing graphs without name
+        with open(test_file, "w") as testfile:
+            testfile.write(
+                'void test() {\n' +
+                'Double_t Graph0_fx2[5] ={ 1.2, 2.2 };\n' +
+                'Double_t Graph0_fy2[5] = { \n0.123345, \n0.343564};\n' +
+                'graph = new TGraph( 5, Graph0_fx2,Graph0_fy2);\n' +
+                'Double_t Graph2_fx1001[30] = {1,\n2};\n' +
+                'Double_t Graph2_fy1001[30] = {3.2,\n2.1};\n' +
+                'Double_t Graph2_fex1001[30] = {0,\n0};\n' +
+                'Double_t Graph2_fey1001[30] = {  0 ,0  };\n' +
+                'TGraphErrors gre = TGraphErrors(30,Graph2_fx1001,Graph2_fy1001,' +
+                'Graph2_fex1001,Graph2_fey1001);}')
+
+        reader = CFileReader(test_file)
+        tgraphs = reader.get_graphs()
+        self.assertTrue(set(tgraphs.keys()) == set(["tgraph", "tgraph"]))
+
         self.addCleanup(os.remove, test_file)
         self.doCleanups()
 
