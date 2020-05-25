@@ -6,6 +6,7 @@ from unittest import TestCase
 import numpy as np
 
 from hepdata_lib.helpers import relative_round
+from hepdata_lib.helpers import round_value_and_uncertainty
 
 
 class TestHelpers(TestCase):
@@ -30,3 +31,35 @@ class TestHelpers(TestCase):
         for original, digits, result in values:
             rounded = relative_round(original, digits)
             self.assertTrue(rounded == result)
+
+
+    def test_round_value_and_uncertainty(self):
+        '''Test behavior of round_value_and_uncertainty function'''
+
+        # Test format is
+        # (container, key_for_values, key_for_uncertanties, significant_digits)
+        # uncertainty has a single value
+        cont = {"val"       : [1.23456, 1234.56, 0.0012345, 0.123],
+                "unc"       : [0.00123,    1.23, 0.012,     0.12]
+                "val_round" : [1.2346,  1234.6,  0.001,     0.12],
+                "unc_round" : [0.0012,     1.2,  0.012,     0.12]
+        }
+        # round to two significant digits
+        round_value_and_uncertainty(cont, "val", "unc", 2)
+        for index in range(len(cont["val"])):            
+            self.assertTrue(cont["val"] == cont["val_round"])
+            self.assertTrue(cont["unc"] == cont["unc_round"])
+
+        # Test format is
+        # (container, key_for_values, key_for_uncertanties, significant_digits)
+        # uncertainty has two value, as it would be the case with TGraphAsymmErrors
+        cont_asymm_err = {"val"       : [1.23456,           0.123],
+                          "unc"       : [(0.00123, 0.0123), (0.012, 0.12)]
+                          "val_round" : [1.235,             0.12],
+                          "unc_round" : [(0.001, 0.012),    (0.01, 0.12)]
+        }
+        # round to two significant digits
+        round_value_and_uncertainty(cont_asymm_err, "val", "unc", 2)
+        for index in range(len(cont_asymm_err["val"])):            
+            self.assertTrue(cont_asymm_err["val"] == cont_asymm_err["val_round"])
+            self.assertTrue(cont_asymm_err["unc"] == cont_asymm_err["unc_round"])
