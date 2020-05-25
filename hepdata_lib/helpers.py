@@ -75,7 +75,7 @@ def get_number_precision(value):
     return math.ceil(math.log10(abs(value)))
 
 
-def get_value_precision_wrt_reference(value,reference):
+def get_value_precision_wrt_reference(value, reference):
     """
     relative precision of first argument with respect to the second one 
     value and reference must be of the same type
