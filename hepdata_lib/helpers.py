@@ -8,7 +8,7 @@ import subprocess
 import fnmatch
 import math
 import numpy as np
-import itertools
+from six.moves import zip
 
 def execute_command(command):
     """
@@ -60,23 +60,22 @@ def relative_round(value, relative_digits):
         return (relative_round(x, relative_digits) for x in value)
 
     value_precision = math.ceil(math.log10(abs(value)))
-
-    absolute_digits = max(0,-value_precision + relative_digits)
+    absolute_digits = -value_precision + relative_digits
 
     return round(value, int(absolute_digits))
 
 
-def getNumberPrecision(value):
+def get_number_precision(value):
 
     if value == 0 or isinstance(value, str) or np.isnan(value) or np.isinf(value):
         return value
     if isinstance(value, tuple):
-        return (getNumberPrecision(x) for x in value)
+        return (get_number_precision(x) for x in value)
 
     return math.ceil(math.log10(abs(value)))
 
 
-def getValuePrecisionWrtReference(value,reference):
+def get_value_precision_wrt_reference(value,reference):
     """
     relative precision of first argument with respect to the second one 
     value and reference must be of the same type
@@ -88,10 +87,10 @@ def getValuePrecisionWrtReference(value,reference):
     : param reference: reference value (usually the uncertainty on value)
     : type  reference: float
     """
-    return getNumberPrecision(value) - getNumberPrecision(reference)
+    return get_number_precision(value) - get_number_precision(reference)
 
 
-def roundValueToDecimals(cont, valKey="y", decimals=3):
+def round_value_to_decimals(cont, key="y", decimals=3):
 
     """
     round all values in a dictionary to some decimals in one go
@@ -107,16 +106,14 @@ def roundValueToDecimals(cont, valKey="y", decimals=3):
 
     decimals = int(decimals)
 
-    for i,v in enumerate(cont[valKey]):        
-        if isinstance(v, tuple):
-            cont[valKey][i] = (round(v[0], decimals),
-                               round(v[1], decimals)
-                           )
+    for i, val in enumerate(cont[key]):        
+        if isinstance(val, tuple):
+            cont[key][i] = (round(val[0], decimals), round(val[1], decimals))
         else:
-            cont[valKey][i] = round(v,decimals)
+            cont[key][i] = round(val, decimals)
 
 
-def roundValueAndUncertaintyToDecimals(cont, valKey="y", uncKey="dy", decimals=3):
+def round_value_and_uncertainty_to_decimals(cont, val_key="y", unc_key="dy", decimals=3):
 
     """
     round values and uncertainty to some decimals
@@ -132,17 +129,15 @@ def roundValueAndUncertaintyToDecimals(cont, valKey="y", uncKey="dy", decimals=3
 
     decimals = int(decimals)
 
-    for i,(v,e) in enumerate(itertools.izip(cont[valKey],cont[uncKey])):        
-        cont[valKey][i] = round(v,decimals)
-        if isinstance(e, tuple):
-            cont[uncKey][i] = (round(e[0], decimals),
-                               round(e[1], decimals)
-                           )
-        else:
-            cont[uncKey][i] = round(e,decimals)
+    for i, (val, unc) in enumerate(zip(cont[val_key], cont[unc_key])):        
+        cont[val_key][i] = round(val, decimals)
+        if isinstance(unc, tuple):
+            cont[unc_key][i] = (round(unc[0], decimals), round(unc[1], decimals))          
+       else:
+            cont[unc_key][i] = round(unc, decimals)
 
 
-def roundValueAndUncertainty(cont, valKey="y", uncKey="dy", sigDigitsUnc=2):
+def round_value_and_uncertainty(cont, val_key="y", unc_key="dy", sig_digits_unc=2):
     
     """
     round values and uncertainty according to the precision of the uncertainty,
@@ -150,7 +145,7 @@ def roundValueAndUncertainty(cont, valKey="y", uncKey="dy", sigDigitsUnc=2):
     Typical usage:
          reader = RootFileReader("rootfile.root")
          data = reader.read_hist_1d("histogramName")    
-         roundValueAndUncertainty(data,"y","dy",2)
+         round_value_and_uncertainty(data,"y","dy",2)
     will round data["y"] to match the precision of data["dy"] for each element, after
     rounding each element of data["dy"] to 2 significant digits
     e.g. 26.5345 +/- 1.3456 --> 26.5 +/- 1.3
@@ -158,44 +153,43 @@ def roundValueAndUncertainty(cont, valKey="y", uncKey="dy", sigDigitsUnc=2):
     : param cont : dictionary as returned e.g. by RootFileReader::read_hist_1d()
     : type  cont : dictionary
 
-    : param sigDigitsUnc: how many significant digits used to round the uncertainty
-    : type  sigDigitsUnc: integer
+    : param sig_digits_unc: how many significant digits used to round the uncertainty
+    : type  sig_digits_unc: integer
     """
 
-    sigDigitsUnc = int(sigDigitsUnc)
+    sig_digits_unc = int(sig_digits_unc)
 
-    for i,(v,e) in enumerate(itertools.izip(cont[valKey],cont[uncKey])):        
-        if isinstance(e, tuple):
+    for i, (val, unc) in enumerate(zip(cont[val_key], cont[unc_key])):        
+        if isinstance(unc, tuple):
             """
-            case for TGraphAsymmErrors with e = (elow,ehigh), the central value is rounded 
+            case for TGraphAsymmErrors with unc = (elow,ehigh), the central value is rounded 
             using the significant digits of the largest of the two uncertainties,
             the smaller uncertainty would be rounded accordingly (at least 1 digit)
             usually lower and higher uncertainties will be of the same order of magnitude
             or at most different by 1 order (like +0.132  -0.083), in which case, 
             if choosing 2 significant digits, the rounding should result in +0.13  -0.08
             """
-            maxabse = 0.0
-            minIndex = 0
+            max_absunc = 0.0
+            index_min_unc = 0
             # set default precision for both sides of uncertainty
-            sigDigitsUncNtuple = [sigDigitsUnc, sigDigitsUnc]
-            if abs(e[0]) < abs(e[1]):
-                maxabse = abs(e[1])
-                minIndex = 0
-                relativePrecision = getValuePrecisionWrtReference(e[0],e[1])
+            sig_digits_unc_ntuple = [sig_digits_unc, sig_digits_unc]
+            if abs(unc[0]) < abs(unc[1]):
+                max_absunc = abs(unc[1])
+                index_min_unc = 0
+                relative_precision = get_value_precision_wrt_reference(unc[0], unc[1])
             else:
-                maxabse = abs(e[0])
-                minIndex = 1
-                relativePrecision = getValuePrecisionWrtReference(e[1],e[0])
+                max_absunc = abs(unc[0])
+                index_min_unc = 1
+                relative_precision = get_value_precision_wrt_reference(unc[1], unc[0])
             # update precision on smaller uncertainty (at least 1 significant digit)
-            sigDigitsUncNtuple[minIndex] = int(max(1,sigDigitsUnc+relativePrecision))
-            cont[uncKey][i] = (relative_round(e[0], sigDigitsUncNtuple[0]),
-                               relative_round(e[1], sigDigitsUncNtuple[1])
-                           )
-            cont[valKey][i] = relative_round(v,int(sigDigitsUnc+getValuePrecisionWrtReference(v,maxabse)))
+            sig_digits_unc_ntuple[index_min_unc] = int(max(1, sig_digits_unc + relative_precision))
+            cont[unc_key][i] = (relative_round(unc[0], sig_digits_unc_ntuple[0]),
+                                relative_round(unc[1], sig_digits_unc_ntuple[1]))
+            cont[val_key][i] = relative_round(val, int(sig_digits_unc + get_value_precision_wrt_reference(val, max_absunc)))
         else:
             # standard case for TH1 or TGraphErrors, uncertainty is a single value
-            cont[uncKey][i] = relative_round(e,sigDigitsUnc)
-            cont[valKey][i] = relative_round(v,int(sigDigitsUnc+getValuePrecisionWrtReference(v,e)))
+            cont[unc_key][i] = relative_round(unc, sig_digits_unc)
+            cont[val_key][i] = relative_round(val, int(sig_digits_unc + get_value_precision_wrt_reference(val, unc)))
 
 
 def check_file_existence(path_to_file):
