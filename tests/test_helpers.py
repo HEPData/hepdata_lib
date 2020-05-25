@@ -40,7 +40,7 @@ class TestHelpers(TestCase):
         # (container, key_for_values, key_for_uncertanties, significant_digits)
         # uncertainty has a single value
         cont = {"val"       : [1.23456, 1234.56, 0.0012345, 0.123],
-                "unc"       : [0.00123,    1.23, 0.012,     0.12]
+                "unc"       : [0.00123,    1.23, 0.012,     0.12],
                 "val_round" : [1.2346,  1234.6,  0.001,     0.12],
                 "unc_round" : [0.0012,     1.2,  0.012,     0.12]
         }
@@ -54,7 +54,7 @@ class TestHelpers(TestCase):
         # (container, key_for_values, key_for_uncertanties, significant_digits)
         # uncertainty has two value, as it would be the case with TGraphAsymmErrors
         cont_asymm_err = {"val"       : [1.23456,           0.123],
-                          "unc"       : [(0.00123, 0.0123), (0.012, 0.12)]
+                          "unc"       : [(0.00123, 0.0123), (0.012, 0.12)],
                           "val_round" : [1.235,             0.12],
                           "unc_round" : [(0.001, 0.012),    (0.01, 0.12)]
         }
