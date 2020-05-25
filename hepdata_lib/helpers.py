@@ -159,14 +159,12 @@ def round_value_and_uncertainty(cont, val_key="y", unc_key="dy", sig_digits_unc=
 
     for i, (val, unc) in enumerate(zip(cont[val_key], cont[unc_key])):
         if isinstance(unc, tuple):
-            """
-            case for TGraphAsymmErrors with unc = (elow,ehigh), the central value is rounded
-            using the significant digits of the largest of the two uncertainties,
-            the smaller uncertainty would be rounded accordingly (at least 1 digit)
-            usually lower and higher uncertainties will be of the same order of magnitude
-            or at most different by 1 order (like +0.132  -0.083), in which case,
-            if choosing 2 significant digits, the rounding should result in +0.13  -0.08
-            """
+            # case for TGraphAsymmErrors with unc = (elow,ehigh), the central value is rounded
+            # using the significant digits of the largest of the two uncertainties,
+            # the smaller uncertainty would be rounded accordingly (at least 1 digit)
+            # usually lower and higher uncertainties will be of the same order of magnitude
+            # or at most different by 1 order (like +0.132  -0.083), in which case,
+            # if choosing 2 significant digits, the rounding should result in +0.13  -0.08
             max_absunc = 0.0
             index_min_unc = 0
             # set default precision for both sides of uncertainty
