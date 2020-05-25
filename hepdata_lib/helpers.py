@@ -133,7 +133,7 @@ def round_value_and_uncertainty_to_decimals(cont, val_key="y", unc_key="dy", dec
         cont[val_key][i] = round(val, decimals)
         if isinstance(unc, tuple):
             cont[unc_key][i] = (round(unc[0], decimals), round(unc[1], decimals))          
-       else:
+        else:
             cont[unc_key][i] = round(unc, decimals)
 
 
