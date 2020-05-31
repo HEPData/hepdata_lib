@@ -50,46 +50,67 @@ def find_all_matching(path, pattern):
     return result
 
 
-def relative_round(value, relative_digits):
-    """Rounds to a given relative precision"""
+def get_number_precision(value):
+    """
+    Get precision of an input value.
+    Exact integer powers of 10 are assigned same precision of smaller numbers
+    For example
+    get_number_precision(10.0) = 1
+    get_number_precision(10.001) = 2
+    get_number_precision(9.999) = 1
+    """
 
+    if isinstance(value, tuple):
+        return (get_number_precision(x) for x in value)
+
+    # if value is tuple, value == 0 might cause ValueError saying that
+    # 'The truth value of an array with more than one element is ambiguous'
+    # Thus, tuple is evaluated above
     if value == 0 or isinstance(value, str) or np.isnan(value) or np.isinf(value):
         return value
+
+    return math.ceil(math.log10(abs(value)))
+
+
+def relative_round(value, relative_digits):
+    """Rounds to a given relative precision"""
 
     if isinstance(value, tuple):
         return (relative_round(x, relative_digits) for x in value)
 
-    value_precision = math.ceil(math.log10(abs(value)))
+    if value == 0 or isinstance(value, str) or np.isnan(value) or np.isinf(value):
+        return value
+
+    value_precision = get_number_precision(value)
     absolute_digits = -value_precision + relative_digits
 
     return round(value, int(absolute_digits))
 
 
-def get_number_precision(value):
-    """Get precision of an input value."""
-
-    if value == 0 or isinstance(value, str) or np.isnan(value) or np.isinf(value):
-        return value
-    if isinstance(value, tuple):
-        return (get_number_precision(x) for x in value)
-
-    return math.ceil(math.log10(abs(value)))
-
-
 def get_value_precision_wrt_reference(value, reference):
     """
     relative precision of first argument with respect to the second one
-    value and reference must be of the same type
-    usually they are float, but should also work for tuples
+    value and reference are both float and/or int
+    value can be float when reference is an int and viceversa
 
     : param value: first value
-    : type  value: float
+    : type  value: float, int
 
     : param reference: reference value (usually the uncertainty on value)
-    : type  reference: float
+    : type  reference: float, int
     """
-    return get_number_precision(value) - get_number_precision(reference)
 
+    this_function = "get_value_precision_wrt_reference()"
+    good_types = [int, float]
+    arguments = [value, reference]
+
+    # first check all arguments have appropriate type
+    for input_arg in arguments:
+        if not any(isinstance(input_arg, x) for x in good_types):
+            raise ValueError("Unsupported input type passed to " + this_function )
+
+    return get_number_precision(value) - get_number_precision(reference)
+    
 
 def round_value_to_decimals(cont, key="y", decimals=3):
     """

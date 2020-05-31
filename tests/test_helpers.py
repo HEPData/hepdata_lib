@@ -6,6 +6,8 @@ from unittest import TestCase
 import numpy as np
 
 from hepdata_lib.helpers import relative_round
+from hepdata_lib.helpers import get_number_precision
+from hepdata_lib.helpers import get_value_precision_wrt_reference
 from hepdata_lib.helpers import round_value_and_uncertainty
 
 
@@ -33,6 +35,59 @@ class TestHelpers(TestCase):
             self.assertTrue(rounded == result)
 
 
+    def test_get_number_precision(self):
+        '''Test behavior of get_number_precision function'''
+
+        # Some values are mapped onto themselves
+        eigenvalues = [np.inf, 0, 'astring']
+        for eig in eigenvalues:
+            self.assertTrue(get_number_precision(eig) == eig)
+        self.assertTrue(np.isnan(get_number_precision(np.nan)))
+        
+        # test case with single value
+        # test format is (original value, precision)
+        values = [(12.5, 2),
+                  (1.25, 1),
+                  (0.125, 0),
+                  (0.0125, -1)
+        ]
+        for value, prec in values:
+            precision = get_number_precision(value)
+            self.assertTrue(precision == prec)
+
+        # test case with ntuple (e.g. with two values)
+        # test format is (original value, precision)
+        # both original value and precision are ntuples (with two elements)
+        ntuples = {(12.5, 1.25) : (2, 1),
+                   (0.125, 0.0125) : (0, -1)
+        }
+        for key in ntuples:
+            prec1, prec2 = get_number_precision(key)
+            self.assertTrue((prec1, prec2) == ntuples[key])
+
+
+    def test_get_value_precision_wrt_reference(self):
+        '''Test behavior of get_value_precision_wrt_reference function'''
+
+        # test format is (value, reference, relative precision)
+        values = [(12.5, 0.08, 3),
+                  (1.25, 102.4, -2),
+                  (0.0, 0.002, 2),
+                  (10.0, 9, 0)
+        ]
+        for val, ref, prec in values:
+            precision = get_value_precision_wrt_reference(val, ref)
+            self.assertTrue(precision == prec)
+
+        # test wrong input type
+        with self.assertRaises(ValueError):
+            get_value_precision_wrt_reference(1.23, "bad")
+        with self.assertRaises(ValueError):
+            get_value_precision_wrt_reference(1.23, (1.2, 3.4))
+        with self.assertRaises(ValueError):
+            get_value_precision_wrt_reference("bad", (1.2, 3.4))
+            
+
     def test_round_value_and_uncertainty(self):
         '''Test behavior of round_value_and_uncertainty function'''
 
@@ -45,9 +100,8 @@ class TestHelpers(TestCase):
                 "unc_round": [0.0012, 1.2, 0.012, 0.12]}
         # round to two significant digits
         round_value_and_uncertainty(cont, "val", "unc", 2)
-        for index in range(len(cont["val"])):
-            self.assertTrue(cont["val"][index] == cont["val_round"][index])
-            self.assertTrue(cont["unc"][index] == cont["unc_round"][index])
+        self.assertTrue(cont["val"] == cont["val_round"])
+        self.assertTrue(cont["unc"] == cont["unc_round"])
 
         # Test format is
         # (container, key_for_values, key_for_uncertanties, significant_digits)
@@ -58,6 +112,5 @@ class TestHelpers(TestCase):
                           "unc_round": [(0.001, 0.012), (0.01, 0.12)]}
         # round to two significant digits
         round_value_and_uncertainty(cont_asymm_err, "val", "unc", 2)
-        for index in range(len(cont_asymm_err["val"])):
-            self.assertTrue(cont_asymm_err["val"] == cont_asymm_err["val_round"])
-            self.assertTrue(cont_asymm_err["unc"] == cont_asymm_err["unc_round"])
+        self.assertTrue(cont_asymm_err["val"] == cont_asymm_err["val_round"])
+        self.assertTrue(cont_asymm_err["unc"] == cont_asymm_err["unc_round"])
