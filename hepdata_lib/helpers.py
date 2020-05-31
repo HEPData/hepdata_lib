@@ -110,7 +110,7 @@ def get_value_precision_wrt_reference(value, reference):
             raise ValueError("Unsupported input type passed to " + this_function)
 
     return get_number_precision(value) - get_number_precision(reference)
-    
+
 
 def round_value_to_decimals(cont, key="y", decimals=3):
     """
