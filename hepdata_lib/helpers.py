@@ -107,7 +107,7 @@ def get_value_precision_wrt_reference(value, reference):
     # first check all arguments have appropriate type
     for input_arg in arguments:
         if not any(isinstance(input_arg, x) for x in good_types):
-            raise ValueError("Unsupported input type passed to " + this_function )
+            raise ValueError("Unsupported input type passed to " + this_function)
 
     return get_number_precision(value) - get_number_precision(reference)
     
