@@ -53,11 +53,12 @@ class Variable(object):
     # pylint: disable=too-many-instance-attributes
     # Eight is reasonable in this case.
 
-    def __init__(self, name, is_independent=True, is_binned=True, units="", values=None):
+    def __init__(self, name, is_independent=True, is_binned=True, has_weighted_bins=False, units="", values=None):
         # pylint: disable=too-many-arguments
         self.name = name
         self.is_independent = is_independent
         self.is_binned = is_binned
+        self.has_weighted_bins = has_weighted_bins
         self.qualifiers = []
         self.units = units
         # needed to make pylint happy, see https://github.com/PyCQA/pylint/issues/409
@@ -85,6 +86,17 @@ class Variable(object):
 
             # All good
             self._values = [(float(x[0]), float(x[1])) for x in value_list]
+        elif self.has_weighted_bins:
+            # Check that the input is well-formed
+            try:
+                assert all([len(x) == 3 for x in value_list])
+            except (AssertionError, TypeError, ValueError):
+                raise ValueError("For Variables with weighted bins, values should be tuples of length three: \
+                                 (bin's weighted mean, lower bin edge, upper bin edge)."
+                                )
+
+            # All good
+            self._values = [(float(x[0]), float(x[1]), float(x[2])) for x in value_list]
         else:
             # Check that the input is well-formed
             try:
@@ -95,11 +107,14 @@ class Variable(object):
 
     def scale_values(self, factor):
         """Multiply each value by constant factor. Also applies to uncertainties."""
-        if not self.is_binned:
-            self.values = [factor * x for x in self.values]
-        else:
+        if self.is_binned:
             self.values = [(factor * x[0], factor * x[1])
                            for x in self.values]
+        elif self.has_weighted_bins:
+            self.values = [(factor * x[0], factor * x[1], factor * x[2])
+                           for x in self.values]
+        else:
+            self.values = [factor * x for x in self.values]
 
         for unc in self.uncertainties:
             unc.scale_values(factor)
@@ -168,6 +183,13 @@ class Variable(object):
                 valuedict["low"] = helpers.relative_round(self._values[i][0],
                                                           self.digits)
                 valuedict["high"] = helpers.relative_round(self._values[i][1],
+                                                           self.digits)
+            elif self.has_weighted_bins:
+                valuedict["value"] = helpers.relative_round(self._values[i][0],
+                                                          self.digits)
+                valuedict["low"] = helpers.relative_round(self._values[i][1],
+                                                          self.digits)
+                valuedict["high"] = helpers.relative_round(self._values[i][2],
                                                            self.digits)
             else:
                 valuedict["value"] = helpers.relative_round(self._values[i],
