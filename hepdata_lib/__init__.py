@@ -53,7 +53,8 @@ class Variable(object):
     # pylint: disable=too-many-instance-attributes
     # Eight is reasonable in this case.
 
-    def __init__(self, name, is_independent=True, is_binned=True, has_weighted_bins=False, units="", values=None):
+    def __init__(self, name, is_independent=True, is_binned=True, has_weighted_bins=False, 
+                 units="", values=None):
         # pylint: disable=too-many-arguments
         self.name = name
         self.is_independent = is_independent
@@ -91,7 +92,8 @@ class Variable(object):
             try:
                 assert all([len(x) == 3 for x in value_list])
             except (AssertionError, TypeError, ValueError):
-                raise ValueError("For Variables with weighted bins, values should be tuples of length three: \
+                raise ValueError("For Variables with weighted bins, values should be tuples \
+                                 of length three: \
                                  (bin's weighted mean, lower bin edge, upper bin edge)."
                                 )
 
@@ -186,7 +188,7 @@ class Variable(object):
                                                            self.digits)
             elif self.has_weighted_bins:
                 valuedict["value"] = helpers.relative_round(self._values[i][0],
-                                                          self.digits)
+                                                            self.digits)
                 valuedict["low"] = helpers.relative_round(self._values[i][1],
                                                           self.digits)
                 valuedict["high"] = helpers.relative_round(self._values[i][2],
