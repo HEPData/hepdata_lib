@@ -53,7 +53,7 @@ class Variable(object):
     # pylint: disable=too-many-instance-attributes
     # Eight is reasonable in this case.
 
-    def __init__(self, name, is_independent=True, is_binned=True, has_weighted_bins=False, 
+    def __init__(self, name, is_independent=True, is_binned=True, has_weighted_bins=False,
                  units="", values=None):
         # pylint: disable=too-many-arguments
         self.name = name
