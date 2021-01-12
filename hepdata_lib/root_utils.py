@@ -3,6 +3,7 @@
 from collections import defaultdict
 import numpy as np
 import ROOT as r
+import ctypes
 from hepdata_lib.helpers import check_file_existence
 
 class RootFileReader(object):
@@ -407,11 +408,11 @@ def get_graph_points(graph):
     points = defaultdict(list)
 
     for i in range(graph.GetN()):
-        x_val = r.Double()
-        y_val = r.Double()
+        x_val = ctypes.c_double()
+        y_val = ctypes.c_double()
         graph.GetPoint(i, x_val, y_val)
-        points["x"].append(float(x_val))
-        points["y"].append(float(y_val))
+        points["x"].append(float(x_val.value))
+        points["y"].append(float(y_val.value))
         if isinstance(graph, r.TGraphErrors):
             points["dx"].append(graph.GetErrorX(i))
             points["dy"].append(graph.GetErrorY(i))
