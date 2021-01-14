@@ -1,7 +1,7 @@
 """.C file reader"""
-
 import io
 from array import array
+from future.utils import raise_from
 import six
 from ROOT import TGraph, TGraphErrors
 import hepdata_lib.root_utils as ru
@@ -171,8 +171,8 @@ class CFileReader(object):
             dy_values.append(dy_value[value])
         try:
             t_object = TGraphErrors(length, x_values, y_values, dx_values, dy_values)
-        except TypeError:
-            raise TypeError("Invalid value in TGraphErrors constructor!")
+        except TypeError as err:
+            raise_from(TypeError("Invalid value in TGraphErrors constructor!"), err)
         graph = ru.get_graph_points(t_object)
 
         return graph
@@ -197,8 +197,8 @@ class CFileReader(object):
             y_values.append(y_value[value])
         try:
             t_object = TGraph(length, x_values, y_values)
-        except TypeError:
-            raise TypeError("Invalid value in TGraph constructor!")
+        except TypeError as err:
+            raise_from(TypeError("Invalid value in TGraph constructor!"), err)
         graph = ru.get_graph_points(t_object)
 
         return graph
@@ -287,17 +287,17 @@ class CFileReader(object):
                 if start == 1:
                     try:
                         tgraph_names.append(line.split('"', 1)[1].split('"')[0])
-                    except IndexError:
+                    except IndexError as err:
                         tgraph_names = 'null'
-                        raise IndexError("index out of range")
+                        raise_from(IndexError("index out of range"), err)
                     start = 0
                     counter = 0
                 if start == 2:
                     try:
                         tgrapherror_names.append(line.split('"', 1)[1].split('"')[0])
-                    except IndexError:
+                    except IndexError as err:
                         tgrapherror_names = 'null'
-                        raise IndexError("index out of range")
+                        raise_from(IndexError("index out of range"), err)
                     start = 0
                     counter = 0
 
@@ -401,6 +401,6 @@ class CFileReader(object):
                     values.append(int(i))
                 except ValueError:
                     values.append(float(i))
-            except ValueError:
-                raise ValueError("Value is not a number in variable:", graphname)
+            except ValueError as err:
+                raise_from(ValueError("Value is not a number in variable:", graphname), err)
         return values

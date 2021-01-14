@@ -1,9 +1,9 @@
 """hepdata_lib utilities to interact with ROOT data formats."""
-
 from collections import defaultdict
+import ctypes
+from future.utils import raise_from
 import numpy as np
 import ROOT as r
-import ctypes
 from hepdata_lib.helpers import check_file_existence
 
 class RootFileReader(object):
@@ -90,10 +90,10 @@ class RootFileReader(object):
             assert False
             return entry
 
-        except AssertionError:
-            raise IOError(
-                "Cannot find any object in file {0} with path {1}".format(
-                    self.tfile, path_to_object))
+        except AssertionError as err:
+            msg="Cannot find any object in file {0} with path {1}".format(
+                    self.tfile, path_to_object)
+            raise_from(IOError(msg), err)
 
     def read_graph(self, path_to_graph):
         """Extract lists of X and Y values from a TGraph.
@@ -197,9 +197,9 @@ class RootFileReader(object):
         for event in tree:
             try:
                 values.append(getattr(event, branch_name))
-            except AttributeError:
+            except AttributeError as err:
                 msg = "The TTree does not have a branch with name '{0}'.".format(branch_name)
-                raise RuntimeError(msg)
+                raise_from(RuntimeError(msg),err)
         return values
 
     def read_limit_tree(self,
