@@ -15,7 +15,7 @@ jobs:
         # Install dependencies
         - name: Install dependencies
           run: |
-            yum install -y python-pip ghostscript
+            apt-get install python-pip ghostscript
             python -m pip install pytest_pylint configparser astroid pyyml papermill nbconvert
             
         # Run pytest
