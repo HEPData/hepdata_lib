@@ -8,27 +8,29 @@ jobs:
   linuxpy3:
       runs-on: [ubuntu-18.04]
       container:
-          image: 'rootproject/root:latest'
+          image: 'rootproject/root:6.22.06-ubuntu20.04'
       steps:
         - uses: actions/checkout@v2
 
         # Install dependencies
         - name: Install dependencies
           run: |
-            apt-get install python-pip ghostscript
-            python -m pip install pytest_pylint configparser astroid pyyml papermill nbconvert
+            curl https://bootstrap.pypa.io/get-pip.py > get-pip.py
+            python3 get-pip.py
+            python3 -m pip install pytest_pylint configparser astroid pyyml papermill nbconvert jupyter
             
         # Run pytest
         - name: Run pytest
           run: |
-            python -m pip install -e .
-            python setup.py test
+            python3 -m pip install -e .
+            python3 setup.py test
             
         # Save notebooks
         - name: Save notebooks
           if: ${{ always() }}
           run: |
-            python -m jupyter nbconvert --ExecutePreprocessor.timeout=600 --ExecutePreprocessor.allow_errors=True --to html --execute examples/*.ipynb
+            python3 -m jupyter kernelspec list
+            python3 -m jupyter nbconvert --ExecutePreprocessor.timeout=600 --ExecutePreprocessor.allow_errors=True --to html --execute examples/*.ipynb
             
         # Upload notebooks
         - name: Upload notebooks
@@ -42,9 +44,9 @@ jobs:
         - name: Run pylint
           if: ${{ always() }}
           run: |
-            python -m pip install -e .
-            python -m pylint hepdata_lib/*.py
-            python -m pylint tests/*.py --rcfile=tests/pylintrc
+            python3 -m pip install -e .
+            python3 -m pylint hepdata_lib/*.py
+            python3 -m pylint tests/*.py --rcfile=tests/pylintrc
             
  # This is a job for macOS python3 tests
   macospy3:
