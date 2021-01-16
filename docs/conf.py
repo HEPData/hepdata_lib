@@ -181,3 +181,20 @@ texinfo_documents = [
 
 # -- Extension configuration -------------------------------------------------
 autodoc_mock_imports = ["ROOT"]
+
+"""Patching m2r"""
+import m2r
+
+current_m2r_setup = m2r.setup
+
+def patched_m2r_setup(app):
+    try:
+        return current_m2r_setup(app)
+    except (AttributeError):
+        app.add_source_suffix(".md", "markdown")
+        app.add_source_parser(m2r.M2RParser)
+    return dict(
+        version=m2r.__version__, parallel_read_safe=True, parallel_write_safe=True,
+    )
+
+m2r.setup = patched_m2r_setup
