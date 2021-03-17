@@ -246,3 +246,19 @@ def check_file_size(path_to_file, upper_limit=None, lower_limit=None):
     if lower_limit and size < lower_limit:
         raise RuntimeError("File too small: '{0}'. Minimal allowed value is {1} \
                             MB.".format(path_to_file, lower_limit))
+
+def sanitize_value(value):
+    """
+    Handle conversion of input types for internal storage.
+
+    :param value: User-side input value to sanitize.
+    :type value: string, int, or castable to float
+
+    Strings and integers are left alone,
+    everything else is converted to float.
+    """
+    if isinstance(value,str):
+        return value
+    if isinstance(value,int):
+        return value
+    return float(value)
