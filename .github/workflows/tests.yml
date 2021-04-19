@@ -6,7 +6,9 @@ on: [push,pull_request]
 jobs:
   # This is a job for linux python3 tests
   linuxpy3:
-      runs-on: [ubuntu-20.04]
+      runs-on: [ubuntu-18.04]
+      container:
+          image: 'rootproject/root:6.20.08-ubuntu20.04'
       steps:
         - uses: actions/checkout@v2
 
@@ -16,7 +18,6 @@ jobs:
             curl https://bootstrap.pypa.io/get-pip.py > get-pip.py
             python3 get-pip.py
             python3 -m pip install pytest_pylint configparser astroid pyyml papermill nbconvert jupyter
-            sudo snap install root-framework
             
         # Run pytest
         - name: Run pytest
