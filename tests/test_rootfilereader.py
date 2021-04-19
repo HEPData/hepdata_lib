@@ -661,9 +661,8 @@ class TestRootFileReader(TestCase):
         ROOT.gROOT.SetBatch(ROOT.kTRUE)
 
         # Create test histogram, plot on canvas, save to file
-        histogram = ROOT.TH1D("testhist", "testhist", 10, 0, 1)
-
         tfile = make_tmp_root_file(testcase=self)
+        histogram = ROOT.TH1D("testhist", "testhist", 10, 0, 1)
         path_to_file = tfile.GetName()
 
         canvas = ROOT.TCanvas()
