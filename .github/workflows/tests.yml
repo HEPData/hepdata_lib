@@ -24,6 +24,7 @@ jobs:
         # Run pytest
         - name: Run pytest
           run: |
+            source root/bin/thisroot.sh
             python3 -m pip install -e .
             python3 setup.py test
             
