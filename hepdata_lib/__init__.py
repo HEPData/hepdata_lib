@@ -161,6 +161,10 @@ class Variable(object):
 
         tmp["values"] = []
 
+        nonzero_uncs = helpers.any_uncertainties_nonzero(
+                                                        self.uncertainties,
+                                                        size=len(self._values)
+                                                        )
         for i in range(len(self._values)):
             valuedict = defaultdict(list)
 
@@ -172,25 +176,27 @@ class Variable(object):
             else:
                 valuedict["value"] = helpers.relative_round(self._values[i],
                                                             self.digits)
-
-            for unc in self.uncertainties:
-                if unc.is_symmetric:
-                    valuedict['errors'].append({
-                        "symerror":
-                            helpers.relative_round(unc.values[i], self.digits),
-                        "label":
-                            unc.label
-                    })
-                else:
-                    valuedict['errors'].append({
-                        "asymerror": {
-                            "minus":
-                                helpers.relative_round(unc.values[i][0], self.digits),
-                            "plus":
-                                helpers.relative_round(unc.values[i][1], self.digits)
-                        },
-                        "label": unc.label
-                    })
+            # An uncertainty entry is only appended
+            # if at least one of the uncertanities is not zero.
+            if nonzero_uncs[i]:
+                for unc in self.uncertainties:
+                    if unc.is_symmetric:
+                        valuedict['errors'].append({
+                            "symerror":
+                                helpers.relative_round(unc.values[i], self.digits),
+                            "label":
+                                unc.label
+                        })
+                    else:
+                        valuedict['errors'].append({
+                            "asymerror": {
+                                "minus":
+                                    helpers.relative_round(unc.values[i][0], self.digits),
+                                "plus":
+                                    helpers.relative_round(unc.values[i][1], self.digits)
+                            },
+                            "label": unc.label
+                        })
             tmp["values"].append(valuedict)
         return tmp
 

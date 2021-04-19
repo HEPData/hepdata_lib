@@ -246,3 +246,17 @@ def check_file_size(path_to_file, upper_limit=None, lower_limit=None):
     if lower_limit and size < lower_limit:
         raise RuntimeError("File too small: '{0}'. Minimal allowed value is {1} \
                             MB.".format(path_to_file, lower_limit))
+
+
+def any_uncertainties_nonzero(uncertainties, size):
+    """
+    Return a mask of bins where any of the uncertainties is nonzero.
+    """
+    nonzero = np.zeros(size, dtype=bool)
+
+    for unc in uncertainties:
+        if unc.is_symmetric:
+            nonzero = nonzero | (np.array(unc.values) > 0)
+        else:
+            nonzero = nonzero | np.any((np.array(unc.values) > 0),axis=1)
+    return nonzero
