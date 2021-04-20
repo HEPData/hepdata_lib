@@ -12,6 +12,7 @@ import tarfile
 import warnings
 from collections import defaultdict
 import yaml
+from future.utils import raise_from
 
 # try to use LibYAML bindings if possible
 try:
@@ -77,11 +78,11 @@ class Variable(object):
         if self.is_binned:
             # Check that the input is well-formed
             try:
-                assert all([len(x) == 2 for x in value_list])
-            except (AssertionError, TypeError, ValueError):
-                raise ValueError("For binned Variables, values should be tuples of length two: \
+                assert all((len(x) == 2 for x in value_list))
+            except (AssertionError, TypeError, ValueError) as err:
+                msg = "For binned Variables, values should be tuples of length two: \
                                  (lower bin edge, upper bin edge)."
-                                )
+                raise_from(ValueError(msg), err)
 
             # All good
             self._values = [(float(x[0]), float(x[1])) for x in value_list]
@@ -89,8 +90,8 @@ class Variable(object):
             # Check that the input is well-formed
             try:
                 parsed_values = [x if isinstance(x, str) else float(x) for x in value_list]
-            except (TypeError, ValueError):
-                raise ValueError("Malformed input for unbinned variable: ", value_list)
+            except (TypeError, ValueError) as err:
+                raise_from(ValueError("Malformed input for unbinned variable: ", value_list),err)
             self._values = parsed_values
 
     def scale_values(self, factor):
