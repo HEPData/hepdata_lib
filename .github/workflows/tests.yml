@@ -60,10 +60,12 @@ jobs:
             python3 -m pip install -e .
             python3 -m pylint hepdata_lib/*.py
             python3 -m pylint tests/*.py --rcfile=tests/pylintrc
-        - name: Coveralls
-          uses: coverallsapp/github-action@master
-          with:
-            github-token: ${{ secrets.GITHUB_TOKEN }}
+        - name: Upload coverage data to coveralls.io
+          run: |
+            python -m pip install coveralls==2.2
+            coveralls --service=github
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
  # This is a job for macOS python3 tests
 #   macospy3:
 #     runs-on: macos-latest
