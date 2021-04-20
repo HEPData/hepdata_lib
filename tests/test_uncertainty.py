@@ -67,5 +67,5 @@ class TestUncertainty(TestCase):
         testunc.set_values_from_intervals(intervals, nominal=values)
 
         # Check that both agree
-        self.assertTrue(all([test_utilities.tuple_compare(tup1, tup2) \
-                        for tup1, tup2 in zip(testunc.values, refunc.values)]))
+        self.assertTrue(all((test_utilities.tuple_compare(tup1, tup2) \
+                        for tup1, tup2 in zip(testunc.values, refunc.values))))

@@ -629,8 +629,8 @@ class TestRootFileReader(TestCase):
         except RuntimeError:
             self.fail("RootFileReader.read_tree raised an unexpected RuntimeError!")
         self.assertIsInstance(data_readback, list)
-        self.assertTrue(all([float_compare(values[0], values[1])
-                             for values in zip(data, data_readback)]))
+        self.assertTrue(all((float_compare(values[0], values[1])
+                             for values in zip(data, data_readback))))
 
         # Try reading a nonexistant branch from an existing tree
         with self.assertRaises(RuntimeError):

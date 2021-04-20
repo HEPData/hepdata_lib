@@ -2,10 +2,13 @@
 # -*- coding:utf-8 -*-
 """Utilities for tests."""
 
-import string
-import random
 import os
+import random
+import string
+
 import ROOT
+from future.utils import raise_from
+
 
 def float_compare(x_val, y_val, precision=1e-6):
     '''Helper function to check that two numbers are equal within float precision.'''
@@ -84,9 +87,9 @@ def make_tmp_root_file(path_to_file='tmp_{RANDID}.root', mode="RECREATE",
     if "{RANDID}" in path_to_file:
         try:
             path_to_file = path_to_file.format(RANDID=get_random_id())
-        except IndexError:
-            raise IOError("String substitution failed. Your input path should not \
-                           have any braces except possibly for the {RANDID} token!")
+        except IndexError as err:
+            raise_from(IOError("String substitution failed. Your input path should not \
+                           have any braces except possibly for the {RANDID} token!"), err)
 
     rfile = ROOT.TFile(path_to_file, mode)
 
