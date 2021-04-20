@@ -88,12 +88,12 @@ class RootFileReader(object):
                 print("Name: '{0}', Type: '{1}'.".format(
                     entry.GetName(), type(entry)))
             assert False
-            return entry
 
         except AssertionError as err:
             msg="Cannot find any object in file {0} with path {1}".format(
                     self.tfile, path_to_object)
             raise_from(IOError(msg), err)
+        return None
 
     def read_graph(self, path_to_graph):
         """Extract lists of X and Y values from a TGraph.
