@@ -85,7 +85,12 @@ class Variable(object):
                 raise_from(ValueError(msg), err)
 
             # All good
-            self._values = [(helpers.sanitize_value(x[0]), helpers.sanitize_value(x[1])) for x in value_list]
+            self._values = [
+                            (
+                             helpers.sanitize_value(x[0]),
+                             helpers.sanitize_value(x[1])
+                            ) for x in value_list
+                            ]
         else:
             # Check that the input is well-formed
             try:
