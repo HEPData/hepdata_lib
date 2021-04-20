@@ -21,11 +21,13 @@ jobs:
             sudo sed -i '/.*PDF.*/ s/none/read | write/g' /etc/ImageMagick*/policy.xml
             ls /etc/ImageMagick*/policy.xml
             cat /etc/ImageMagick*/policy.xml
+            sudo apt update
+            sudo apt install ghostscript
             echo "---GS---"
             which gs
             echo "--------"
             echo "---DELEGATES---"
-            cat /etc/ImageMagick-6/delegates.xml | grep gs
+            cat /etc/ImageMagick/delegates.xml | grep gs
             echo "---------------"
         - name: Install ROOT
           run: |
