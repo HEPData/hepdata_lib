@@ -1,4 +1,4 @@
-FROM rootproject/root:latest
+FROM rootproject/root:6.22.06-fedora33
 
 ENV MAGICK_HOME=/usr
 
