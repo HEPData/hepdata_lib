@@ -199,8 +199,14 @@ class Variable(object):
                             "label": unc.label
                         })
             elif self.uncertainties:
-                print("Warning: omitting 'errors' since all uncertainties are zero for bin {} of variable '{}'.".format(i+1, self.name))
-                print("Note that bins with zero content should preferably be omitted completely from the HEPData table.")
+                print(
+                    "Warning: omitting 'errors' since all uncertainties \
+                    are zero for bin {} of variable '{}'.".format(i+1, self.name)
+                    )
+                print(
+                    "Note that bins with zero content should preferably \
+                    be omitted completely from the HEPData table."
+                    )
             tmp["values"].append(valuedict)
         return tmp
 
