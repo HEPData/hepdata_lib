@@ -45,8 +45,8 @@ class TestOutput(TestCase):
         testtxt = ("dependent_variables:\n- header:\n    name: Y\n  values:\n" +
                    "  - value: 0.12\n  - value: 0.22\nindependent_variables:\n" +
                    "- header:\n    name: X\n  values:\n  - value: 1.2\n  - value: 2.2\n")
-        testfile = open("output/testtable.yaml", 'r')
-        testyaml = testfile.read()
+        with open("output/testtable.yaml", 'r') as testfile:
+            testyaml = testfile.read()
 
         self.assertEqual(str(testyaml), testtxt)
         self.addCleanup(os.remove, "submission.tar.gz")
