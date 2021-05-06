@@ -35,7 +35,7 @@ class CFileReader(object):
                     "CFileReader: Input file is not a .C file (name does not end in .C)!"
                     )
             if check_file_existence(cfile):
-                self._cfile = open(cfile, "r")
+                self._cfile = open(cfile, "r") # pylint: disable=consider-using-with
         elif six.PY2:
             if isinstance(cfile, file): # pylint:disable=E0602
                 self._cfile = cfile

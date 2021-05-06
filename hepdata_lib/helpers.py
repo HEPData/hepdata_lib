@@ -20,22 +20,25 @@ def execute_command(command):
     :param command: Command to execute.
     :type command: string
     """
-    proc = subprocess.Popen(
-        command,
+
+    subprocess_args = dict(
+        args=command,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         shell=True,
-        universal_newlines=True)
-    exit_code = proc.wait()
-    if exit_code == 127:
-        print("Command does not exist:", command)
-        return False
-    if exit_code != 0:
-        result = ""
-        for line in proc.stderr:
-            result = result + line
-        raise RuntimeError(result)
+        universal_newlines=True
+    )
+    with subprocess.Popen(**subprocess_args) as proc:
+        exit_code = proc.wait()
+        if exit_code == 127:
+            print("Command does not exist:", command)
+            return False
+        if exit_code != 0:
+            result = ""
+            for line in proc.stderr:
+                result = result + line
+            raise RuntimeError(result)
     return True
 
 def find_all_matching(path, pattern):
@@ -246,6 +249,20 @@ def check_file_size(path_to_file, upper_limit=None, lower_limit=None):
     if lower_limit and size < lower_limit:
         raise RuntimeError("File too small: '{0}'. Minimal allowed value is {1} \
                             MB.".format(path_to_file, lower_limit))
+
+
+def any_uncertainties_nonzero(uncertainties, size):
+    """
+    Return a mask of bins where any of the uncertainties is nonzero.
+    """
+    nonzero = np.zeros(size, dtype=bool)
+
+    for unc in uncertainties:
+        if unc.is_symmetric:
+            nonzero = nonzero | (np.array(unc.values) != 0)
+        else:
+            nonzero = nonzero | np.any((np.array(unc.values) != 0),axis=1)
+    return nonzero
 
 def sanitize_value(value):
     """
