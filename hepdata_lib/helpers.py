@@ -256,7 +256,7 @@ def any_uncertainties_nonzero(uncertainties, size):
 
     for unc in uncertainties:
         if unc.is_symmetric:
-            nonzero = nonzero | (np.array(unc.values) > 0)
+            nonzero = nonzero | (np.array(unc.values) != 0)
         else:
-            nonzero = nonzero | np.any((np.array(unc.values) > 0),axis=1)
+            nonzero = nonzero | np.any((np.array(unc.values) != 0),axis=1)
     return nonzero
