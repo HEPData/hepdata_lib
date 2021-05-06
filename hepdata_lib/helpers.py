@@ -20,22 +20,25 @@ def execute_command(command):
     :param command: Command to execute.
     :type command: string
     """
-    proc = subprocess.Popen(
-        command,
+
+    subprocess_args = dict(
+        args=command,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         shell=True,
-        universal_newlines=True)
-    exit_code = proc.wait()
-    if exit_code == 127:
-        print("Command does not exist:", command)
-        return False
-    if exit_code != 0:
-        result = ""
-        for line in proc.stderr:
-            result = result + line
-        raise RuntimeError(result)
+        universal_newlines=True
+    )
+    with subprocess.Popen(**subprocess_args) as proc:
+        exit_code = proc.wait()
+        if exit_code == 127:
+            print("Command does not exist:", command)
+            return False
+        if exit_code != 0:
+            result = ""
+            for line in proc.stderr:
+                result = result + line
+            raise RuntimeError(result)
     return True
 
 def find_all_matching(path, pattern):

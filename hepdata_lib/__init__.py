@@ -541,15 +541,13 @@ class Submission(object):
         self.copy_files(outdir)
 
         # Put everything into a tarfile
-        tar = tarfile.open("submission.tar.gz", "w:gz")
-        for yaml_file in helpers.find_all_matching(outdir, "*.yaml"):
-            tar.add(yaml_file)
-        for png_file in helpers.find_all_matching(outdir, "*.png"):
-            tar.add(png_file)
-        for additional in self.files_to_copy:
-            tar.add(os.path.join(outdir, os.path.basename(additional)))
-
-        tar.close()
+        with tarfile.open("submission.tar.gz", "w:gz") as tar:
+            for yaml_file in helpers.find_all_matching(outdir, "*.yaml"):
+                tar.add(yaml_file)
+            for png_file in helpers.find_all_matching(outdir, "*.png"):
+                tar.add(png_file)
+            for additional in self.files_to_copy:
+                tar.add(os.path.join(outdir, os.path.basename(additional)))
 
 
 class Uncertainty(object):
