@@ -260,3 +260,19 @@ def any_uncertainties_nonzero(uncertainties, size):
         else:
             nonzero = nonzero | np.any((np.array(unc.values) != 0),axis=1)
     return nonzero
+
+def sanitize_value(value):
+    """
+    Handle conversion of input types for internal storage.
+
+    :param value: User-side input value to sanitize.
+    :type value: string, int, or castable to float
+
+    Strings and integers are left alone,
+    everything else is converted to float.
+    """
+    if isinstance(value,str):
+        return value
+    if isinstance(value,int):
+        return value
+    return float(value)

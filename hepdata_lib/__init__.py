@@ -85,11 +85,16 @@ class Variable(object):
                 raise_from(ValueError(msg), err)
 
             # All good
-            self._values = [(float(x[0]), float(x[1])) for x in value_list]
+            self._values = [
+                            (
+                             helpers.sanitize_value(x[0]),
+                             helpers.sanitize_value(x[1])
+                            ) for x in value_list
+                            ]
         else:
             # Check that the input is well-formed
             try:
-                parsed_values = [x if isinstance(x, str) else float(x) for x in value_list]
+                parsed_values = [helpers.sanitize_value(x) for x in value_list]
             except (TypeError, ValueError) as err:
                 raise_from(ValueError("Malformed input for unbinned variable: ", value_list),err)
             self._values = parsed_values
