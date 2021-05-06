@@ -178,7 +178,7 @@ class Variable(object):
                 valuedict["value"] = helpers.relative_round(self._values[i],
                                                             self.digits)
             # An uncertainty entry is only appended
-            # if at least one of the uncertanities is not zero.
+            # if at least one of the uncertainties is not zero.
             if nonzero_uncs[i]:
                 for unc in self.uncertainties:
                     if unc.is_symmetric:
