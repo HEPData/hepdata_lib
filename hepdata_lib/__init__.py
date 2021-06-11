@@ -270,6 +270,7 @@ class Table(object):
 
         if not isinstance(file_path, str):
             raise TypeError("Expected string argument, instead got: '{}'.".format(type(file_path)))
+        file_path = os.path.expanduser(file_path)
         if os.path.exists(file_path):
             self.image_files.add(file_path)
         else:
