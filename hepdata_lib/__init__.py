@@ -245,7 +245,7 @@ class Table(object):
     def name(self, name):
         """Name setter."""
         if len(name) > 64:
-            raise ValueError("Table name must not be longer than 64 characters.")
+            raise ValueError("Table name must not be longer than 64 characters: " + name)
         self._name = name
 
     def add_image(self, file_path, outdir=None):
