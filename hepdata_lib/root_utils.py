@@ -284,7 +284,7 @@ def get_hist_2d_points(hist, **kwargs):
         assert ylim[0] < ylim[1]
 
     points = {}
-    for key in ["x", "y", "x_edges", "y_edges", "z", "dz","x_labels","y_labels"]:
+    for key in ["x", "y", "x_edges", "y_edges", "z", "dz", "x_labels", "y_labels"]:
         points[key] = []
 
     ixmin = hist.GetXaxis().FindBin(xlim[0]) if xlim[0] is not None else 1
