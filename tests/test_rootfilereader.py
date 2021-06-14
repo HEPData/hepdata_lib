@@ -184,9 +184,9 @@ class TestRootFileReader(TestCase):
             hist.SetBinContent(i, y_values[i-1])
             hist.SetBinError(i, dy_values[i-1])
 
-            c = hist.GetBinCenter(i)
-            w = hist.GetBinWidth(i)
-            x_edges.append((c-0.5*w, c+0.5*w))
+            center = hist.GetBinCenter(i)
+            width = hist.GetBinWidth(i)
+            x_edges.append((center-0.5*width, center+0.5*width))
 
         testfile = make_tmp_root_file(testcase=self)
         testfile.cd()
@@ -395,15 +395,15 @@ class TestRootFileReader(TestCase):
         name = "test"
 
         # Create test histogram
-        Nx = 13
-        Ny = 37
-        y_values = np.random.uniform(-1e3, 1e3, (Nx,Ny))
-        xlabels = ["X{0}".format(i) for i in range(Nx)]
-        ylabels = ["Y{0}".format(i) for i in range(Ny)]
+        NX = 13
+        NY = 37
+        y_values = np.random.uniform(-1e3, 1e3, (NX,NY))
+        xlabels = ["X{0}".format(i) for i in range(NX)]
+        ylabels = ["Y{0}".format(i) for i in range(NY)]
 
-        hist = ROOT.TH2D("test2d_labels", "test2d_labels", Nx, 0, Nx, Ny, 0, Ny)
-        for i in range(Nx):
-            for j in range(Ny):
+        hist = ROOT.TH2D("test2d_labels", "test2d_labels", NX, 0, NX, NY, 0, NY)
+        for i in range(NX):
+            for j in range(NY):
                 hist.Fill(i,j,y_values[i,j])
                 hist.GetXaxis().SetBinLabel(i+1, xlabels[i])
                 hist.GetYaxis().SetBinLabel(j+1, ylabels[j])
@@ -421,9 +421,9 @@ class TestRootFileReader(TestCase):
 
         # The output ordering is
         # [(x=0,y=0), (x=0,y=1), ...]
-        for i in range(Nx):
-            for j in range(Ny):
-                index = i*Ny + j
+        for i in range(NX):
+            for j in range(NY):
+                index = i*NY + j
                 self.assertTrue(
                     points["x_labels"][index]==xlabels[i]
                 )
