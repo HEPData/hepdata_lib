@@ -394,17 +394,18 @@ class TestRootFileReader(TestCase):
         name = "test"
 
         # Create test histogram
-        N = 20
-        y_values = np.random.uniform(-1e3, 1e3, (N,N))
-        xlabels = ["X{0}".format(i) for i in range(N)]
-        ylabels = ["Y{0}".format(i) for i in range(N)]
+        Nx = 13
+        Ny = 37
+        y_values = np.random.uniform(-1e3, 1e3, (Nx,Ny))
+        xlabels = ["X{0}".format(i) for i in range(Nx)]
+        ylabels = ["Y{0}".format(i) for i in range(Ny)]
 
-        hist = ROOT.TH2D("test2d_labels", "test2d_labels", N, 0, N, N, 0, N)
-        for i in range(hist.GetNbinsX()):
-            for j in range(hist.GetNbinsY()):
-                hist.Fill(N,N,y_values[i,j])
+        hist = ROOT.TH2D("test2d_labels", "test2d_labels", Nx, 0, Nx, Ny, 0, Ny)
+        for i in range(Nx):
+            for j in range(Ny):
+                hist.Fill(i,j,y_values[i,j])
                 hist.GetXaxis().SetBinLabel(i+1, xlabels[i])
-                hist.GetYaxis().SetBinLabel(j+1, ylabels[i])
+                hist.GetYaxis().SetBinLabel(j+1, ylabels[j])
 
         testfile = make_tmp_root_file(testcase=self)
         testfile.cd()
@@ -419,13 +420,15 @@ class TestRootFileReader(TestCase):
 
         # The output ordering is
         # [(x=0,y=0), (x=0,y=1), ...]
-        for i in range(N*N):
-            self.assertTrue(
-                points["x_labels"][i]==xlabels[i//N]
-            )
-            self.assertTrue(
-                points["y_labels"][i]==ylabels[j%N]
-            )
+        for i in range(Nx):
+            for j in range(Ny):
+                index = i*Ny + j
+                self.assertTrue(
+                    points["x_labels"][index]==xlabels[i]
+                )
+                self.assertTrue(
+                    points["y_labels"][index]==ylabels[j]
+                )
         # Clean up
         self.doCleanups()
 
