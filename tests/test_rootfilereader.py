@@ -115,7 +115,7 @@ class TestRootFileReader(TestCase):
         data = reader.read_graph(name)
 
         # Check consistency
-        for key in ["x", "y", "dx","dy"]:
+        for key in ["x", "y", "dx", "dy"]:
             self.assertTrue(key in set(data.keys()))
         self.assertTrue(all(data["x"] == x))
         self.assertTrue(all(data["y"] == y))
@@ -132,7 +132,6 @@ class TestRootFileReader(TestCase):
         """
         # pylint: disable-msg=too-many-locals
         N = 20
-        _filepath = "testfile.root"
         name = "testgraph"
 
         x = np.random.uniform(-1e3, 1e3, N)
@@ -157,7 +156,7 @@ class TestRootFileReader(TestCase):
         data = reader.read_graph(name)
 
         # Check consistency
-        for key in ["x", "y", "dx","dy"]:
+        for key in ["x", "y", "dx", "dy"]:
             self.assertTrue(key in set(data.keys()))
 
         self.assertTrue(all(data["x"] == x))
@@ -269,8 +268,6 @@ class TestRootFileReader(TestCase):
 
     def test_read_hist_1d_asymmetric_errors(self):
         """Test the read_hist_1d function for a histogram with asymmetric errors."""
-        _fpath = "testfile.root"
-
         # Create test histogram
         n_bin = 17
         n_fill = 1000
@@ -465,7 +462,7 @@ class TestRootFileReader(TestCase):
         points = reader.read_hist_2d(testname)
 
         # Check keys
-        for key in ["x","y","z","dz"]:
+        for key in ["x", "y", "z", "dz"]:
             self.assertTrue(key in points.keys())
 
         # Check length
@@ -554,7 +551,7 @@ class TestRootFileReader(TestCase):
         points = reader.read_hist_2d(testname, xlim=(xmin, xmax), ylim=(ymin, ymax))
 
         # Check keys
-        for key in ["x","y","z","dz"]:
+        for key in ["x", "y", "z", "dz"]:
             self.assertTrue(key in points.keys())
 
         # Check length
@@ -610,7 +607,7 @@ class TestRootFileReader(TestCase):
         points = reader.read_hist_2d("test2d_asym")
 
         # Check keys
-        for key in ["x","y","z","dz"]:
+        for key in ["x", "y", "z", "dz"]:
             self.assertTrue(key in points.keys())
 
         # Check length
@@ -664,7 +661,7 @@ class TestRootFileReader(TestCase):
         points = reader.read_hist_2d("test2d_asym", force_symmetric_errors=True)
 
         # Check keys
-        for key in ["x","y","z","dz"]:
+        for key in ["x", "y", "z", "dz"]:
             self.assertTrue(key in points.keys())
 
         # Check length
