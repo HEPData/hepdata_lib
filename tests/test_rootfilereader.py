@@ -178,11 +178,15 @@ class TestRootFileReader(TestCase):
         x_values = [0.5 + x for x in range(N)]
         y_values = list(np.random.uniform(-1e3, 1e3, N))
         dy_values = list(np.random.uniform(0, 1e3, N))
-
+        x_edges = []
         hist = ROOT.TH1D("test1d_symm", "test1d_symm", N, 0, N)
         for i in range(1, hist.GetNbinsX()+1):
             hist.SetBinContent(i, y_values[i-1])
             hist.SetBinError(i, dy_values[i-1])
+
+            c = hist.GetBinCenter(i)
+            w = hist.GetBinWidth(i)
+            x_edges.append((c-0.5*w, c+0.5*w))
 
         testfile = make_tmp_root_file(testcase=self)
         testfile.cd()
@@ -193,12 +197,12 @@ class TestRootFileReader(TestCase):
         points = reader.read_hist_1d(name)
 
         # Check consistency
-        for key in ["x", "y", "dy"]:
+        for key in ["x", "y", "dy", "x_edges"]:
             self.assertTrue(key in set(points.keys()))
-
         self.assertTrue(all(float_compare(*tup) for tup in zip(points["x"], x_values)))
         self.assertTrue(all(float_compare(*tup) for tup in zip(points["y"], y_values)))
         self.assertTrue(all(float_compare(*tup) for tup in zip(points["dy"], dy_values)))
+        self.assertTrue(all(tuple_compare(*tup) for tup in zip(points["x_edges"], x_edges)))
 
         # Clean up
         self.doCleanups()
