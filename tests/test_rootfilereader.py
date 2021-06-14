@@ -388,7 +388,7 @@ class TestRootFileReader(TestCase):
 
         # Clean up
         self.doCleanups()
-    
+
     def test_read_hist_2d_bin_labels(self):
         """Test the read_hist_2d function with bin labels."""
         name = "test"
