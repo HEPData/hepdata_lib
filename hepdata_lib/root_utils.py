@@ -284,7 +284,7 @@ def get_hist_2d_points(hist, **kwargs):
         assert ylim[0] < ylim[1]
 
     points = {}
-    for key in ["x", "y", "x_edges", "y_edges", "z", "dz"]:
+    for key in ["x", "y", "x_edges", "y_edges", "z", "dz", "x_labels", "y_labels"]:
         points[key] = []
 
     ixmin = hist.GetXaxis().FindBin(xlim[0]) if xlim[0] is not None else 1
@@ -317,6 +317,9 @@ def get_hist_2d_points(hist, **kwargs):
 
             points["z"].append(z_val)
             points["dz"].append(dz_val)
+
+            points["x_labels"].append(hist.GetXaxis().GetBinLabel(x_bin))
+            points["y_labels"].append(hist.GetYaxis().GetBinLabel(y_bin))
 
     return points
 
@@ -356,7 +359,7 @@ def get_hist_1d_points(hist, **kwargs):
         assert xlim[0] < xlim[1]
 
     points = {}
-    for key in ["x", "y", "x_edges", "dy"]:
+    for key in ["x", "y", "x_edges", "x_labels", "dy"]:
         points[key] = []
 
     symmetric = (hist.GetBinErrorOption() == r.TH1.kNormal)
@@ -379,6 +382,8 @@ def get_hist_1d_points(hist, **kwargs):
 
         points["y"].append(y_val)
         points["dy"].append(dy_val)
+
+        points["x_labels"].append(hist.GetXaxis().GetBinLabel(x_bin))
 
     return points
 

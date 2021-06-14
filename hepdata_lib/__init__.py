@@ -245,7 +245,7 @@ class Table(object):
     def name(self, name):
         """Name setter."""
         if len(name) > 64:
-            raise ValueError("Table name must not be longer than 64 characters.")
+            raise ValueError("Table name must not be longer than 64 characters: " + name)
         self._name = name
 
     def add_image(self, file_path, outdir=None):
@@ -270,6 +270,7 @@ class Table(object):
 
         if not isinstance(file_path, str):
             raise TypeError("Expected string argument, instead got: '{}'.".format(type(file_path)))
+        file_path = os.path.expanduser(file_path)
         if os.path.exists(file_path):
             self.image_files.add(file_path)
         else:
