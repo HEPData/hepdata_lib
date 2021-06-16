@@ -48,6 +48,59 @@ warnings.filterwarnings("always", category=DeprecationWarning, module="hepdata_l
 
 __version__ = "0.5.0"
 
+class AdditionalResourceMixin(object):
+    def __init__(self):
+        self.files_to_copy = []
+        self.additional_resources = []
+
+    def add_additional_resource(self, description, location, copy_file=False):
+        """
+        Add any kind of additional resource.
+        If copy_file is set to False, the location and description will be added as-is.
+        This is useful e.g. for the case of providing a URL to a web-based resource.
+
+        If copy_file is set to True, we will try to copy the file from the location you have given
+        into the output directory. This only works if the location is a local file.
+        If the location you gave does not exist or points to a file larger than 100 MB,
+        a RuntimeError will be raised.
+        While the file checks are performed immediately (i.e. the file must exist when this
+        function is called), the actual copying only happens once create_files function of the
+        submission object is called.
+
+        :param description: Description of what the resource is.
+        :type description: string.
+
+        :param location: Can be either a URL pointing to a web-based resource or a local file path.
+        :type: string
+
+        :param copy_file: If set to true, will attempt to copy a local file to the tar ball.
+        :type copy_file: bool
+        """
+
+        resource = {}
+        resource["description"] = description
+        if copy_file:
+            helpers.check_file_existence(location)
+            helpers.check_file_size(location, upper_limit=100)
+            resource["location"] = os.path.basename(location)
+        else:
+            resource["location"] = location
+
+        self.additional_resources.append(resource)
+        self.files_to_copy.append(location)
+
+    def copy_files(self, outdir):
+        """
+        Copy the files in the files_to_copy list to the output directory.
+
+        :param outdir: Output directory path to copy to.
+        :type outdir: string
+        """
+        for ifile in self.files_to_copy:
+            helpers.check_file_existence(ifile)
+            helpers.check_file_size(ifile, upper_limit=100)
+            shutil.copy2(ifile, outdir)
+
 class Variable(object):
     """A Variable is a wrapper for a list of values + some meta data."""
 
@@ -216,7 +269,7 @@ class Variable(object):
         return tmp
 
 
-class Table(object):
+class Table(AdditionalResourceMixin):
     """
     A table is a collection of variables.
 
@@ -227,13 +280,13 @@ class Table(object):
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self, name):
+        super(Table, self).__init__()
         self._name = None
         self.name = name
         self.variables = []
         self.description = "Example description"
         self.location = "Example location"
         self.keywords = {}
-        self.additional_resources = []
         self.image_files = set([])
 
     @property
@@ -385,7 +438,7 @@ class Table(object):
         return os.path.basename(outfile_path)
 
 
-class Submission(object):
+class Submission(AdditionalResourceMixin):
     """
     Top-level object of a HEPData submission.
 
@@ -393,11 +446,10 @@ class Submission(object):
     """
 
     def __init__(self):
+        super(Submission, self).__init__()
         self.tables = []
         self.comment = ""
-        self.additional_resources = []
         self.record_ids = []
-        self.files_to_copy = []
 
     @staticmethod
     def get_license():
@@ -437,42 +489,6 @@ class Submission(object):
         link["location"] = location
         self.additional_resources.append(link)
 
-    def add_additional_resource(self, description, location, copy_file=False):
-        """
-        Add any kind of additional resource.
-        If copy_file is set to False, the location and description will be added as-is.
-        This is useful e.g. for the case of providing a URL to a web-based resource.
-
-        If copy_file is set to True, we will try to copy the file from the location you have given
-        into the output directory. This only works if the location is a local file.
-        If the location you gave does not exist or points to a file larger than 100 MB,
-        a RuntimeError will be raised.
-        While the file checks are performed immediately (i.e. the file must exist when this
-        function is called), the actual copying only happens once create_files function of the
-        submission object is called.
-
-        :param description: Description of what the resource is.
-        :type description: string.
-
-        :param location: Can be either a URL pointing to a web-based resource or a local file path.
-        :type: string
-
-        :param copy_file: If set to true, will attempt to copy a local file to the tar ball.
-        :type copy_file: bool
-        """
-
-        resource = {}
-        resource["description"] = description
-        if copy_file:
-            helpers.check_file_existence(location)
-            helpers.check_file_size(location, upper_limit=100)
-            resource["location"] = os.path.basename(location)
-        else:
-            resource["location"] = location
-
-        self.additional_resources.append(resource)
-        self.files_to_copy.append(location)
-
     def add_record_id(self, r_id, r_type):
         """Append record_id to record_ids list."""
         # should add some type checks
@@ -495,17 +511,7 @@ class Submission(object):
 
         self.comment = raw
 
-    def copy_files(self, outdir):
-        """
-        Copy the files in the files_to_copy list to the output directory.
 
-        :param outdir: Output directory path to copy to.
-        :type outdir: string
-        """
-        for ifile in self.files_to_copy:
-            helpers.check_file_existence(ifile)
-            helpers.check_file_size(ifile, upper_limit=100)
-            shutil.copy2(ifile, outdir)
 
     def create_files(self, outdir="."):
         """
@@ -537,6 +543,7 @@ class Submission(object):
         # Write all the tables
         for table in self.tables:
             table.write_output(outdir)
+            table.copy_files(outdir)
 
         # Copy additional resource files
         self.copy_files(outdir)
