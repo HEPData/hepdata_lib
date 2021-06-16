@@ -589,10 +589,10 @@ class Uncertainty(object):
         if self.is_symmetric:
             self._values = values
         else:
-            def float_cast(x):
-                if isinstance(x, str) and x=='':
-                    return x
-                return float(x)
+            def float_cast(value):
+                if isinstance(value, str) and value=='':
+                    return value
+                return float(value)
 
             self._values = [tuple(map(float_cast, x)) for x in values]
 
