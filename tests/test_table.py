@@ -123,3 +123,11 @@ class TestTable(TestCase):
             with self.assertRaises(TypeError):
                 test_table.write_images(argument)
         self.doCleanups()
+
+    def test_add_additional_resource(self):
+        """Test the add_additional_resource function."""
+        test_table = Table("Some Table")
+        try:
+            test_table.add_additional_resource("some link","www.cern.ch")
+        except:
+            self.fail("Table.add_additional_resource raised an unexpected exception.")
