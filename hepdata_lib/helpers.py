@@ -261,7 +261,7 @@ def any_uncertainties_nonzero(uncertainties, size):
 
         # Treat one-sided uncertainties as
         values = np.array(unc.values)
-        values[values==''] = 0
+        values[values.astype(str)==''] = 0
         values = values.astype(float)
 
         if unc.is_symmetric:
