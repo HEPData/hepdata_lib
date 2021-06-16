@@ -127,10 +127,7 @@ class TestTable(TestCase):
     def test_add_additional_resource(self):
         """Test the add_additional_resource function."""
         test_table = Table("Some Table")
-        try:
-            test_table.add_additional_resource("some link","www.cern.ch")
-        except:
-            self.fail("Table.add_additional_resource raised an unexpected exception.")
+        test_table.add_additional_resource("some link","www.cern.ch")
 
     def test_copy_files(self):
         """Test the copy_files function."""
@@ -141,7 +138,5 @@ class TestTable(TestCase):
         os.makedirs(testdir)
 
         test_table.add_additional_resource("a plot",some_pdf, copy_file=True)
-        try:
-            test_table.copy_files(testdir)
-        except:
-            self.fail("Table.copy_files raised an unexpected exception.")
+        test_table.copy_files(testdir)
+
