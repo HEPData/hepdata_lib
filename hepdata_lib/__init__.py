@@ -49,6 +49,8 @@ warnings.filterwarnings("always", category=DeprecationWarning, module="hepdata_l
 __version__ = "0.5.0"
 
 class AdditionalResourceMixin(object):
+    """Functionality related to additional materials."""
+
     def __init__(self):
         self.files_to_copy = []
         self.additional_resources = []
@@ -280,7 +282,7 @@ class Table(AdditionalResourceMixin):
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self, name):
-        super(Table, self).__init__()
+        super().__init__()
         self._name = None
         self.name = name
         self.variables = []
@@ -446,11 +448,13 @@ class Submission(AdditionalResourceMixin):
     """
 
     def __init__(self):
-        super(Submission, self).__init__()
+        super().__init__()
         self.tables = []
         self.comment = ""
         self.record_ids = []
-        self.add_additional_resource("Created with hepdata_lib " + __version__, "https://zenodo.org/record/4946277")
+        self.add_additional_resource(
+            "Created with hepdata_lib " + __version__,
+            "https://zenodo.org/record/4946277")
 
     @staticmethod
     def get_license():
