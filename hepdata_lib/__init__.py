@@ -41,6 +41,8 @@ yaml.add_representer(defaultdict, SafeRepresenter.represent_dict)
 Dumper.add_representer(defaultdict, dict_representer)
 Loader.add_constructor(MAPPING_TAG, dict_constructor)
 
+Dumper.add_representer(str,
+                       SafeRepresenter.represent_str)
 yaml.add_representer(np.str_,
                        SafeRepresenter.represent_str)
 
