@@ -83,11 +83,11 @@ class AdditionalResourceMixin(object):
             helpers.check_file_existence(location)
             helpers.check_file_size(location, upper_limit=100)
             resource["location"] = os.path.basename(location)
+            self.files_to_copy.append(location)
         else:
             resource["location"] = location
 
         self.additional_resources.append(resource)
-        self.files_to_copy.append(location)
 
     def copy_files(self, outdir):
         """
@@ -450,6 +450,7 @@ class Submission(AdditionalResourceMixin):
         self.tables = []
         self.comment = ""
         self.record_ids = []
+        self.add_additional_resource("Created with hepdata_lib " + __version__, "https://zenodo.org/record/4946277")
 
     @staticmethod
     def get_license():
