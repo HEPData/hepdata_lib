@@ -5,6 +5,7 @@ from __future__ import print_function
 
 import fnmatch
 import math
+import numpy as np
 import os
 import shutil
 import subprocess
@@ -40,7 +41,7 @@ yaml.add_representer(defaultdict, SafeRepresenter.represent_dict)
 Dumper.add_representer(defaultdict, dict_representer)
 Loader.add_constructor(MAPPING_TAG, dict_constructor)
 
-Dumper.add_representer(str,
+yaml.add_representer(np.str_,
                        SafeRepresenter.represent_str)
 
 # Display deprecation warnings
@@ -587,14 +588,9 @@ class Uncertainty(object):
 
         """
         if self.is_symmetric:
-            self._values = values
+            self._values = list(map(helpers.sanitize_value,values))
         else:
-            def float_cast(value):
-                if isinstance(value, str) and value=='':
-                    return value
-                return float(value)
-
-            self._values = [tuple(map(float_cast, x)) for x in values]
+            self._values = [tuple(map(helpers.sanitize_value, x)) for x in values]
 
     def set_values_from_intervals(self, intervals, nominal):
         """
