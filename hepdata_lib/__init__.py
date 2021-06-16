@@ -3,15 +3,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import fnmatch
-import math
-import numpy as np
 import os
 import shutil
-import subprocess
 import tarfile
 import warnings
 from collections import defaultdict
+import numpy as np
 import yaml
 from future.utils import raise_from
 
