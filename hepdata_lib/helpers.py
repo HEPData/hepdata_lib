@@ -258,10 +258,16 @@ def any_uncertainties_nonzero(uncertainties, size):
     nonzero = np.zeros(size, dtype=bool)
 
     for unc in uncertainties:
+
+        # Treat one-sided uncertainties as
+        values = np.array(unc.values)
+        values[values==''] = 0
+        values = values.astype(float)
+
         if unc.is_symmetric:
-            nonzero = nonzero | (np.array(unc.values) != 0)
+            nonzero = nonzero | (values != 0)
         else:
-            nonzero = nonzero | np.any((np.array(unc.values) != 0),axis=1)
+            nonzero = nonzero | np.any(values != 0,axis=1)
     return nonzero
 
 def sanitize_value(value):

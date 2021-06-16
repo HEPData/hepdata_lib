@@ -589,7 +589,12 @@ class Uncertainty(object):
         if self.is_symmetric:
             self._values = values
         else:
-            self._values = [(float(x[0]), float(x[1])) for x in values]
+            def float_cast(x):
+                if isinstance(x, str) and x=='':
+                    return x
+                return float(x)
+
+            self._values = [tuple(map(float_cast, x)) for x in values]
 
     def set_values_from_intervals(self, intervals, nominal):
         """
