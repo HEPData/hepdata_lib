@@ -69,30 +69,24 @@ jobs:
  # This is a job for macOS python3 tests
   macospy3:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        python-version: [3.8]
     steps:
       - uses: actions/checkout@v2
-        
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
       # Install dependencies
       - name: Install dependencies
         run: |
           brew update
-          brew install fontconfig gd gettext libffi glib jasper netpbm gts graphviz gsl libxml2 openblas numpy tbb xrootd root || true
-          brew install python@3.8 openssl@1.1 || true
+          brew install root || true
           
       # Run pytest
       - name: Run pytest
         run: |
-          # ROOT_VERSION=6.20.04_1
-          # curl -O https://clange.web.cern.ch/clange/root-v${ROOT_VERSION}.tar.gz
-          # tar xzf root-v${ROOT_VERSION}.tar.gz
-          # mkdir -p /usr/local/Cellar/root
-          # mv ${ROOT_VERSION} /usr/local/Cellar/root/
-          # cd /usr/local/Cellar/root/${ROOT_VERSION}
-          # export PATH=${PWD}/bin:$(brew --cellar python@3.8)/$(ls $(brew --cellar python@3.8))/bin:${PATH}
-          # export PYTHONPATH=${PWD}/lib/root:${PYTHONPATH}
-          # export LD_LIBRARY_PATH=${PWD}/lib/root:${LD_LIBRARY_PATH}
-          # echo ${PYTHONPATH}
-          # cd -
           python3 -m pip install pytest ipykernel papermill jupyter_client nbconvert
           python3 setup.py test
           
