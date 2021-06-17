@@ -82,8 +82,8 @@ jobs:
       - name: Install dependencies
         run: |
           brew update
-          brew install root || true
-          
+          brew install python@3.8 openssl@1.1 || true
+          brew install fontconfig gd gettext libffi glib jasper netpbm gts graphviz gsl libxml2 openblas numpy tbb xrootd root || true
       # Run pytest
       - name: Run pytest
         run: |
