@@ -87,6 +87,7 @@ jobs:
       # Run pytest
       - name: Run pytest
         run: |
+          . $(brew --prefix)/bin/thisroot.sh
           python3 -m pip install pytest ipykernel papermill jupyter_client nbconvert
           python3 setup.py test
           
