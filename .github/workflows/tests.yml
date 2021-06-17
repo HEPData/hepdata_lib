@@ -88,8 +88,8 @@ jobs:
       - name: Run pytest
         run: |
           . $(brew --prefix)/bin/thisroot.sh
-          python3 -m pip install pytest ipykernel papermill jupyter_client nbconvert
-          python3 setup.py test
+          $(brew --prefix)/bin/python3 -m pip install pytest ipykernel papermill jupyter_client nbconvert
+          $(brew --prefix)/bin/python3 setup.py test
           
 #       # Save notebooks
 #       - name: Save notebooks
