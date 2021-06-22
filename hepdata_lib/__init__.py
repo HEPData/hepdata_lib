@@ -3,14 +3,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import fnmatch
-import math
 import os
 import shutil
-import subprocess
 import tarfile
 import warnings
 from collections import defaultdict
+import numpy as np
 import yaml
 from future.utils import raise_from
 
@@ -41,6 +39,8 @@ Dumper.add_representer(defaultdict, dict_representer)
 Loader.add_constructor(MAPPING_TAG, dict_constructor)
 
 Dumper.add_representer(str,
+                       SafeRepresenter.represent_str)
+yaml.add_representer(np.str_,
                        SafeRepresenter.represent_str)
 
 # Display deprecation warnings
@@ -587,9 +587,9 @@ class Uncertainty(object):
 
         """
         if self.is_symmetric:
-            self._values = values
+            self._values = list(map(helpers.sanitize_value,values))
         else:
-            self._values = [(float(x[0]), float(x[1])) for x in values]
+            self._values = [tuple(map(helpers.sanitize_value, x)) for x in values]
 
     def set_values_from_intervals(self, intervals, nominal):
         """
