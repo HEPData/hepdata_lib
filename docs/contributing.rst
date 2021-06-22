@@ -42,6 +42,7 @@ Execute the following commands to create a source distribution and upload it:
 
 ::
 
+    pip install -U wheel
     python setup.py sdist bdist_wheel
     pip install -U twine
     twine upload --repository-url https://test.pypi.org/legacy/ dist/*

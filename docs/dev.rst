@@ -4,7 +4,7 @@ Developer information
 The testing system
 --------------------
 
-While further developing the code base, we want to ensure that any changes we make do not accidentally break existing functionality. For this purpose, we use continuous integration via Travis_. Practically, this means that we define a set of test code that is automatically run in a predefined environment every time we push to a branch or create a pull request. If the test code runs successfully, we know that everything works as expected. 
+While further developing the code base, we want to ensure that any changes we make do not accidentally break existing functionality. For this purpose, we use continuous integration via GitHub Actions_. Practically, this means that we define a set of test code that is automatically run in a predefined environment every time we push to a branch or create a pull request. If the test code runs successfully, we know that everything works as expected.
 
 To run the tests, move into the ``hepdata_lib`` directory and run
 
@@ -27,16 +27,16 @@ Inside each file, a test class is defined that inherits from the ``TestCase`` cl
 
     class TestForFeatureX(TestCase):
         """Test case for feature X."""
-        
+
         def test_aspect_y(self):
             """Test that aspect Y works."""
             # Do something with feature X and sub-feature Y."""
-        
+
         def test_aspect_z(self):
             """Test that aspect Z works."""
             # Do something with feature X and sub-feature Z."""
 
-If all functions run without raising exceptions, the test is considered to be passed. Therefore, you should ensure that the test functions only run through if everything is really as expected. 
+If all functions run without raising exceptions, the test is considered to be passed. Therefore, you should ensure that the test functions only run through if everything is really as expected.
 
 
 When to test
@@ -65,7 +65,7 @@ The ``TestCase`` base class provides functionality to help implement simple chec
 
     class TestForArithmetic(TestCase):
         """Test case for python arithmetic"""
-        
+
         def test_addition(self):
             """Test that the addition operator works."""
 
@@ -82,14 +82,14 @@ The ``TestCase`` base class provides functionality to help implement simple chec
             # Check that it raises an expected TypeError for bad input
             with self.assertRaises(TypeError):
                 val = None + 5
-            
+
             # Check that no TypeError is raised for good input
             try:
                 val = 1 + 5
             except TypeError:
                 self.fail("The addition operator raised an unexpected TypeError.")
-        
-            
+
+
 
 Note that this is an overly simple example case: In a real testing case, you should try to cover all possible and impossible input types for a thorough test coverage.
 
@@ -100,5 +100,5 @@ Check out the unittest package documentation_ for details of the available testi
 
 
 
-.. _Travis: https://travis-ci.com
+.. _Actions: https://docs.github.com/en/actions
 .. _documentation: https://docs.python.org/2/library/unittest.html#unittest.TestCase
