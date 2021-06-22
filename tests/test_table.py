@@ -123,3 +123,19 @@ class TestTable(TestCase):
             with self.assertRaises(TypeError):
                 test_table.write_images(argument)
         self.doCleanups()
+
+    def test_add_additional_resource(self): # pylint: disable=no-self-use
+        """Test the add_additional_resource function."""
+        test_table = Table("Some Table")
+        test_table.add_additional_resource("some link","www.cern.ch")
+
+    def test_copy_files(self):
+        """Test the copy_files function."""
+        test_table = Table("Some Table")
+        some_pdf = "%s/minimal.pdf" % os.path.dirname(__file__)
+        testdir = "test_output"
+        self.addCleanup(shutil.rmtree, testdir)
+        os.makedirs(testdir)
+
+        test_table.add_additional_resource("a plot",some_pdf, copy_file=True)
+        test_table.copy_files(testdir)
