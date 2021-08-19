@@ -79,12 +79,12 @@ def relative_round(value, relative_digits):
     """Rounds to a given relative precision"""
 
     if isinstance(value, tuple):
-        return (relative_round(x, relative_digits) for x in value)
+        return tuple((relative_round(x, relative_digits) for x in value))
 
     if value == 0 or isinstance(value, str) or np.isnan(value) or np.isinf(value):
         return value
 
-    value_precision = get_number_precision(value)
+    value_precision = get_number_precision(value) # pylint: disable invalid-unary-operand-type
     absolute_digits = -value_precision + relative_digits
 
     return round(value, int(absolute_digits))
