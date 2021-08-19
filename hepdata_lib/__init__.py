@@ -226,16 +226,16 @@ class Variable(object):
                                                         self.uncertainties,
                                                         size=len(self._values)
                                                         )
-        for i in range(len(self._values)):
+        for i, value in enumerate(self._values):
             valuedict = defaultdict(list)
 
             if self.is_binned:
-                valuedict["low"] = helpers.relative_round(self._values[i][0],
+                valuedict["low"] = helpers.relative_round(value[0],
                                                           self.digits)
-                valuedict["high"] = helpers.relative_round(self._values[i][1],
+                valuedict["high"] = helpers.relative_round(value[1],
                                                            self.digits)
             else:
-                valuedict["value"] = helpers.relative_round(self._values[i],
+                valuedict["value"] = helpers.relative_round(value,
                                                             self.digits)
             # An uncertainty entry is only appended
             # if at least one of the uncertainties is not zero.

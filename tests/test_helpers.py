@@ -63,9 +63,9 @@ class TestHelpers(TestCase):
             (12.5, 1.25) : (2, 1),
             (0.125, 0.0125) : (0, -1)
         }
-        for key in ntuples:
-            prec1, prec2 = get_number_precision(key)
-            self.assertTrue((prec1, prec2) == ntuples[key])
+        for original_values, target_precisions in ntuples.items():
+            precisions = get_number_precision(original_values)
+            self.assertTrue(precisions == target_precisions)
 
 
     def test_get_value_precision_wrt_reference(self):

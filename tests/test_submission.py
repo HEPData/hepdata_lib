@@ -6,8 +6,8 @@ import shutil
 import string
 from builtins import bytes
 from unittest import TestCase
-from hepdata_lib import Submission, Table, Variable, Uncertainty
 import tarfile
+from hepdata_lib import Submission, Table, Variable, Uncertainty
 
 class TestSubmission(TestCase):
     """Test the Submission class."""
@@ -98,7 +98,7 @@ class TestSubmission(TestCase):
         self.doCleanups()
 
     def test_nested_files_to_copy(self):
-
+        """Test that file copying works when tables have files."""
         # Create random test file
         testfile = "testfile.txt"
         with open(testfile, "w") as f:
@@ -120,8 +120,8 @@ class TestSubmission(TestCase):
         sub.create_files(testdirectory)
 
         # Check that test file is actually in the tar ball
-        with tarfile.open("submission.tar.gz", "r:gz") as tf:
+        with tarfile.open("submission.tar.gz", "r:gz") as tar:
             try:
-                tf.getmember(testfile)
+                tar.getmember(testfile)
             except KeyError:
                 self.fail("Submission.create_files failed to write all files to tar ball.")

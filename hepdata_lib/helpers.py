@@ -64,7 +64,7 @@ def get_number_precision(value):
     """
 
     if isinstance(value, tuple):
-        return (get_number_precision(x) for x in value)
+        return tuple((get_number_precision(x) for x in value))
 
     # if value is tuple, value == 0 might cause ValueError saying that
     # 'The truth value of an array with more than one element is ambiguous'
