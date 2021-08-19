@@ -84,8 +84,8 @@ def relative_round(value, relative_digits):
     if value == 0 or isinstance(value, str) or np.isnan(value) or np.isinf(value):
         return value
 
-    value_precision = get_number_precision(value) # pylint: disable invalid-unary-operand-type
-    absolute_digits = -value_precision + relative_digits
+    value_precision = get_number_precision(value)
+    absolute_digits = -value_precision + relative_digits  # pylint: disable=invalid-unary-operand-type
 
     return round(value, int(absolute_digits))
 
