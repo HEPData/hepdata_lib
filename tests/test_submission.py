@@ -7,6 +7,7 @@ import string
 from builtins import bytes
 from unittest import TestCase
 from hepdata_lib import Submission, Table, Variable, Uncertainty
+import tarfile
 
 class TestSubmission(TestCase):
     """Test the Submission class."""
@@ -95,3 +96,32 @@ class TestSubmission(TestCase):
         self.assertEqual(test_submission.comment, some_string)
 
         self.doCleanups()
+
+    def test_nested_files_to_copy(self):
+
+        # Create random test file
+        testfile = "testfile.txt"
+        with open(testfile, "w") as f:
+            f.write("test")
+        self.addCleanup(os.remove, testfile)
+
+        # Output files
+        testdirectory = "./testout"
+        self.addCleanup(shutil.rmtree, testdirectory)
+        self.addCleanup(os.remove, "submission.tar.gz")
+
+        # Add resource to table, add table to Submission
+        sub = Submission()
+        tab = Table('test')
+        tab.add_additional_resource("a_resource",testfile,True)
+        sub.add_table(tab)
+
+        # Write outputs
+        sub.create_files(testdirectory)
+
+        # Check that test file is actually in the tar ball
+        with tarfile.open("submission.tar.gz", "r:gz") as tf:
+            try:
+                tf.getmember(testfile)
+            except KeyError:
+                self.fail("Submission.create_files failed to write all files to tar ball.")
