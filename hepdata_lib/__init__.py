@@ -516,7 +516,14 @@ class Submission(AdditionalResourceMixin):
 
         self.comment = raw
 
-
+    def files_to_copy_nested(self):
+        """
+        List files-to-copy for this Submission and nested daughters
+        """
+        files = self.files_to_copy
+        for table in self.tables:
+            files = files + table.files_to_copy
+        return files
 
     def create_files(self, outdir="."):
         """
@@ -554,13 +561,18 @@ class Submission(AdditionalResourceMixin):
         self.copy_files(outdir)
 
         # Put everything into a tarfile
+        files_to_add = []
+        files_to_add.extend(helpers.find_all_matching(outdir, "*.yaml"))
+        files_to_add.extend(helpers.find_all_matching(outdir, "*.png"))
+        files_to_add.extend(
+            [os.path.join(outdir, os.path.basename(x)) for x in  self.files_to_copy_nested()]
+        )
         with tarfile.open("submission.tar.gz", "w:gz") as tar:
-            for yaml_file in helpers.find_all_matching(outdir, "*.yaml"):
-                tar.add(yaml_file)
-            for png_file in helpers.find_all_matching(outdir, "*.png"):
-                tar.add(png_file)
-            for additional in self.files_to_copy:
-                tar.add(os.path.join(outdir, os.path.basename(additional)))
+            for filepath in files_to_add:
+                tar.add(
+                        filepath,
+                        arcname=os.path.basename(filepath)
+                        )
 
 
 class Uncertainty(object):
@@ -605,7 +617,7 @@ class Uncertainty(object):
 
     def set_values_from_intervals(self, intervals, nominal):
         """
-        Set values relative to set of nominal valuesself.
+        Set values relative to set of nominal values.
         Useful if you do not have the actual uncertainty available,
         but the upper and lower boundaries of an interval.
 
