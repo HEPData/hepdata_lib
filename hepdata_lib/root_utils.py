@@ -52,12 +52,15 @@ class RootFileReader(object):
         """
         Generalized function to retrieve a TObject from a file.
 
-        There are two use cases:
+        There are three use cases:
         1)  The object is saved under the exact path given.
         In this case, the function behaves identically to TFile.Get.
         2)  The object is saved as a primitive in a TCanvas.
         In this case, the path has to be formatted as
         PATH_TO_CANVAS/NAME_OF_PRIMITIVE
+        3)  The object is saved as a primitive in a TPad that is nested
+        in a TCanvas.  In this case, the path has to be formatted as
+        CANVAS/PAD1/PAD2.../NAME_OF_PRIMITIVE
 
 
         :param path_to_object: Absolute path in current TFile.
