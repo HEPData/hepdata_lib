@@ -108,6 +108,12 @@ class RootFileReader(object):
 
             raise_from(IOError(msg), err)
 
+        except AttributeError as err:
+            msg="Cannot find any nested TPads in file {0} with path {1}".format(
+                    self.tfile, path_to_object)
+
+            raise_from(IOError(msg), err)
+
         return None
 
 
