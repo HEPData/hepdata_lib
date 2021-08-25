@@ -90,10 +90,27 @@ class RootFileReader(object):
             assert False
 
         except AssertionError as err:
-            msg="Cannot find any object in file {0} with path {1}".format(
+            msg="Cannot find any object in file {0} with path {1}.  Will try nested TPads".format(
                     self.tfile, path_to_object)
+            print(msg)
+        # If the above didn't work, try nested tpads
+        try:
+            obj = self.tfile.Get(parts[0])
+            for part in parts[1:]:
+                obj = obj.GetPrimitive(part)
+            
+            assert obj
+
+            return obj
+        except AssertionError as err:
+            msg="Cannot find any nested TPads in file {0} with path {1}".format(
+                    self.tfile, path_to_object)
+
             raise_from(IOError(msg), err)
+
         return None
+
+
 
     def read_graph(self, path_to_graph):
         """Extract lists of X and Y values from a TGraph.
