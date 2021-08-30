@@ -64,7 +64,7 @@ def get_number_precision(value):
     """
 
     if isinstance(value, tuple):
-        return (get_number_precision(x) for x in value)
+        return tuple((get_number_precision(x) for x in value))
 
     # if value is tuple, value == 0 might cause ValueError saying that
     # 'The truth value of an array with more than one element is ambiguous'
@@ -79,13 +79,13 @@ def relative_round(value, relative_digits):
     """Rounds to a given relative precision"""
 
     if isinstance(value, tuple):
-        return (relative_round(x, relative_digits) for x in value)
+        return tuple((relative_round(x, relative_digits) for x in value))
 
     if value == 0 or isinstance(value, str) or np.isnan(value) or np.isinf(value):
         return value
 
     value_precision = get_number_precision(value)
-    absolute_digits = -value_precision + relative_digits
+    absolute_digits = -value_precision + relative_digits  # pylint: disable=invalid-unary-operand-type
 
     return round(value, int(absolute_digits))
 
