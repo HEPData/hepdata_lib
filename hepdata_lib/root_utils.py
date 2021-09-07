@@ -92,7 +92,7 @@ class RootFileReader(object):
                     entry.GetName(), type(entry)))
             assert False
 
-        except AssertionError as err:
+        except AssertionError:
             # This is ok, it might be nested TPads
             pass
 
@@ -101,16 +101,18 @@ class RootFileReader(object):
             obj = self.tfile.Get(parts[0])
             for part in parts[1:]:
                 obj = obj.GetPrimitive(part)
-            
+
             assert obj
 
             return obj
         except AssertionError as err:
-            msg="Cannot find any object in file {0} using path {1} or interpreting it as a TCanvas with TPads.".format(self.tfile, path_to_object)
+            msg="Cannot find any object in file {0} using path {1} or interpreting it as a TCanvas"\
+                "with TPads.".format(self.tfile, path_to_object)
             raise_from(IOError(msg), err)
 
         except AttributeError as err:
-            msg="Cannot find any object in file {0} using path {1} or interpreting it as a TCanvas with TPads.".format(self.tfile, path_to_object)
+            msg="Cannot find any object in file {0} using path {1} or interpreting it as a TCanvas"\
+                "with TPads.".format(self.tfile, path_to_object)
             raise_from(IOError(msg), err)
 
         return None
