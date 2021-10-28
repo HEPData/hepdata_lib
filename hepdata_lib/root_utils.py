@@ -52,12 +52,15 @@ class RootFileReader(object):
         """
         Generalized function to retrieve a TObject from a file.
 
-        There are two use cases:
+        There are three use cases:
         1)  The object is saved under the exact path given.
         In this case, the function behaves identically to TFile.Get.
         2)  The object is saved as a primitive in a TCanvas.
         In this case, the path has to be formatted as
         PATH_TO_CANVAS/NAME_OF_PRIMITIVE
+        3)  The object is saved as a primitive in a TPad that is nested
+        in a TCanvas.  In this case, the path has to be formatted as
+        CANVAS/PAD1/PAD2.../NAME_OF_PRIMITIVE
 
 
         :param path_to_object: Absolute path in current TFile.
@@ -89,11 +92,32 @@ class RootFileReader(object):
                     entry.GetName(), type(entry)))
             assert False
 
+        except AssertionError:
+            # This is ok, it might be nested TPads
+            pass
+
+        # If the above didn't work, try nested tpads
+        try:
+            obj = self.tfile.Get(parts[0])
+            for part in parts[1:]:
+                obj = obj.GetPrimitive(part)
+
+            assert obj
+
+            return obj
         except AssertionError as err:
-            msg="Cannot find any object in file {0} with path {1}".format(
-                    self.tfile, path_to_object)
+            msg="Cannot find any object in file {0} using path {1} or interpreting it as a TCanvas"\
+                "with TPads.".format(self.tfile, path_to_object)
             raise_from(IOError(msg), err)
+
+        except AttributeError as err:
+            msg="Cannot find any object in file {0} using path {1} or interpreting it as a TCanvas"\
+                "with TPads.".format(self.tfile, path_to_object)
+            raise_from(IOError(msg), err)
+
         return None
+
+
 
     def read_graph(self, path_to_graph):
         """Extract lists of X and Y values from a TGraph.

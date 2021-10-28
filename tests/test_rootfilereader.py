@@ -777,3 +777,45 @@ class TestRootFileReader(TestCase):
 
         # Clean up
         self.doCleanups()
+
+    def test_retrieve_object_canvas_tpad(self):
+        '''Check that retrieve_object correctly reads from canvas.'''
+        # Disable graphical output
+        ROOT.gROOT.SetBatch(ROOT.kTRUE)
+
+        # Create test histogram, plot on canvas, save to file
+        tfile = make_tmp_root_file(testcase=self)
+        histogram = ROOT.TH1D("testhist", "testhist", 10, 0, 1)
+        path_to_file = tfile.GetName()
+
+        canvas = ROOT.TCanvas()
+        pad1 = ROOT.TPad("pad1","pad1",0,0,1,1)
+        pad1.Draw()
+        pad1.cd()
+        histogram.Draw("HIST")
+        canvas.Write("canvas")
+
+        path_to_object = f"canvas/{pad1.GetName()}/{histogram.GetName()}"
+
+        reference = histogram.Clone("reference")
+        reference.SetDirectory(0)
+        tfile.Write()
+
+        if tfile:
+            tfile.Close()
+
+        # Read it back
+        reader = RootFileReader(path_to_file)
+        try:
+            readback = reader.retrieve_object(path_to_object)
+        except IOError:
+            print("RootFileReader.retrieve_object raised unexpected IOError!")
+            self.fail()
+
+        self.assertTrue(readback)
+        self.assertTrue(
+            histogram_compare_1d(reference, readback)
+            )
+
+        # Clean up
+        self.doCleanups()
