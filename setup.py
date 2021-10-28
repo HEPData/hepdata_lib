@@ -8,7 +8,7 @@ try:
 except ImportError:
     print("ROOT is required by this library.")
 
-DEPS = ['numpy', 'PyYAML>4.*', 'future', 'six', 'pylint==2.9.6']
+DEPS = ['numpy', 'PyYAML>4.*', 'future', 'six']
 
 HERE = path.abspath(path.dirname(__file__))
 
@@ -38,7 +38,10 @@ setup(
     zip_safe=False,
     install_requires=DEPS,
     setup_requires=['pytest-runner', 'pytest-cov'],
-    tests_require=['pytest', 'papermill', 'six'],
+    tests_require=['pytest', 'papermill', 'six',
+                   'pylint==1.9.5; python_version<"3"',
+                   'pylint==2.9.6; python_version>="3"',
+                  ],
     project_urls={
         'Documentation': 'https://hepdata-lib.readthedocs.io',
         'Bug Reports': 'https://github.com/HEPData/hepdata_lib/issues',
