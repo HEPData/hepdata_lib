@@ -414,11 +414,13 @@ class Table(AdditionalResourceMixin):
         shortname = self.name.lower().replace(" ", "_")
         outfile_path = os.path.join(
             outdir, '{NAME}.yaml'.format(NAME=shortname))
+        # pylint: disable=unspecified-encoding
         with open(outfile_path, 'w') as outfile:
             yaml.dump(table, outfile, default_flow_style=False)
 
         # Add entry to central submission file
         submission_path = os.path.join(outdir, 'submission.yaml')
+        # pylint: disable=unspecified-encoding
         with open(submission_path, 'a+') as submissionfile:
             submission = {}
             submission["name"] = self.name
@@ -509,6 +511,7 @@ class Submission(AdditionalResourceMixin):
         :param filepath: Path to text file containing abstract.
         :type filepath: string.
         """
+        # pylint: disable=unspecified-encoding
         with open(filepath) as afile:
             raw = str(afile.read())
         raw = raw.replace("\r\n", "")
@@ -545,6 +548,7 @@ class Submission(AdditionalResourceMixin):
         if self.record_ids:
             submission["record_ids"] = self.record_ids
 
+        # pylint: disable=unspecified-encoding
         with open(os.path.join(outdir, 'submission.yaml'), 'w') as outfile:
             yaml.dump(
                 submission,
