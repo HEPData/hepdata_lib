@@ -782,7 +782,7 @@ class TestRootFileReader(TestCase):
         '''Check that retrieve_object correctly reads from canvas.'''
         # Disable graphical output
         ROOT.gROOT.SetBatch(ROOT.kTRUE)
-        
+
         # Create test histogram, plot on canvas, save to file
         tfile = make_tmp_root_file(testcase=self)
         histogram = ROOT.TH1D("testhist", "testhist", 10, 0, 1)
@@ -791,7 +791,7 @@ class TestRootFileReader(TestCase):
         canvas = ROOT.TCanvas()
         pad1 = ROOT.TPad("pad1","pad1",0,0,1,1)
         pad1.Draw()
-        pad1.cd()        
+        pad1.cd()
         histogram.Draw("HIST")
         canvas.Write("canvas")
 
@@ -800,7 +800,7 @@ class TestRootFileReader(TestCase):
         reference = histogram.Clone("reference")
         reference.SetDirectory(0)
         tfile.Write()
-        
+
         if tfile:
             tfile.Close()
 
