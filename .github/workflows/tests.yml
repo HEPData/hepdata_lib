@@ -15,7 +15,7 @@ jobs:
           run: |
             curl https://bootstrap.pypa.io/get-pip.py > get-pip.py
             python3 get-pip.py
-            python3 -m pip install pytest_pylint configparser astroid pyyml papermill nbconvert jupyter pytest pytest-cov
+            python3 -m pip install pylint==2.9.6 pytest_pylint configparser astroid pyyml papermill nbconvert jupyter pytest pytest-cov
         - name: Fixup ImageMagick
           run: |
             sudo sed -i '/.*PDF.*/ s/none/read | write/g' /etc/ImageMagick*/policy.xml
