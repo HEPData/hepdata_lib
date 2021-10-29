@@ -32,7 +32,7 @@ If you would like to develop the code, you need to install the package from the 
 ::
 
     cd $SOMEPATH
-    git clone git@github.com:clelange/hepdata_lib.git
+    git clone git@github.com:HEPData/hepdata_lib.git
 
     workon myhepdata # activate virtual environment!
     pip install -e $SOMEPATH/hepdata_lib

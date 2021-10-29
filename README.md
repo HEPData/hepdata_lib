@@ -5,7 +5,7 @@
 [![Actions Status](https://github.com/HEPData/hepdata_lib/workflows/tests/badge.svg)](https://github.com/HEPData/hepdata_lib/actions)
 [![Coverage Status](https://coveralls.io/repos/github/HEPData/hepdata_lib/badge.svg?branch=master)](https://coveralls.io/github/HEPData/hepdata_lib?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/hepdata-lib/badge/)](http://hepdata-lib.readthedocs.io/)
-[![Docker Hub](https://images.microbadger.com/badges/image/clelange/hepdata_lib.svg)](https://hub.docker.com/r/clelange/hepdata_lib/)
+[![Docker image](https://github.com/HEPData/hepdata_lib/actions/workflows/docker.yml/badge.svg)](https://github.com/HEPData/hepdata_lib/pkgs/container/hepdata_lib)
 
 Library for getting your data into HEPData
 
@@ -29,7 +29,7 @@ For using `hepdata_lib`, you don't even need to install it, but can use the [bin
 You can also use the Docker image:
 
 ```shell
-docker run --rm -it -p 8888:8888 -v ${PWD}:/home/hepdata clelange/hepdata_lib
+docker run --rm -it -p 8888:8888 -v ${PWD}:/home/hepdata ghcr.io/hepdata/hepdata_lib:latest
 ```
 
 And then point your browser to [http://localhost:8888](http://localhost:8888) and use the token that is printed out. The output will end up in your current working directory (`${PWD}`).
@@ -37,14 +37,14 @@ And then point your browser to [http://localhost:8888](http://localhost:8888) an
 If you prefer a shell, instead run:
 
 ```shell
-docker run --rm -it -p 8888:8888 -v ${PWD}:/home/hepdata clelange/hepdata_lib bash
+docker run --rm -it -p 8888:8888 -v ${PWD}:/home/hepdata ghcr.io/hepdata/hepdata_lib:latest bash
 ```
 
 If on CERN LXPLUS or anywhere else where there is Singularity available but not Docker, you can still use the docker image:
 
 ```shell
 export SINGULARITY_CACHEDIR="/tmp/$(whoami)/singularity"
-singularity shell -B /afs -B /eos docker://clelange/hepdata_lib bash
+singularity shell -B /afs -B /eos docker://ghcr.io/hepdata/hepdata_lib:latest bash
 ```
 
 Unpacking the image can take a few minutes the first time you use it. Please be patient. Both EOS and AFS should be available and the output will be in your current working directory.
