@@ -65,7 +65,7 @@ You should then find the new version at `this location`_. You need to be a maint
 
 
 .. _bumpversion: https://github.com/peritus/bumpversion
-.. _.bumpversion.cfg: https://github.com/clelange/hepdata_lib/blob/master/.bumpversion.cfg
+.. _.bumpversion.cfg: https://github.com/HEPData/hepdata_lib/blob/master/.bumpversion.cfg
 .. _PyPI: https://pypi.org
 .. _PyPI test server: https://test.pypi.org/project/hepdata_lib/
 .. _this location: https://pypi.org/project/hepdata_lib/
