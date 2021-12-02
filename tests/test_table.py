@@ -6,6 +6,7 @@ import shutil
 from unittest import TestCase
 
 from hepdata_lib import Table, Variable, Uncertainty
+from test_utilities import tmp_directory_name
 
 class TestTable(TestCase):
     """Test the Table class."""
@@ -61,7 +62,7 @@ class TestTable(TestCase):
         test_table = Table("Some Table")
         test_variable = Variable("Some Variable")
         test_table.add_variable(test_variable)
-        testdir = "test_output"
+        testdir = tmp_directory_name()
         self.addCleanup(shutil.rmtree, testdir)
         try:
             test_table.write_yaml(testdir)
@@ -110,7 +111,7 @@ class TestTable(TestCase):
 
         # This should work fine
         test_table.add_image(some_pdf)
-        testdir = "test_output"
+        testdir = tmp_directory_name()
         self.addCleanup(shutil.rmtree, testdir)
         try:
             test_table.write_images(testdir)
@@ -133,7 +134,7 @@ class TestTable(TestCase):
         """Test the copy_files function."""
         test_table = Table("Some Table")
         some_pdf = "%s/minimal.pdf" % os.path.dirname(__file__)
-        testdir = "test_output"
+        testdir = tmp_directory_name()
         self.addCleanup(shutil.rmtree, testdir)
         os.makedirs(testdir)
 

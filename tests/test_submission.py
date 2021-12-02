@@ -71,7 +71,7 @@ class TestSubmission(TestCase):
     def test_create_files(self):
         """Test create_files() for Submission."""
 
-        testdir = "test_output"
+        testdir = tmp_directory_name()
         test_submission = Submission()
         tab = Table("test")
         test_submission.add_table(tab)
