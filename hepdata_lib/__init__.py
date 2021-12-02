@@ -11,7 +11,6 @@ from collections import defaultdict
 import numpy as np
 import yaml
 from future.utils import raise_from
-
 # try to use LibYAML bindings if possible
 try:
     from yaml import CLoader as Loader, CSafeDumper as Dumper
@@ -19,6 +18,7 @@ except ImportError:
     from yaml import Loader, SafeDumper as Dumper
 from yaml.representer import SafeRepresenter
 
+from hepdata_validator.full_submission_validator import FullSubmissionValidator
 from hepdata_lib import helpers
 from hepdata_lib.root_utils import RootFileReader
 
@@ -579,7 +579,6 @@ class Submission(AdditionalResourceMixin):
                         )
 
         if validate:
-            from hepdata_validator.full_submission_validator import FullSubmissionValidator
             full_submission_validator = FullSubmissionValidator()
             is_archive_valid = full_submission_validator.validate(archive=tarfile_path)
             assert is_archive_valid, "The tar ball is not valid"
