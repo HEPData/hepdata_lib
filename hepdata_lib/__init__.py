@@ -581,6 +581,9 @@ class Submission(AdditionalResourceMixin):
         if validate:
             full_submission_validator = FullSubmissionValidator()
             is_archive_valid = full_submission_validator.validate(archive=tarfile_path)
+            if not is_archive_valid:
+                for filename in full_submission_validator.get_messages():
+                    full_submission_validator.print_errors(filename)
             assert is_archive_valid, "The tar ball is not valid"
 
 class Uncertainty(object):
