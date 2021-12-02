@@ -73,9 +73,8 @@ class TestSubmission(TestCase):
 
         testdir = "test_output"
         test_submission = Submission()
-        self.addCleanup(os.remove, "submission.tar.gz")
-        self.addCleanup(shutil.rmtree, testdir)
-
+        tab = Table("test")
+        test_submission.add_table(tab)
         test_submission.create_files(testdir)
 
         self.doCleanups()
