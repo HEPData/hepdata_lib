@@ -525,12 +525,15 @@ class Submission(AdditionalResourceMixin):
             files = files + table.files_to_copy
         return files
 
-    def create_files(self, outdir="."):
+    def create_files(self, outdir=".", validate=True):
         """
         Create the output files.
 
         Implicitly triggers file creation for all tables that have been added to the submission,
         all variables associated to the tables and all uncertainties associated to the variables.
+
+        If `validate` is True, the hepdata-validator package will be used to validate the
+        output tar ball.
         """
         if not os.path.exists(outdir):
             os.makedirs(outdir)
@@ -567,13 +570,19 @@ class Submission(AdditionalResourceMixin):
         files_to_add.extend(
             [os.path.join(outdir, os.path.basename(x)) for x in  self.files_to_copy_nested()]
         )
-        with tarfile.open("submission.tar.gz", "w:gz") as tar:
+        tarfile_path = "submission.tar.gz"
+        with tarfile.open(tarfile_path, "w:gz") as tar:
             for filepath in files_to_add:
                 tar.add(
                         filepath,
                         arcname=os.path.basename(filepath)
                         )
 
+        if validate:
+            from hepdata_validator.full_submission_validator import FullSubmissionValidator
+            full_submission_validator = FullSubmissionValidator()
+            is_archive_valid = full_submission_validator.validate(archive=tarfile_path)
+            assert is_archive_valid, "The tar ball is not valid"
 
 class Uncertainty(object):
     """
