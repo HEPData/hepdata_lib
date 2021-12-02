@@ -358,26 +358,35 @@ class Table(AdditionalResourceMixin):
                 raise RuntimeError("File %s does not exist!" % image_file)
             if not os.path.exists(outdir):
                 os.makedirs(outdir)
-            out_image_file = "{}.png".format(
-                os.path.splitext(image_file)[0].rsplit("/", 1)[1])
-            thumb_out_image_file = "thumb_" + out_image_file
-            # first convert to png, then create thumbnail
-            command = "convert -flatten -density 300 -fuzz 1% -trim +repage {} {}/{}".format(
-                image_file, outdir, out_image_file)
-            command_ok = helpers.execute_command(command)
-            if not command_ok:
-                print("ImageMagick does not seem to be installed \
-                       or is not in the path - not adding any images.")
-                break
-            command = "convert -thumbnail 240x179 {outdir}/{image} {outdir}/{thumb}".format(
-                outdir=outdir, image=out_image_file, thumb=thumb_out_image_file)
-            helpers.execute_command(command)
+
+            # PNG file is named same as input file except for extension
+            # Thumbnail is named with a '_thumb' prefix
+            png_output_base = os.path.splitext(os.path.basename(image_file))[0] + ".png"
+            thumbnail_output_base = "thumb_" + png_output_base
+
+            # Absolute paths for further use
+            png_output_path = os.path.join(outdir, png_output_base)
+            thumbnail_output_path = os.path.join(outdir, thumbnail_output_base)
+
+
+            # Convert to full-size PNG image
+            # Only executed if output is missing or out of date
+            if helpers.file_is_outdated(png_output_path, image_file):
+                helpers.convert_pdf_to_png(image_file, png_output_path)
+            else:
+                print("Full-size PNG file %s is up to date." % image_file)
+
+            if helpers.file_is_outdated(thumbnail_output_path, png_output_path):
+                helpers.convert_png_to_thumbnail(png_output_path, thumbnail_output_path)
+            else:
+                print("Thumbnail PNG file %s is up to date." % thumbnail_output_path)
+
             image = {}
             image["description"] = "Image file"
-            image["location"] = out_image_file
+            image["location"] = os.path.basename(png_output_path)
             thumbnail = {}
             thumbnail["description"] = "Thumbnail image file"
-            thumbnail["location"] = thumb_out_image_file
+            thumbnail["location"] = os.path.basename(thumbnail_output_path)
             self.additional_resources.append(image)
             self.additional_resources.append(thumbnail)
 

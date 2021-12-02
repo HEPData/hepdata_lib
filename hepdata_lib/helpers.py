@@ -285,3 +285,58 @@ def sanitize_value(value):
     if isinstance(value,int):
         return value
     return float(value)
+
+
+def convert_pdf_to_png(source, target):
+    """
+    Wrapper for the ImageMagick convert utility.
+
+    :param source: Source file in PDF format.
+    :type source: str
+    :param target: Output file in PNG format.
+    :type target: str
+    """
+    assert os.path.exists(source), "Source file does not exist: %s" % source
+
+    command = "convert -flatten -density 300 -fuzz 1% -trim +repage {} {}".format(
+        source, target)
+    command_ok = execute_command(command)
+    if not command_ok:
+        print("ImageMagick does not seem to be installed \
+                or is not in the path - not adding any images.")
+        return False
+    return True
+
+
+def convert_png_to_thumbnail(source, target):
+    """
+    Wrapper for the ImageMagick convert utility in thumbnail mode.
+    """
+
+    command = "convert -thumbnail 240x179 {} {}".format(
+                source, target)
+    command_ok = execute_command(command)
+
+    if not command_ok:
+        print("ImageMagick does not seem to be installed \
+                or is not in the path - not adding any images.")
+        return False
+
+    return True
+
+def file_is_outdated(file_path, reference_file_path):
+    """
+    Check if the given file is outdated compared to the reference file.
+
+    Also returns true if the reference file does not exist.
+
+    :param file_path: Path to the file to check.
+    :type file_path: str
+    :param reference_file_path: Path to the reference file.
+    :type reference_file_path: str
+    """
+    if not os.path.exists(reference_file_path):
+        raise RuntimeError("Reference file does not exist: %s" % reference_file_path)
+    if not os.path.exists(file_path):
+        return True
+    return os.path.getmtime(file_path) < os.path.getmtime(reference_file_path)
