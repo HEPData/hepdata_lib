@@ -8,7 +8,8 @@ try:
 except ImportError:
     print("ROOT is required by this library.")
 
-DEPS = ['numpy', 'PyYAML>4.*', 'future', 'six','hepdata-validator>=0.3.2']
+with open("requirements.txt","r") as f:
+    DEPS = f.readlines()
 
 HERE = path.abspath(path.dirname(__file__))
 
