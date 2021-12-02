@@ -5,10 +5,10 @@ from __future__ import print_function
 from collections import defaultdict
 from unittest import TestCase
 import shutil
-import yaml
 import os
-from hepdata_lib import Submission, Table, Variable
+import yaml
 from test_utilities import tmp_directory_name
+from hepdata_lib import Submission, Table, Variable
 
 class TestOutput(TestCase):
     """Test output"""

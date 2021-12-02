@@ -7,6 +7,7 @@ import string
 from builtins import bytes
 from unittest import TestCase
 import tarfile
+from test_utilities import tmp_directory_name
 from hepdata_lib import Submission, Table, Variable, Uncertainty
 
 class TestSubmission(TestCase):
