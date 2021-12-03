@@ -1,3 +1,4 @@
 m2r
 sphinx_rtd_theme
 docutils<0.18
+hepdata-validator>=0.3.2
