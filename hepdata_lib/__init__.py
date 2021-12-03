@@ -525,7 +525,7 @@ class Submission(AdditionalResourceMixin):
             files = files + table.files_to_copy
         return files
 
-    def create_files(self, outdir=".", validate=True):
+    def create_files(self, outdir=".", validate=True, remove_old=True):
         """
         Create the output files.
 
@@ -534,7 +534,12 @@ class Submission(AdditionalResourceMixin):
 
         If `validate` is True, the hepdata-validator package will be used to validate the
         output tar ball.
+
+        If `remove_old` is True, the output directory will be deleted before recreation.
         """
+        if remove_old and os.path.exists(outdir):
+            shutil.rmtree(outdir)
+
         if not os.path.exists(outdir):
             os.makedirs(outdir)
 

@@ -80,6 +80,37 @@ class TestSubmission(TestCase):
 
         self.doCleanups()
 
+    def test_create_files_with_removal(self):
+        """Test the removal of old files in create_files()"""
+        testdir = tmp_directory_name()
+
+        # Step 1: Create test directory containing random file
+        os.makedirs(testdir)
+        self.addCleanup(shutil.rmtree, testdir)
+        testfile = os.path.join(testdir, "test.txt")
+        with open(testfile, "w") as f:
+            f.write("test")
+        self.assertTrue(os.path.isfile(testfile))
+
+        # Step 2: Create submission and write output to test directory
+        # Without overwriting of files
+        test_submission = Submission()
+        tab = Table("test")
+        test_submission.add_table(tab)
+        test_submission.create_files(testdir, remove_old=False)
+
+        # Test file should still exist
+        self.assertTrue(os.path.isfile(testfile))
+
+        # Step 3: Recreate submission files with removal
+        test_submission.create_files(testdir, remove_old=True)
+
+        # Test file should no longer exist
+        self.assertFalse(os.path.isfile(testfile))
+
+
+
+
     def test_read_abstract(self):
         """Test read_abstract function."""
         some_string = string.ascii_lowercase
@@ -125,3 +156,4 @@ class TestSubmission(TestCase):
                 tar.getmember(testfile)
             except KeyError:
                 self.fail("Submission.create_files failed to write all files to tar ball.")
+
