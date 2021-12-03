@@ -156,4 +156,3 @@ class TestSubmission(TestCase):
                 tar.getmember(testfile)
             except KeyError:
                 self.fail("Submission.create_files failed to write all files to tar ball.")
-
