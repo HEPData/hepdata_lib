@@ -2,11 +2,12 @@
 # -*- coding:utf-8 -*-
 """Test Output."""
 from __future__ import print_function
-import os
 from collections import defaultdict
 from unittest import TestCase
 import shutil
+import os
 import yaml
+from test_utilities import tmp_directory_name
 from hepdata_lib import Submission, Table, Variable
 
 class TestOutput(TestCase):
@@ -14,6 +15,7 @@ class TestOutput(TestCase):
 
     def test_yaml_output(self):
         """Test yaml dump"""
+        tmp_dir = tmp_directory_name()
 
         # Create test dictionary
         testlist = [("x", 1.2), ("x", 2.2), ("y", 0.12), ("y", 0.22)]
@@ -23,7 +25,6 @@ class TestOutput(TestCase):
 
         # Create test submission
         test_submission = Submission()
-        testdir = "./output"
         test_table = Table("TestTable")
         x_variable = Variable("X", is_independent=True, is_binned=False)
         x_variable.values = testdict['x']
@@ -32,11 +33,12 @@ class TestOutput(TestCase):
         test_table.add_variable(x_variable)
         test_table.add_variable(y_variable)
         test_submission.add_table(test_table)
-        test_submission.create_files(testdir)
+        test_submission.create_files(tmp_dir)
 
         # Test read yaml file
+        table_file = os.path.join(tmp_dir, "testtable.yaml")
         try:
-            with open("output/testtable.yaml", 'r') as testfile:
+            with open(table_file, 'r') as testfile:
                 testyaml = yaml.safe_load(testfile)
         except yaml.YAMLError as exc:
             print(exc)
@@ -45,10 +47,10 @@ class TestOutput(TestCase):
         testtxt = ("dependent_variables:\n- header:\n    name: Y\n  values:\n" +
                    "  - value: 0.12\n  - value: 0.22\nindependent_variables:\n" +
                    "- header:\n    name: X\n  values:\n  - value: 1.2\n  - value: 2.2\n")
-        with open("output/testtable.yaml", 'r') as testfile:
+        with open(table_file, 'r') as testfile:
             testyaml = testfile.read()
 
         self.assertEqual(str(testyaml), testtxt)
         self.addCleanup(os.remove, "submission.tar.gz")
-        self.addCleanup(shutil.rmtree, testdir)
+        self.addCleanup(shutil.rmtree, tmp_dir)
         self.doCleanups()

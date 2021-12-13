@@ -1,0 +1,5 @@
+numpy
+PyYAML>4.*
+future
+six
+hepdata-validator>=0.3.2

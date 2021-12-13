@@ -7,6 +7,7 @@ import string
 from builtins import bytes
 from unittest import TestCase
 import tarfile
+from test_utilities import tmp_directory_name
 from hepdata_lib import Submission, Table, Variable, Uncertainty
 
 class TestSubmission(TestCase):
@@ -71,14 +72,44 @@ class TestSubmission(TestCase):
     def test_create_files(self):
         """Test create_files() for Submission."""
 
-        testdir = "test_output"
+        testdir = tmp_directory_name()
         test_submission = Submission()
-        self.addCleanup(os.remove, "submission.tar.gz")
-        self.addCleanup(shutil.rmtree, testdir)
-
+        tab = Table("test")
+        test_submission.add_table(tab)
         test_submission.create_files(testdir)
 
         self.doCleanups()
+
+    def test_create_files_with_removal(self):
+        """Test the removal of old files in create_files()"""
+        testdir = tmp_directory_name()
+
+        # Step 1: Create test directory containing random file
+        os.makedirs(testdir)
+        self.addCleanup(shutil.rmtree, testdir)
+        testfile = os.path.join(testdir, "test.txt")
+        with open(testfile, "w") as f:
+            f.write("test")
+        self.assertTrue(os.path.isfile(testfile))
+
+        # Step 2: Create submission and write output to test directory
+        # Without overwriting of files
+        test_submission = Submission()
+        tab = Table("test")
+        test_submission.add_table(tab)
+        test_submission.create_files(testdir, remove_old=False)
+
+        # Test file should still exist
+        self.assertTrue(os.path.isfile(testfile))
+
+        # Step 3: Recreate submission files with removal
+        test_submission.create_files(testdir, remove_old=True)
+
+        # Test file should no longer exist
+        self.assertFalse(os.path.isfile(testfile))
+
+
+
 
     def test_read_abstract(self):
         """Test read_abstract function."""

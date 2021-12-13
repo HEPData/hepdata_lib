@@ -62,6 +62,17 @@ def get_random_id(length=12):
     return "".join(random.sample(string.ascii_uppercase+string.digits, length))
 
 
+def tmp_directory_name():
+    """
+    Generate a random directory name for testing.
+
+    Guaranteed to not exist.
+    """
+    tmp_name = "/tmp/hepdata_lib_test_" + get_random_id()
+    if os.path.exists(tmp_name):
+        return tmp_directory_name()
+    return tmp_name
+
 def remove_if_exist(path_to_file):
     """Remove file if it exists."""
     if os.path.exists(path_to_file):

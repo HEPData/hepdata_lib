@@ -11,7 +11,6 @@ from collections import defaultdict
 import numpy as np
 import yaml
 from future.utils import raise_from
-
 # try to use LibYAML bindings if possible
 try:
     from yaml import CLoader as Loader, CSafeDumper as Dumper
@@ -19,6 +18,7 @@ except ImportError:
     from yaml import Loader, SafeDumper as Dumper
 from yaml.representer import SafeRepresenter
 
+from hepdata_validator.full_submission_validator import FullSubmissionValidator
 from hepdata_lib import helpers
 from hepdata_lib.root_utils import RootFileReader
 
@@ -538,13 +538,21 @@ class Submission(AdditionalResourceMixin):
             files = files + table.files_to_copy
         return files
 
-    def create_files(self, outdir="."):
+    def create_files(self, outdir=".", validate=True, remove_old=True):
         """
         Create the output files.
 
         Implicitly triggers file creation for all tables that have been added to the submission,
         all variables associated to the tables and all uncertainties associated to the variables.
+
+        If `validate` is True, the hepdata-validator package will be used to validate the
+        output tar ball.
+
+        If `remove_old` is True, the output directory will be deleted before recreation.
         """
+        if remove_old and os.path.exists(outdir):
+            shutil.rmtree(outdir)
+
         if not os.path.exists(outdir):
             os.makedirs(outdir)
 
@@ -580,13 +588,21 @@ class Submission(AdditionalResourceMixin):
         files_to_add.extend(
             [os.path.join(outdir, os.path.basename(x)) for x in  self.files_to_copy_nested()]
         )
-        with tarfile.open("submission.tar.gz", "w:gz") as tar:
+        tarfile_path = "submission.tar.gz"
+        with tarfile.open(tarfile_path, "w:gz") as tar:
             for filepath in files_to_add:
                 tar.add(
                         filepath,
                         arcname=os.path.basename(filepath)
                         )
 
+        if validate:
+            full_submission_validator = FullSubmissionValidator()
+            is_archive_valid = full_submission_validator.validate(archive=tarfile_path)
+            if not is_archive_valid:
+                for filename in full_submission_validator.get_messages():
+                    full_submission_validator.print_errors(filename)
+            assert is_archive_valid, "The tar ball is not valid"
 
 class Uncertainty(object):
     """
