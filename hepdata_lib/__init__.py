@@ -374,12 +374,16 @@ class Table(AdditionalResourceMixin):
             if helpers.file_is_outdated(png_output_path, image_file):
                 helpers.convert_pdf_to_png(image_file, png_output_path)
             else:
-                print("Full-size PNG file %s is up to date." % image_file)
+                print("Full-size PNG file %s is newer than its source file. \
+                       Remove the thumbnail file or use create_files(remove_old=True)\
+                           to force recreation." % png_output_path)
 
             if helpers.file_is_outdated(thumbnail_output_path, png_output_path):
                 helpers.convert_png_to_thumbnail(png_output_path, thumbnail_output_path)
             else:
-                print("Thumbnail PNG file %s is up to date." % thumbnail_output_path)
+                print("Thumbnail PNG file %s is newer than its source file. \
+                       Remove the thumbnail file or use create_files(remove_old=True)\
+                           to force recreation." % thumbnail_output_path)
 
             image = {}
             image["description"] = "Image file"
