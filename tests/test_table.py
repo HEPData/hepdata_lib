@@ -117,12 +117,61 @@ class TestTable(TestCase):
         except TypeError:
             self.fail("Table.write_images raised an unexpected TypeError.")
 
+        # Check that output file exists
+        expected_file = os.path.join(testdir, "minimal.png")
+        self.assertTrue(os.path.exists(expected_file))
+
         # Try wrong type of input argument
         bad_arguments = [None, 5, {}, []]
         for argument in bad_arguments:
             with self.assertRaises(TypeError):
                 test_table.write_images(argument)
         self.doCleanups()
+
+    def test_write_images_multiple_executions(self):
+        """
+        write_images is supposed to only recreate output PNG
+        files if the output file does not yet exist or is outdated
+        relative to the input file.
+        """
+
+        test_table = Table("Some Table")
+        some_pdf = "%s/minimal.pdf" % os.path.dirname(__file__)
+        test_table.add_image(some_pdf)
+        testdir = "test_output"
+        self.addCleanup(shutil.rmtree, testdir)
+
+        expected_main_file = os.path.join(testdir, "minimal.png")
+        expected_thumbnail_file = os.path.join(testdir, "thumb_minimal.png")
+
+        # Output files should not yet exist
+        self.assertTrue(not os.path.exists(expected_main_file))
+        self.assertTrue(not os.path.exists(expected_thumbnail_file))
+
+        # Run the function
+        test_table.write_images(testdir)
+
+        # Output files now exist
+        self.assertTrue(os.path.exists(expected_main_file))
+        self.assertTrue(os.path.exists(expected_thumbnail_file))
+
+        # Make sure that output is not recreated if input file is unchanged
+        modified_time_main = os.path.getmtime(expected_main_file)
+        modified_time_thumbnail = os.path.getmtime(expected_thumbnail_file)
+        test_table.write_images(testdir)
+        self.assertEqual(modified_time_main, os.path.getmtime(expected_main_file))
+        self.assertEqual(modified_time_thumbnail, os.path.getmtime(expected_thumbnail_file))
+
+
+        # Make sure that a change in input file triggers recreation
+        os.utime(some_pdf, None)
+        test_table.write_images(testdir)
+        self.assertTrue(modified_time_main < os.path.getmtime(expected_main_file))
+        self.assertTrue(modified_time_thumbnail < os.path.getmtime(expected_thumbnail_file))
+
+
+
+
 
     def test_add_additional_resource(self): # pylint: disable=no-self-use
         """Test the add_additional_resource function."""
