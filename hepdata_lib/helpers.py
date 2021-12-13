@@ -304,13 +304,16 @@ def convert_pdf_to_png(source, target):
     if not command_ok:
         print("ImageMagick does not seem to be installed \
                 or is not in the path - not adding any images.")
-        return False
-    return True
 
 
 def convert_png_to_thumbnail(source, target):
     """
     Wrapper for the ImageMagick convert utility in thumbnail mode.
+
+    :param source: Source file in PNG format.
+    :type source: str
+    :param target: Output thumbnailfile in PNG format.
+    :type target: str
     """
 
     command = "convert -thumbnail 240x179 {} {}".format(
@@ -320,9 +323,6 @@ def convert_png_to_thumbnail(source, target):
     if not command_ok:
         print("ImageMagick does not seem to be installed \
                 or is not in the path - not adding any images.")
-        return False
-
-    return True
 
 def file_is_outdated(file_path, reference_file_path):
     """
