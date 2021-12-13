@@ -28,8 +28,6 @@ setup(
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
@@ -40,7 +38,6 @@ setup(
     install_requires=DEPS,
     setup_requires=['pytest-runner', 'pytest-cov'],
     tests_require=['pytest', 'papermill', 'six',
-                   'pylint==1.9.5; python_version<"3"',
                    'pylint==2.9.6; python_version>="3"',
                   ],
     project_urls={
