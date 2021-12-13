@@ -339,4 +339,8 @@ def file_is_outdated(file_path, reference_file_path):
         raise RuntimeError("Reference file does not exist: %s" % reference_file_path)
     if not os.path.exists(file_path):
         return True
-    return os.path.getmtime(file_path) < os.path.getmtime(reference_file_path)
+
+    modification_outdated = os.path.getmtime(file_path) < os.path.getmtime(reference_file_path)
+    change_outdated = os.path.getctime(file_path) < os.path.getctime(reference_file_path)
+
+    return modification_outdated | change_outdated
