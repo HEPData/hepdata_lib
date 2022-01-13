@@ -538,7 +538,7 @@ class Submission(AdditionalResourceMixin):
             files = files + table.files_to_copy
         return files
 
-    def create_files(self, outdir=".", validate=True, remove_old=True):
+    def create_files(self, outdir=".", validate=True, remove_old=False):
         """
         Create the output files.
 
