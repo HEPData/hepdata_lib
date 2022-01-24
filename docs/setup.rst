@@ -6,6 +6,9 @@ Setup
 Setup for users
 -----------------
 
+With Python 3 locally available
++++++++++++++++++++++++++++++++
+
 The library is available for installation as a pypi package and can be installed from the terminal with pip:
 
 
@@ -18,6 +21,18 @@ The ``--user`` flag lets you install the package in a user dependent location, a
 If you are running on your own computer or laptop, it's up to you to decide where you want to install the package. However, we recommended to install it inside a virtual environment (see :ref:`sec-setup-virtualenv`)
 
 This setup naturally restricts you to use the latest stable version of the package in pypi. If you would like to use the code as it is the github repository, please follow the instructions in :ref:`sec-setup-developers`.
+
+Using Singularity
++++++++++++++++++++++++++++++++
+
+On LXPLUS and many other local computing sites with CVMFS and Singularity available, you can use the library without having to install anything:
+
+::
+
+    singularity run /cvmfs/unpacked.cern.ch/ghcr.io/hepdata/hepdata_lib:latest /bin/bash
+
+This opens a new shell with ``hepdata_lib``, ROOT, and Python 3 available.
+Your home directory and most other user directories on the machine on which you execute Singularity will also be accessible from within this shell.
 
 
 .. _sec-setup-developers:
