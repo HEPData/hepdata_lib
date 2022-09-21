@@ -3,7 +3,7 @@
 [![DOI](https://zenodo.org/badge/129248575.svg)](https://zenodo.org/badge/latestdoi/129248575)
 [![PyPI version](https://badge.fury.io/py/hepdata-lib.svg)](https://badge.fury.io/py/hepdata-lib)
 [![Actions Status](https://github.com/HEPData/hepdata_lib/workflows/tests/badge.svg)](https://github.com/HEPData/hepdata_lib/actions)
-[![Coverage Status](https://coveralls.io/repos/github/HEPData/hepdata_lib/badge.svg?branch=master)](https://coveralls.io/github/HEPData/hepdata_lib?branch=master)
+[![Coverage Status](https://codecov.io/gh/HEPData/hepdata_lib/graph/badge.svg?branch=master)](https://codecov.io/gh/HEPData/hepdata_lib?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/hepdata-lib/badge/)](http://hepdata-lib.readthedocs.io/)
 [![Docker image](https://github.com/HEPData/hepdata_lib/actions/workflows/docker.yml/badge.svg)](https://github.com/HEPData/hepdata_lib/pkgs/container/hepdata_lib)
 
