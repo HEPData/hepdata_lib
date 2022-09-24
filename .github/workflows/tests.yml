@@ -75,7 +75,7 @@ jobs:
         source root/bin/thisroot.sh
         python -m pytest tests
 
-    - name: Report contrib coverage with Codecov
+    - name: Report coverage with Codecov
       uses: codecov/codecov-action@v3
       with:
         files: ./coverage.xml
