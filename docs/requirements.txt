@@ -1,4 +1,4 @@
-m2r
+m2r2==0.3.3
 sphinx_rtd_theme
 docutils<0.18
 mistune<2.0.0

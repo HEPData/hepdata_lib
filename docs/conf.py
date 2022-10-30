@@ -61,7 +61,7 @@ release = '0.10.1'
 # ones.
 extensions = [
     'sphinx.ext.githubpages',
-    'm2r',
+    'm2r2',
     'sphinx.ext.autodoc'
 ]
 
