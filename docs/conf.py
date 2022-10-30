@@ -41,7 +41,7 @@ except ImportError:
 # -- Project information -----------------------------------------------------
 
 project = 'hepdata_lib'
-copyright = '2018-2020, Andreas Albert, Clemens Lange'
+copyright = '2018-2022, Andreas Albert, Clemens Lange'
 author = 'Andreas Albert, Clemens Lange'
 
 # The short X.Y version
