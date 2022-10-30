@@ -1,7 +1,7 @@
 Code Documentation
 ====================
 
-.. toctree::
-   :maxdepth: 4
+.. autosummary::
+   :toctree: generated
 
    hepdata_lib

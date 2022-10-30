@@ -15,7 +15,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../hepdata_lib'))
+sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('../'))
 
 if (sys.version_info > (3, 3)):
     # Python 3.3
@@ -62,7 +63,8 @@ release = '0.10.1'
 extensions = [
     'sphinx.ext.githubpages',
     'm2r2',
-    'sphinx.ext.autodoc'
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
