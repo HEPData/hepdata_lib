@@ -69,3 +69,23 @@ class TestUncertainty(TestCase):
         # Check that both agree
         self.assertTrue(all((test_utilities.tuple_compare(tup1, tup2) \
                         for tup1, tup2 in zip(testunc.values, refunc.values))))
+
+    def test_mixed_uncertainties(self):
+        '''Test behavior in case of symmetric and asymmetric uncertainties'''
+
+        # Create a Variable with random values
+        var = Variable("testvar")
+        var.is_binned = False
+        var.values = [1, 2, 3, 4]
+        var.make_dict()
+
+        # Add mixed uncertainties, declaring asymmetric type in order to allow up/down variations
+        unc = Uncertainty("fake_unc")
+        unc.is_symmetric = False
+        unc.values = [(-1, 1), (-1.5, 2), (-3, 2), (-2.5, 2.5)]
+        var.add_uncertainty(unc)
+        dictionary = var.make_dict()
+
+        # Verify the pattern: the correct one VS output of the make_dict() function
+        pattern = ['symerror', 'asymerror', 'asymerror', 'symerror']
+        self.assertTrue((list(dictionary['values'][i]['errors'][0].keys())[0], pattern[i]) for i in range(4))
