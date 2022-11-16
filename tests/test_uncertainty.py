@@ -91,4 +91,4 @@ class TestUncertainty(TestCase):
         # Verify the pattern: the correct one VS output of the make_dict() function
         pattern = ['symerror', 'asymerror', 'asymerror', 'symerror']
         self.assertTrue((list(dictionary['values'][i]['errors'][0].keys())[
-                        0], pattern[i]) for i in len(pattern))
+                        0], value) for i, value in enumerate(pattern))
