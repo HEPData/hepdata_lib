@@ -9,6 +9,7 @@ from hepdata_lib import Variable, Uncertainty
 
 class TestUncertainty(TestCase):
     """Test the Uncertainty class."""
+
     def test_scale_values(self):
         '''Test behavior of Uncertainty.scale_values function'''
         values = list(range(0, 300, 1))
@@ -50,7 +51,8 @@ class TestUncertainty(TestCase):
         # Dummy central values and variatons relative to central value
         npoints = 100
         values = list(range(0, npoints, 1))
-        uncertainty = [(-random.uniform(0, 1), random.uniform(0, 1)) for _ in range(100)]
+        uncertainty = [(-random.uniform(0, 1), random.uniform(0, 1))
+                       for _ in range(npoints)]
 
         # Convert +- error to interval bounds
         intervals = [(val + unc_minus, val + unc_plus)
@@ -67,5 +69,26 @@ class TestUncertainty(TestCase):
         testunc.set_values_from_intervals(intervals, nominal=values)
 
         # Check that both agree
-        self.assertTrue(all((test_utilities.tuple_compare(tup1, tup2) \
+        self.assertTrue(all((test_utilities.tuple_compare(tup1, tup2)
                         for tup1, tup2 in zip(testunc.values, refunc.values))))
+
+    def test_mixed_uncertainties(self):
+        '''Test behavior in case of symmetric and asymmetric uncertainties'''
+
+        # Create a Variable with random values
+        var = Variable("testvar")
+        var.is_binned = False
+        var.values = [1, 2, 3, 4]
+        var.make_dict()
+
+        # Add mixed uncertainties, declaring asymmetric type in order to allow up/down variations
+        unc = Uncertainty("fake_unc")
+        unc.is_symmetric = False
+        unc.values = [(-1, 1), (-1.5, 2), (-3, 2), (-2.5, 2.5)]
+        var.add_uncertainty(unc)
+        dictionary = var.make_dict()
+
+        # Verify the pattern: the correct one VS output of the make_dict() function
+        pattern = ['symerror', 'asymerror', 'asymerror', 'symerror']
+        self.assertTrue((list(dictionary['values'][i]['errors'][0].keys())[
+                        0], value) for i, value in enumerate(pattern))

@@ -8,6 +8,7 @@ import shutil
 import tarfile
 import warnings
 from collections import defaultdict
+from decimal import Decimal
 import numpy as np
 import yaml
 from future.utils import raise_from
@@ -249,15 +250,24 @@ class Variable(object):
                                 unc.label
                         })
                     else:
-                        valuedict['errors'].append({
-                            "asymerror": {
-                                "minus":
-                                    helpers.relative_round(unc.values[i][0], self.digits),
-                                "plus":
-                                    helpers.relative_round(unc.values[i][1], self.digits)
-                            },
-                            "label": unc.label
-                        })
+                        sum_unc = Decimal(float(unc.values[i][0]) + float(unc.values[i][1]))
+                        if sum_unc.is_zero():
+                            valuedict['errors'].append({
+                                "symerror":
+                                    helpers.relative_round(unc.values[i][1], self.digits),
+                                "label":
+                                    unc.label
+                            })
+                        else:
+                            valuedict['errors'].append({
+                                "asymerror": {
+                                    "minus":
+                                        helpers.relative_round(unc.values[i][0], self.digits),
+                                    "plus":
+                                        helpers.relative_round(unc.values[i][1], self.digits)
+                                },
+                                "label": unc.label
+                            })
             elif self.uncertainties:
                 print(
                     "Warning: omitting 'errors' since all uncertainties " \
