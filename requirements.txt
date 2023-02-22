@@ -1,5 +1,5 @@
 numpy
-PyYAML>4.*
+PyYAML>=4.0
 future
 six
 hepdata-validator>=0.3.2
