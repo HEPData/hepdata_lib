@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # pylint: skip-file
 #
 # Configuration file for the Sphinx documentation builder.
@@ -17,12 +16,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../../hepdata_lib'))
 
-if (sys.version_info > (3, 3)):
-    # Python 3.3
-    from unittest.mock import MagicMock
-else:
-    # Python 2 and < 3.3
-    from mock import Mock as MagicMock
+from unittest.mock import MagicMock
 
 
 class Mock(MagicMock):
