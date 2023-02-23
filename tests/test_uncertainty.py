@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding:utf-8 -*-
 """Test Uncertainty."""
 import random
 from unittest import TestCase

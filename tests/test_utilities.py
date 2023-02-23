@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding:utf-8 -*-
 """Utilities for tests."""
 
 import os
@@ -105,7 +104,7 @@ def make_tmp_root_file(path_to_file='tmp_{RANDID}.root', mode="RECREATE",
     rfile = ROOT.TFile(path_to_file, mode)
 
     if not rfile:
-        raise RuntimeError("Failed to create temporary file: {}".format(path_to_file))
+        raise RuntimeError(f"Failed to create temporary file: {path_to_file}")
 
     if testcase:
         testcase.addCleanup(remove_if_exist, path_to_file)

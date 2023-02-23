@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-# -*- coding:utf-8 -*-
 """Test RootFileReader."""
-from __future__ import print_function
 from unittest import TestCase
 from array import array
 import os
@@ -79,7 +77,7 @@ class TestRootFileReader(TestCase):
         reader = RootFileReader(testfile.GetName())
         data = reader.read_graph(name)
 
-        self.assertTrue(set(data.keys()) == set(["x", "y"]))
+        self.assertTrue(set(data.keys()) == {"x", "y"})
         self.assertTrue(all(data["x"] == x))
         self.assertTrue(all(data["y"] == y))
 
@@ -398,8 +396,8 @@ class TestRootFileReader(TestCase):
         NX = 13
         NY = 37
         y_values = np.random.uniform(-1e3, 1e3, (NX,NY))
-        xlabels = ["X{0}".format(i) for i in range(NX)]
-        ylabels = ["Y{0}".format(i) for i in range(NY)]
+        xlabels = [f"X{i}" for i in range(NX)]
+        ylabels = [f"Y{i}" for i in range(NY)]
 
         hist = ROOT.TH2D("test2d_labels", "test2d_labels", NX, 0, NX, NY, 0, NY)
         for i in range(NX):
@@ -717,8 +715,8 @@ class TestRootFileReader(TestCase):
         except RuntimeError:
             self.fail("RootFileReader.read_tree raised an unexpected RuntimeError!")
         self.assertIsInstance(data_readback, list)
-        self.assertTrue(all((float_compare(values[0], values[1])
-                             for values in zip(data, data_readback))))
+        self.assertTrue(all(float_compare(values[0], values[1])
+                             for values in zip(data, data_readback)))
 
         # Try reading a nonexistant branch from an existing tree
         with self.assertRaises(RuntimeError):
@@ -766,7 +764,7 @@ class TestRootFileReader(TestCase):
         reader = RootFileReader(path_to_file)
         try:
             readback = reader.retrieve_object("canvas/testhist")
-        except IOError:
+        except OSError:
             print("RootFileReader.retrieve_object raised unexpected IOError!")
             self.fail()
 
@@ -808,7 +806,7 @@ class TestRootFileReader(TestCase):
         reader = RootFileReader(path_to_file)
         try:
             readback = reader.retrieve_object(path_to_object)
-        except IOError:
+        except OSError:
             print("RootFileReader.retrieve_object raised unexpected IOError!")
             self.fail()
 

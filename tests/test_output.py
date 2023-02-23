@@ -1,7 +1,5 @@
 # !/usr/bin/env python
-# -*- coding:utf-8 -*-
 """Test Output."""
-from __future__ import print_function
 from collections import defaultdict
 from unittest import TestCase
 import shutil
@@ -38,7 +36,7 @@ class TestOutput(TestCase):
         # Test read yaml file
         table_file = os.path.join(tmp_dir, "testtable.yaml")
         try:
-            with open(table_file, 'r') as testfile:
+            with open(table_file) as testfile:
                 testyaml = yaml.safe_load(testfile)
         except yaml.YAMLError as exc:
             print(exc)
@@ -47,7 +45,7 @@ class TestOutput(TestCase):
         testtxt = ("dependent_variables:\n- header:\n    name: Y\n  values:\n" +
                    "  - value: 0.12\n  - value: 0.22\nindependent_variables:\n" +
                    "- header:\n    name: X\n  values:\n  - value: 1.2\n  - value: 2.2\n")
-        with open(table_file, 'r') as testfile:
+        with open(table_file) as testfile:
             testyaml = testfile.read()
 
         self.assertEqual(str(testyaml), testtxt)

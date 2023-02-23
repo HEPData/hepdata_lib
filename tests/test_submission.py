@@ -1,10 +1,8 @@
 # !/usr/bin/env python
-# -*- coding:utf-8 -*-
 """Test Submission."""
 import os
 import shutil
 import string
-from builtins import bytes
 from unittest import TestCase
 import tarfile
 from test_utilities import tmp_directory_name

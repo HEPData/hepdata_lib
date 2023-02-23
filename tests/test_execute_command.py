@@ -1,5 +1,4 @@
 # !/usr/bin/env python
-# -*- coding:utf-8 -*-
 """Test execute_command() function."""
 from unittest import TestCase
 from hepdata_lib.helpers import execute_command

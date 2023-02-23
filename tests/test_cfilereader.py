@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-# -*- coding:utf-8 -*-
 """Test CFileReader."""
-from __future__ import print_function
 from unittest import TestCase
 import os
 import numpy as np
@@ -56,7 +54,7 @@ class TestCFileReader(TestCase):
 
         # Use opened file (io.TextIOBase)
         try:
-            with open(_cfile, "r") as testfile:
+            with open(_cfile) as testfile:
                 _reader = CFileReader(testfile)
         # pylint: disable=W0702
         except:
@@ -167,7 +165,7 @@ class TestCFileReader(TestCase):
 
         reader = CFileReader(test_file)
         tgraphs = reader.get_graphs()
-        self.assertTrue(set(tgraphs.keys()) == set(["tgraph", "tgraph"]))
+        self.assertTrue(set(tgraphs.keys()) == {"tgraph", "tgraph"})
 
         self.addCleanup(os.remove, test_file)
         self.doCleanups()
@@ -188,7 +186,7 @@ class TestCFileReader(TestCase):
         reader = CFileReader(c_file)
         graph = reader.create_tgrapherrors(x_value, y_value, dx_value, dy_value)
 
-        self.assertTrue(set(graph.keys()) == set(["x", "y", "dx", "dy"]))
+        self.assertTrue(set(graph.keys()) == {"x", "y", "dx", "dy"})
         self.assertTrue(all(graph["x"] == x_value))
         self.assertTrue(all(graph["y"] == y_value))
 
@@ -217,7 +215,7 @@ class TestCFileReader(TestCase):
         reader = CFileReader(c_file)
         graph = reader.create_tgraph(x_value, y_value)
 
-        self.assertTrue(set(graph.keys()) == set(["x", "y"]))
+        self.assertTrue(set(graph.keys()) == {"x", "y"})
         self.assertTrue(all(graph["x"] == x_value))
         self.assertTrue(all(graph["y"] == y_value))
         self.addCleanup(os.remove, c_file)
