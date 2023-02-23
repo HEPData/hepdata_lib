@@ -6,7 +6,7 @@ from ROOT import TGraph, TGraphErrors
 import hepdata_lib.root_utils as ru
 from hepdata_lib.helpers import check_file_existence
 
-class CFileReader(object):
+class CFileReader:
     """Reads ROOT Objects from .C files"""
 
     def __init__(self, cfile):
@@ -34,7 +34,7 @@ class CFileReader(object):
                     "CFileReader: Input file is not a .C file (name does not end in .C)!"
                     )
             if check_file_existence(cfile):
-                self._cfile = open(cfile, "r") # pylint: disable=consider-using-with
+                self._cfile = open(cfile) # pylint: disable=consider-using-with
         else:
             if isinstance(cfile, io.TextIOBase):
                 self._cfile = cfile
@@ -43,7 +43,7 @@ class CFileReader(object):
                     "CFileReader: Encountered unknown type of variable passed as cfile argument: "
                     + str(type(cfile)))
         if not self._cfile:
-            raise IOError("CFileReader: File not opened properly.")
+            raise OSError("CFileReader: File not opened properly.")
 
     def get_graphs(self):
         """Parse the .C file trying to find TGraph objects"""

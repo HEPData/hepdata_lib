@@ -1,7 +1,4 @@
 """hepdata_lib main."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 import os
 import shutil
@@ -49,7 +46,7 @@ warnings.filterwarnings("always", category=DeprecationWarning, module="hepdata_l
 
 __version__ = "0.11.1"
 
-class AdditionalResourceMixin(object):
+class AdditionalResourceMixin:
     """Functionality related to additional materials."""
 
     def __init__(self):
@@ -104,7 +101,7 @@ class AdditionalResourceMixin(object):
             helpers.check_file_size(ifile, upper_limit=100)
             shutil.copy2(ifile, outdir)
 
-class Variable(object):
+class Variable:
     """A Variable is a wrapper for a list of values + some meta data."""
 
     # pylint: disable=too-many-instance-attributes
@@ -134,7 +131,7 @@ class Variable(object):
         if self.is_binned:
             # Check that the input is well-formed
             try:
-                assert all((len(x) == 2 for x in value_list))
+                assert all(len(x) == 2 for x in value_list)
             except (AssertionError, TypeError, ValueError) as err:
                 msg = "For binned Variables, values should be tuples of length two: \
                                  (lower bin edge, upper bin edge)."
@@ -189,14 +186,14 @@ class Variable(object):
         is applied on the length of the list of Uncertainty values.
         """
         if not isinstance(uncertainty, Uncertainty):
-            raise TypeError("Expected 'Uncertainty', instead got '{0}'.".format(type(uncertainty)))
+            raise TypeError(f"Expected 'Uncertainty', instead got '{type(uncertainty)}'.")
 
         lenvar = len(self.values)
         lenunc = len(uncertainty.values)
         if lenvar and (lenvar != lenunc):
-            raise ValueError("Length of uncertainty list ({0})" \
+            raise ValueError(f"Length of uncertainty list ({lenunc})" \
                              "is not the same as length of Variable" \
-                             "values list ({1})!.".format(lenunc, lenvar))
+                             f"values list ({lenvar})!.")
         self.uncertainties.append(uncertainty)
 
     def make_dict(self):
@@ -299,7 +296,7 @@ class Table(AdditionalResourceMixin):
         self.description = "Example description"
         self.location = "Example location"
         self.keywords = {}
-        self.image_files = set([])
+        self.image_files = set()
 
     @property
     def name(self):
@@ -334,12 +331,12 @@ class Table(AdditionalResourceMixin):
             warnings.warn(msg, DeprecationWarning)
 
         if not isinstance(file_path, str):
-            raise TypeError("Expected string argument, instead got: '{}'.".format(type(file_path)))
+            raise TypeError(f"Expected string argument, instead got: '{type(file_path)}'.")
         file_path = os.path.expanduser(file_path)
         if os.path.exists(file_path):
             self.image_files.add(file_path)
         else:
-            raise RuntimeError("Cannot find image file: {0}".format(file_path))
+            raise RuntimeError(f"Cannot find image file: {file_path}")
 
     def write_output(self, outdir):
         """
@@ -361,7 +358,7 @@ class Table(AdditionalResourceMixin):
         :type outdir: string
         """
         if not isinstance(outdir, str):
-            raise TypeError("Expected string argument, instead got: '{}'.".format(type(outdir)))
+            raise TypeError(f"Expected string argument, instead got: '{type(outdir)}'.")
 
         for image_file in self.image_files:
             if not os.path.isfile(image_file):
@@ -414,7 +411,7 @@ class Table(AdditionalResourceMixin):
         if isinstance(variable, Variable):
             self.variables.append(variable)
         else:
-            raise TypeError("Unknown object type: {0}".format(str(type(variable))))
+            raise TypeError(f"Unknown object type: {str(type(variable))}")
 
     def write_yaml(self, outdir="."):
         """
@@ -436,7 +433,7 @@ class Table(AdditionalResourceMixin):
 
         shortname = self.name.lower().replace(" ", "_")
         outfile_path = os.path.join(
-            outdir, '{NAME}.yaml'.format(NAME=shortname))
+            outdir, f'{shortname}.yaml')
         with open(outfile_path, 'w') as outfile:
             yaml.dump(table, outfile, default_flow_style=False)
 
@@ -447,7 +444,7 @@ class Table(AdditionalResourceMixin):
             submission["name"] = self.name
             submission["description"] = self.description
             submission["location"] = self.location
-            submission["data_file"] = '{NAME}.yaml'.format(NAME=shortname)
+            submission["data_file"] = f'{shortname}.yaml'
             submission["keywords"] = []
             if self.additional_resources:
                 submission["additional_resources"] = self.additional_resources
@@ -499,7 +496,7 @@ class Submission(AdditionalResourceMixin):
         if isinstance(table, Table):
             self.tables.append(table)
         else:
-            raise TypeError("Unknown object type: {0}".format(str(type(table))))
+            raise TypeError(f"Unknown object type: {str(type(table))}")
 
     def add_link(self, description, location):
         """
@@ -614,7 +611,7 @@ class Submission(AdditionalResourceMixin):
                     full_submission_validator.print_errors(filename)
             assert is_archive_valid, "The tar ball is not valid"
 
-class Uncertainty(object):
+class Uncertainty:
     """
     Store information about an uncertainty on a variable
 

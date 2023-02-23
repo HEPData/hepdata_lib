@@ -1,7 +1,4 @@
 """hepdata_lib helper functions."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 import os
 import subprocess
@@ -43,7 +40,7 @@ def execute_command(command):
 def find_all_matching(path, pattern):
     """Utility function that works like 'find' in bash."""
     if not os.path.exists(path):
-        raise RuntimeError("Invalid path '{0}'".format(path))
+        raise RuntimeError(f"Invalid path '{path}'")
     result = []
     for root, _, files in os.walk(path):
         for thisfile in files:
@@ -63,7 +60,7 @@ def get_number_precision(value):
     """
 
     if isinstance(value, tuple):
-        return tuple((get_number_precision(x) for x in value))
+        return tuple(get_number_precision(x) for x in value)
 
     # if value is tuple, value == 0 might cause ValueError saying that
     # 'The truth value of an array with more than one element is ambiguous'
@@ -78,7 +75,7 @@ def relative_round(value, relative_digits):
     """Rounds to a given relative precision"""
 
     if isinstance(value, tuple):
-        return tuple((relative_round(x, relative_digits) for x in value))
+        return tuple(relative_round(x, relative_digits) for x in value)
 
     if value == 0 or isinstance(value, str) or np.isnan(value) or np.isinf(value):
         return value
@@ -243,11 +240,11 @@ def check_file_size(path_to_file, upper_limit=None, lower_limit=None):
     """
     size = 1e-6 * os.path.getsize(path_to_file)
     if upper_limit and size > upper_limit:
-        raise RuntimeError("File too big: '{0}'. Maximum allowed value is {1} \
-                            MB.".format(path_to_file, upper_limit))
+        raise RuntimeError(f"File too big: '{path_to_file}'. Maximum allowed value is {upper_limit}"
+        + "MB.")
     if lower_limit and size < lower_limit:
-        raise RuntimeError("File too small: '{0}'. Minimal allowed value is {1} \
-                            MB.".format(path_to_file, lower_limit))
+        raise RuntimeError(f"File too small: '{path_to_file}'."
+        + f"Minimal allowed value is {lower_limit} MB.")
 
 
 def any_uncertainties_nonzero(uncertainties, size):
