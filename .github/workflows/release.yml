@@ -18,7 +18,7 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v3
         with:
           persist-credentials: false
 
@@ -65,7 +65,7 @@ jobs:
     container:
       image: 'rootproject/root:latest'
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v3
     - uses: scherermichael/action-has-permission@master
       id: check2
       with:
