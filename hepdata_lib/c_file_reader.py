@@ -2,7 +2,6 @@
 import io
 from array import array
 from future.utils import raise_from
-import six
 from ROOT import TGraph, TGraphErrors
 import hepdata_lib.root_utils as ru
 from hepdata_lib.helpers import check_file_existence
@@ -36,13 +35,6 @@ class CFileReader(object):
                     )
             if check_file_existence(cfile):
                 self._cfile = open(cfile, "r") # pylint: disable=consider-using-with
-        elif six.PY2:
-            if isinstance(cfile, file): # pylint:disable=E0602
-                self._cfile = cfile
-            else:
-                raise ValueError(
-                    "CFileReader: Encountered unknown type of variable passed as cfile argument: "
-                    + str(type(cfile)))
         else:
             if isinstance(cfile, io.TextIOBase):
                 self._cfile = cfile

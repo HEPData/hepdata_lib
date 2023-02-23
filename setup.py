@@ -44,7 +44,6 @@ setup(
     tests_require=[
         'pytest',
         'papermill',
-        'six',
         'pylint==2.9.6',
     ],
     project_urls={

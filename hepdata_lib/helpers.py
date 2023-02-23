@@ -8,7 +8,6 @@ import subprocess
 import fnmatch
 import math
 import numpy as np
-from six.moves import zip
 
 def execute_command(command):
     """
