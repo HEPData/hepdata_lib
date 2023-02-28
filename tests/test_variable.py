@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding:utf-8 -*-
 """Test Variable."""
 import random
 from unittest import TestCase

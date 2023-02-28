@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding:utf-8 -*-
 """Test helpers."""
 from unittest import TestCase
 

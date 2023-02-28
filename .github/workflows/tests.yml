@@ -1,4 +1,3 @@
-
 name: tests
 #Running tests on all branches
 on:

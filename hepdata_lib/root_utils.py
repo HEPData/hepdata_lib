@@ -6,7 +6,7 @@ import numpy as np
 import ROOT as r
 from hepdata_lib.helpers import check_file_existence
 
-class RootFileReader(object):
+class RootFileReader:
     """Easily extract information from ROOT histograms, graphs, etc"""
 
     def __init__(self, tfile):
@@ -46,7 +46,7 @@ class RootFileReader(object):
                 + str(type(tfile)))
 
         if not self._tfile:
-            raise IOError("RootReader: File not opened properly.")
+            raise OSError("RootReader: File not opened properly.")
 
     def retrieve_object(self, path_to_object):
         """
@@ -85,11 +85,9 @@ class RootFileReader(object):
                     return entry
 
             # Didn't find anything. Print available primitives to help user debug.
-            print("Available primitives in TCanvas '{0}':".format(
-                path_to_canvas))
+            print(f"Available primitives in TCanvas '{path_to_canvas}':")
             for entry in list(canv.GetListOfPrimitives()):
-                print("Name: '{0}', Type: '{1}'.".format(
-                    entry.GetName(), type(entry)))
+                print(f"Name: '{entry.GetName()}', Type: '{type(entry)}'.")
             assert False
 
         except AssertionError:
@@ -106,13 +104,17 @@ class RootFileReader(object):
 
             return obj
         except AssertionError as err:
-            msg="Cannot find any object in file {0} using path {1} or interpreting it as a TCanvas"\
-                "with TPads.".format(self.tfile, path_to_object)
+            msg = (
+                f"Cannot find any object in file {self.tfile} using path {path_to_object} or"
+                + " interpreting it as a TCanvas with TPads."
+            )
             raise_from(IOError(msg), err)
 
         except AttributeError as err:
-            msg="Cannot find any object in file {0} using path {1} or interpreting it as a TCanvas"\
-                "with TPads.".format(self.tfile, path_to_object)
+            msg = (
+                f"Cannot find any object in file {self.tfile} using path {path_to_object} or"
+                + " interpreting it as a TCanvas with TPads."
+            )
             raise_from(IOError(msg), err)
 
         return None
@@ -216,13 +218,13 @@ class RootFileReader(object):
         """
         tree = self.tfile.Get(path_to_tree)
         if not tree or not isinstance(tree, r.TTree):
-            raise RuntimeError("No TTree found for path '{0}'.".format(path_to_tree))
+            raise RuntimeError(f"No TTree found for path '{path_to_tree}'.")
         values = []
         for event in tree:
             try:
                 values.append(getattr(event, branch_name))
             except AttributeError as err:
-                msg = "The TTree does not have a branch with name '{0}'.".format(branch_name)
+                msg = f"The TTree does not have a branch with name '{branch_name}'."
                 raise_from(RuntimeError(msg),err)
         return values
 

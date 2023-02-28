@@ -1,5 +1,4 @@
 """pypi package setup."""
-from __future__ import print_function
 import codecs
 from os import path
 from setuptools import setup, find_packages
@@ -8,7 +7,7 @@ try:
 except ImportError:
     print("ROOT is required by this library.")
 
-with open("requirements.txt","r") as f:
+with open("requirements.txt") as f:
     DEPS = f.readlines()
 
 HERE = path.abspath(path.dirname(__file__))
