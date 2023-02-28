@@ -44,7 +44,7 @@ yaml.add_representer(np.str_,
 # Display deprecation warnings
 warnings.filterwarnings("always", category=DeprecationWarning, module="hepdata_lib")
 
-__version__ = "0.11.1"
+__version__ = "0.12.0"
 
 class AdditionalResourceMixin:
     """Functionality related to additional materials."""
