@@ -107,8 +107,6 @@ class TestSubmission(TestCase):
         self.assertFalse(os.path.isfile(testfile))
 
 
-
-
     def test_read_abstract(self):
         """Test read_abstract function."""
         some_string = string.ascii_lowercase
@@ -154,3 +152,17 @@ class TestSubmission(TestCase):
                 tar.getmember(testfile)
             except KeyError:
                 self.fail("Submission.create_files failed to write all files to tar ball.")
+    
+    def test_add_related_table_doi(self):
+        t = Table(name="")
+        test_data = "10.17182/hepdata.1.v1/t1"
+        t.add_related_table_doi(test_data)
+        assert test_data == t.related_tables[0]
+
+    def test_add_related_record(self):
+        sub = Submission()
+        test_data = [1, 2, 3]
+
+        for test in range(0, len(test_data)):
+            sub.add_related_record(test_data[test])
+            assert sub.related_records[test] == test_data[test]

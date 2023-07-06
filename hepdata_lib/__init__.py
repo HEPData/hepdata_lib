@@ -343,11 +343,11 @@ class Table(AdditionalResourceMixin):
         """
         Appends the given table DOI to the related_tables list.
 
-        :param r_id: The table DOI.
-        :type location: String
+        :param doi: The table DOI.
+        :type doi: Integer
         """
-        to_string = str(doi)
-        self.related_tables.append(to_string)
+
+        self.related_tables.append(str(doi))
 
     def write_output(self, outdir):
         """
