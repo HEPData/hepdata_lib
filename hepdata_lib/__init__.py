@@ -293,6 +293,7 @@ class Table(AdditionalResourceMixin):
         self._name = None
         self.name = name
         self.variables = []
+        self.related_tables = []
         self.description = "Example description"
         self.location = "Example location"
         self.keywords = {}
@@ -337,6 +338,16 @@ class Table(AdditionalResourceMixin):
             self.image_files.add(file_path)
         else:
             raise RuntimeError(f"Cannot find image file: {file_path}")
+    
+    def add_related_table_doi(self, doi):
+        """
+        Appends the given table DOI to the related_tables list.
+
+        :param r_id: The table DOI.
+        :type location: String
+        """
+        to_string = str(doi)
+        self.related_tables.append(to_string)
 
     def write_output(self, outdir):
         """
@@ -444,6 +455,7 @@ class Table(AdditionalResourceMixin):
             submission["name"] = self.name
             submission["description"] = self.description
             submission["location"] = self.location
+            submission["related_to_table_dois"] = self.related_tables
             submission["data_file"] = f'{shortname}.yaml'
             submission["keywords"] = []
             if self.additional_resources:
@@ -472,6 +484,7 @@ class Submission(AdditionalResourceMixin):
         self.tables = []
         self.comment = ""
         self.record_ids = []
+        self.related_records = []
         self.add_additional_resource(
             "Created with hepdata_lib " + __version__,
             "https://zenodo.org/record/4946277")
@@ -522,6 +535,17 @@ class Submission(AdditionalResourceMixin):
         record_id["type"] = r_type
         self.record_ids.append(record_id)
 
+    def add_related_record(self, r_id):
+        """
+        Appends a record ID to the related_records list.
+
+        :param r_id: The record's ID
+        :type r_id: Integer
+        """
+        to_int = int(r_id)
+        self.related_records.append(to_int)
+
+
     def read_abstract(self, filepath):
         """
         Read in the abstracts file.
@@ -567,6 +591,7 @@ class Submission(AdditionalResourceMixin):
         submission = {}
         submission["data_license"] = self.get_license()
         submission["comment"] = self.comment
+        submission["related_to_hepdata_recids"] = self.related_records
 
         if self.additional_resources:
             submission["additional_resources"] = self.additional_resources
