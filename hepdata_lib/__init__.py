@@ -9,6 +9,8 @@ from decimal import Decimal
 import numpy as np
 import yaml
 from future.utils import raise_from
+import re
+
 # try to use LibYAML bindings if possible
 try:
     from yaml import CLoader as Loader, CSafeDumper as Dumper
@@ -339,15 +341,21 @@ class Table(AdditionalResourceMixin):
         else:
             raise RuntimeError(f"Cannot find image file: {file_path}")
     
-    def add_related_table_doi(self, doi):
+    def add_related_doi(self, doi):
         """
-        Appends the given table DOI to the related_tables list.
+        Appends a DOI string to the related_tables list.
 
         :param doi: The table DOI.
-        :type doi: Integer
+        :type doi: string
         """
-
-        self.related_tables.append(str(doi))
+        # Check against regex here too, maybe?
+        pattern = r"^10\.17182\/hepdata\.\d+\.v\d+\/t\d+$"
+        match = re.match(pattern, doi)
+        if match:
+            to_string = str(doi)
+            self.related_tables.append(to_string)
+        else:
+            raise ValueError(f"DOI does not match the correct pattern: {pattern}.")
 
     def write_output(self, outdir):
         """
@@ -535,15 +543,22 @@ class Submission(AdditionalResourceMixin):
         record_id["type"] = r_type
         self.record_ids.append(record_id)
 
-    def add_related_record(self, r_id):
+    def add_related_recid(self, r_id):
         """
         Appends a record ID to the related_records list.
-
         :param r_id: The record's ID
-        :type r_id: Integer
+        :type r_id: integer
         """
-        to_int = int(r_id)
-        self.related_records.append(to_int)
+
+        try:
+            recid = int(r_id)
+        except:
+            raise TypeError(f"Expected 'Integer', instead got '{type(r_id)}'.")
+        if recid > 0:
+            self.related_records.append(recid)
+        else:
+            raise ValueError("Please enter a valid integer above 0.")
+            
 
 
     def read_abstract(self, filepath):

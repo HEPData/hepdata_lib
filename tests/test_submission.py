@@ -153,16 +153,39 @@ class TestSubmission(TestCase):
             except KeyError:
                 self.fail("Submission.create_files failed to write all files to tar ball.")
     
-    def test_add_related_table_doi(self):
-        t = Table(name="")
-        test_data = "10.17182/hepdata.1.v1/t1"
-        t.add_related_table_doi(test_data)
-        assert test_data == t.related_tables[0]
+    def test_add_related_doi(self):
+        """Test insertion and retrieval of recid values in the Table object"""
+        # Possibly unneccessary boundary testing 
+        test_data = [
+            {"doi": "10.17182/hepdata.1.v1/t1", "error": False},
+            {"doi": "10.17182/hepdata.1", "error": ValueError},
+            {"doi": "10.17182/hepdata.1.v1", "error": ValueError},
+            {"doi": "10.17182/hepdata.1.v1/a2", "error": ValueError},
+            {"doi": "not_valid", "error": ValueError},
+            {"doi": 1, "error": TypeError},
+        ]
+        table = Table("Table")
+        for test in test_data:
+            if test["error"]:
+                self.assertRaises(test["error"], table.add_related_doi, test["doi"])
+            else:
+                table.add_related_doi(test["doi"])
+                assert test["doi"] == table.related_tables[-1]
+        assert len(table.related_tables) == 1
 
-    def test_add_related_record(self):
+    def test_add_related_recid(self):
+        """Test insertion and retrieval of recid values in the Submission object"""
+        test_data = [
+            {"recid": 1, "error": False},
+            {"recid": "1", "error": False},
+            {"recid": -1, "error": ValueError},
+            {"recid": "a", "error": TypeError}
+        ]
         sub = Submission()
-        test_data = [1, 2, 3]
-
-        for test in range(0, len(test_data)):
-            sub.add_related_record(test_data[test])
-            assert sub.related_records[test] == test_data[test]
+        for test in test_data:
+            if test["error"]:
+                self.assertRaises(test["error"], sub.add_related_recid, test["recid"])
+            else:
+                sub.add_related_recid(test["recid"])
+                assert int(test["recid"]) == sub.related_records[-1]
+        assert len(sub.related_records) == 2
