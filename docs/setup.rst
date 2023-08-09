@@ -96,29 +96,13 @@ You can always activate the virtual environment in another shell by calling the 
 Setup on lxplus with CMSSW
 --------------------------
 
-In order to have all relevant libraries available, a straightforward alternative to using your own machine may be lxplus.
-You can use the same instructions as above, but in order to succeed, make sure to use a CMSSW_10_2_3 environment and propagate the correct python environment to your virtual environment (other CMSSW releases may also work, but this one has been tested). In short:
+The ``hepdata_lib`` library is shipped with CMSSW via cmsdist_.
+However, please make sure that you are using a recent CMSSW release, since
+otherwise you might be using an outdated version of the library.
+After running ``cmsenv``, you can check the installed version as follows:
 
 ::
 
-    scramv1 project CMSSW CMSSW_10_2_3
-    cd CMSSW_10_2_3/src
-    cmsenv
-    cd -
+    python3 -m pip list | grep hepdata_lib
 
-    virtualenv -p $(which python) hepdata_lib_env
-    cd hepdata_lib_env
-    source bin/activate  # if not using zsh/bash but csh: source bin/activate.csh
-
-    python -m pip install hepdata_lib
-
-Whenever you log back on to lxplus, do the following:
-
-::
-
-    cd CMSSW_10_2_3/src
-    cmsenv
-    cd -
-
-    cd hepdata_lib_env
-    source bin/activate  # if not using zsh/bash but csh: source bin/activate.csh
+.. _cmsdist: https://github.com/cms-sw/cmsdist/
