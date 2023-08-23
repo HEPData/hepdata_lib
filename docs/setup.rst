@@ -22,17 +22,17 @@ If you are running on your own computer or laptop, it's up to you to decide wher
 
 This setup naturally restricts you to use the latest stable version of the package in pypi. If you would like to use the code as it is the github repository, please follow the instructions in :ref:`sec-setup-developers`.
 
-Using Singularity
+Using Singularity/Apptainer
 +++++++++++++++++++++++++++++++
 
-On LXPLUS and many other local computing sites with CVMFS and Singularity available, you can use the library without having to install anything:
+On LXPLUS and many other local computing sites with CVMFS and Singularity/Apptainer available, you can use the library without having to install anything:
 
 ::
 
-    singularity run /cvmfs/unpacked.cern.ch/ghcr.io/hepdata/hepdata_lib:latest /bin/bash
+    apptainer run /cvmfs/unpacked.cern.ch/ghcr.io/hepdata/hepdata_lib:latest /bin/bash
 
 This opens a new shell with ``hepdata_lib``, ROOT, and Python 3 available.
-Your home directory and most other user directories on the machine on which you execute Singularity will also be accessible from within this shell.
+Your home directory and most other user directories on the machine on which you execute Singularity/Apptainer will also be accessible from within this shell.
 
 
 .. _sec-setup-developers:
@@ -96,29 +96,19 @@ You can always activate the virtual environment in another shell by calling the 
 Setup on lxplus with CMSSW
 --------------------------
 
-In order to have all relevant libraries available, a straightforward alternative to using your own machine may be lxplus.
-You can use the same instructions as above, but in order to succeed, make sure to use a CMSSW_10_2_3 environment and propagate the correct python environment to your virtual environment (other CMSSW releases may also work, but this one has been tested). In short:
+The ``hepdata_lib`` library is shipped with CMSSW via cmsdist_.
+However, please make sure that you are using a recent CMSSW release, since
+otherwise you might be using an outdated version of the library.
+After running ``cmsenv``, you can check the installed version as follows:
 
 ::
 
-    scramv1 project CMSSW CMSSW_10_2_3
-    cd CMSSW_10_2_3/src
-    cmsenv
-    cd -
+    python3 -m pip list | grep hepdata-lib
 
-    virtualenv -p $(which python) hepdata_lib_env
-    cd hepdata_lib_env
-    source bin/activate  # if not using zsh/bash but csh: source bin/activate.csh
+(mind the use of ``hepdata-lib`` above, when importing, the package is still
+called ``hepdata_lib``). If the version is significantly older than the one
+on PyPI_, please use the Singularity/Apptainer container as described at
+:ref:`sec-setup-users` above.
 
-    python -m pip install hepdata_lib
-
-Whenever you log back on to lxplus, do the following:
-
-::
-
-    cd CMSSW_10_2_3/src
-    cmsenv
-    cd -
-
-    cd hepdata_lib_env
-    source bin/activate  # if not using zsh/bash but csh: source bin/activate.csh
+.. _cmsdist: https://github.com/cms-sw/cmsdist/
+.. _PyPI: https://pypi.org/project/hepdata-lib/
