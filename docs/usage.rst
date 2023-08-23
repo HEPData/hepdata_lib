@@ -122,6 +122,8 @@ To add a link to a related record object, you can use the `add_related_recid` fu
 ::
 
     sub.add_related_recid(1)
+    sub.add_related_recid(2)
+    sub.add_related_recid(3)
 
 In this example, we are adding a link to the submission with the record ID value of `"1"`.
 
@@ -266,6 +268,7 @@ To add a link to a related table object, you can use the `add_related_doi` funct
 ::
 
     table.add_related_doi("10.17182/hepdata.1.v2/t3")
+    table.add_related_doi("10.17182/hepdata.25.v1/t6")
 
 In this example, we are adding a link to the table with a DOI of: `"10.17182/hepdata.1.v2/t3"`.
 
