@@ -606,7 +606,7 @@ class Submission(AdditionalResourceMixin):
         submission = {}
         submission["data_license"] = self.get_license()
         submission["comment"] = self.comment
-        submission["related_to_hepdata_recids"] = self.related_records
+        submission["related_to_hepdata_records"] = self.related_records
 
         if self.additional_resources:
             submission["additional_resources"] = self.additional_resources
