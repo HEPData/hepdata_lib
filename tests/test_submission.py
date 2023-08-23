@@ -152,10 +152,10 @@ class TestSubmission(TestCase):
                 tar.getmember(testfile)
             except KeyError:
                 self.fail("Submission.create_files failed to write all files to tar ball.")
-    
+
     def test_add_related_doi(self):
         """Test insertion and retrieval of recid values in the Table object"""
-        # Possibly unneccessary boundary testing 
+        # Possibly unneccessary boundary testing
         test_data = [
             {"doi": "10.17182/hepdata.1.v1/t1", "error": False},
             {"doi": "10.17182/hepdata.1", "error": ValueError},

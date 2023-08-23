@@ -6,10 +6,10 @@ import tarfile
 import warnings
 from collections import defaultdict
 from decimal import Decimal
+from re import match as rematch
 import numpy as np
 import yaml
 from future.utils import raise_from
-import re
 
 # try to use LibYAML bindings if possible
 try:
@@ -340,7 +340,7 @@ class Table(AdditionalResourceMixin):
             self.image_files.add(file_path)
         else:
             raise RuntimeError(f"Cannot find image file: {file_path}")
-    
+
     def add_related_doi(self, doi):
         """
         Appends a DOI string to the related_tables list.
@@ -350,7 +350,7 @@ class Table(AdditionalResourceMixin):
         """
         # Check against regex here too, maybe?
         pattern = r"^10\.17182\/hepdata\.\d+\.v\d+\/t\d+$"
-        match = re.match(pattern, doi)
+        match = rematch(pattern, doi)
         if match:
             to_string = str(doi)
             self.related_tables.append(to_string)
@@ -552,14 +552,12 @@ class Submission(AdditionalResourceMixin):
 
         try:
             recid = int(r_id)
-        except:
-            raise TypeError(f"Expected 'Integer', instead got '{type(r_id)}'.")
+        except Exception as exc:
+            raise TypeError(f"Expected 'Integer', instead got '{type(r_id)}'.") from exc
         if recid > 0:
             self.related_records.append(recid)
         else:
             raise ValueError("Please enter a valid integer above 0.")
-            
-
 
     def read_abstract(self, filepath):
         """
