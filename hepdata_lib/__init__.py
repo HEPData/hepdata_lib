@@ -348,7 +348,7 @@ class Table(AdditionalResourceMixin):
         :param doi: The table DOI.
         :type doi: string
         """
-        # Check against regex here too, maybe?
+        # Checking against the regex, this also happens in the validator.
         pattern = r"^10\.17182\/hepdata\.\d+\.v\d+\/t\d+$"
         match = rematch(pattern, doi)
         if match:
