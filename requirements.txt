@@ -1,4 +1,4 @@
 numpy
 PyYAML>=4.0
 future
-hepdata-validator>=0.3.4
+hepdata-validator>=0.3.5
