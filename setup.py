@@ -28,6 +28,7 @@ setup(
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
@@ -36,7 +37,7 @@ setup(
     keywords='HEPData physics OpenData',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     zip_safe=False,
-    python_requires='>=3.7',
+    python_requires='>=3.6',
     install_requires=DEPS,
     setup_requires=['pytest-runner', 'pytest-cov'],
     tests_require=[
