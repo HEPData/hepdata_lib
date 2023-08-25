@@ -112,6 +112,25 @@ The ``create_files`` function writes all the YAML output files you need and pack
 
 **Please note**: creating the output files also creates a ``submission`` folder containing the individual files going into the tarball. This folder exists merely for convenience, in order to make it easy to inspect each individual file. It is not recommended to attempt to manually manage or edit the files in the folder, and there is no guarantee that ``hepdata_lib`` will handle any of the changes you make in a graceful manner. As far as we are aware, there is no use case where manual editing of the files is necessary. If you have such a use case, please report it in a Github issue.
 
+Adding links to related records
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To add a link to a related record object, you can use the `add_related_recid` function of the Submission object.
+
+**Please note**: Values must be entered as integers.
+
+::
+
+    sub.add_related_recid(1)
+    sub.add_related_recid(2)
+    sub.add_related_recid(3)
+
+In this example, we are adding a link to the submission with the record ID value of `"1"`.
+
+The documentation for this feature can be found here: (`Linking Records`_).
+
+.. _`Linking Records` : https://hepdata-submission.readthedocs.io/en/latest/bidirectional.html#linking-records
+
 
 .. _sec-usage-tab-var:
 
@@ -239,6 +258,24 @@ Lists of recognized keywords are available from the hepdata documentation for `O
 .. _`Particles`: https://hepdata-submission.readthedocs.io/en/latest/keywords/partlist.html
 
 
+Adding links to related tables
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To add a link to a related table object, you can use the `add_related_doi` function of the Table class.
+
+**Please note**: Your DOIs must match the format: `10.17182/hepdata.[RecordID].v[Version]/t[Table]`
+
+::
+
+    table.add_related_doi("10.17182/hepdata.72886.v2/t3")
+    table.add_related_doi("10.17182/hepdata.12882.v1/t2")
+
+In this example, we are adding a link to the table with a DOI value of: `10.17182/hepdata.12882.v1/t2 <https://doi.org/10.17182/hepdata.12882.v1/t2>`__.
+
+
+The documentation for this feature can be found here: `Linking Tables`_.
+
+.. _`Linking Tables` : https://hepdata-submission.readthedocs.io/en/latest/bidirectional.html#linking-tables
 
 Uncertainties
 ++++++++++++++++++++++++++++++++

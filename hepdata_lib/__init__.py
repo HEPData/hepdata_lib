@@ -6,9 +6,11 @@ import tarfile
 import warnings
 from collections import defaultdict
 from decimal import Decimal
+from re import match as rematch
 import numpy as np
 import yaml
 from future.utils import raise_from
+
 # try to use LibYAML bindings if possible
 try:
     from yaml import CLoader as Loader, CSafeDumper as Dumper
@@ -293,6 +295,7 @@ class Table(AdditionalResourceMixin):
         self._name = None
         self.name = name
         self.variables = []
+        self.related_tables = []
         self.description = "Example description"
         self.location = "Example location"
         self.keywords = {}
@@ -337,6 +340,22 @@ class Table(AdditionalResourceMixin):
             self.image_files.add(file_path)
         else:
             raise RuntimeError(f"Cannot find image file: {file_path}")
+
+    def add_related_doi(self, doi):
+        """
+        Appends a DOI string to the related_tables list.
+
+        :param doi: The table DOI.
+        :type doi: string
+        """
+        # Checking against the regex, this also happens in the validator.
+        pattern = r"^10\.17182\/hepdata\.\d+\.v\d+\/t\d+$"
+        match = rematch(pattern, doi)
+        if match:
+            to_string = str(doi)
+            self.related_tables.append(to_string)
+        else:
+            raise ValueError(f"DOI does not match the correct pattern: {pattern}.")
 
     def write_output(self, outdir):
         """
@@ -444,6 +463,7 @@ class Table(AdditionalResourceMixin):
             submission["name"] = self.name
             submission["description"] = self.description
             submission["location"] = self.location
+            submission["related_to_table_dois"] = self.related_tables
             submission["data_file"] = f'{shortname}.yaml'
             submission["keywords"] = []
             if self.additional_resources:
@@ -472,6 +492,7 @@ class Submission(AdditionalResourceMixin):
         self.tables = []
         self.comment = ""
         self.record_ids = []
+        self.related_records = []
         self.add_additional_resource(
             "Created with hepdata_lib " + __version__,
             "https://zenodo.org/record/4946277")
@@ -522,6 +543,22 @@ class Submission(AdditionalResourceMixin):
         record_id["type"] = r_type
         self.record_ids.append(record_id)
 
+    def add_related_recid(self, r_id):
+        """
+        Appends a record ID to the related_records list.
+        :param r_id: The record's ID
+        :type r_id: integer
+        """
+
+        try:
+            recid = int(r_id)
+        except Exception as exc:
+            raise TypeError(f"Expected 'Integer', instead got '{type(r_id)}'.") from exc
+        if recid > 0:
+            self.related_records.append(recid)
+        else:
+            raise ValueError("Please enter a valid integer above 0.")
+
     def read_abstract(self, filepath):
         """
         Read in the abstracts file.
@@ -567,6 +604,7 @@ class Submission(AdditionalResourceMixin):
         submission = {}
         submission["data_license"] = self.get_license()
         submission["comment"] = self.comment
+        submission["related_to_hepdata_records"] = self.related_records
 
         if self.additional_resources:
             submission["additional_resources"] = self.additional_resources
