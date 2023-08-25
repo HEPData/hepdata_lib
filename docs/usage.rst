@@ -273,7 +273,7 @@ To add a link to a related table object, you can use the `add_related_doi` funct
 In this example, we are adding a link to the table with a DOI value of: `10.17182/hepdata.12882.v1/t2 <https://doi.org/10.17182/hepdata.12882.v1/t2>`__.
 
 
-The documentation for this feature can be found here: (`Linking Tables`_).
+The documentation for this feature can be found here: `Linking Tables`_.
 
 .. _`Linking Tables` : https://hepdata-submission.readthedocs.io/en/latest/bidirectional.html#linking-tables
 
