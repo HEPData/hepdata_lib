@@ -25,19 +25,25 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        root-version: ["6.24", "6.26"]
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        root-version: ["6.24", "6.26", "6.28"]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11"]
         exclude:
           - root-version: "6.24"
             python-version: "3.10"
+          - root-version: "6.24"
+            python-version: "3.11"
           - root-version: "6.26"
             python-version: "3.6"
           - root-version: "6.26"
             python-version: "3.7"
+          - root-version: "6.28"
+            python-version: "3.6"
+          - root-version: "6.28"
+            python-version: "3.7"
         include:
           - os: macos-latest
-            root-version: "6.26"
-            python-version: "3.10"
+            root-version: "6.28"
+            python-version: "3.11"
 
     steps:
     - uses: actions/checkout@v3
