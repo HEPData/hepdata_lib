@@ -47,7 +47,7 @@ If you would like to develop the code, you need to install the package from the 
 ::
 
     cd $SOMEPATH
-    git clone git@github.com:HEPData/hepdata_lib.git
+    git clone https://github.com/HEPData/hepdata_lib.git
 
     workon myhepdata # activate virtual environment!
     pip install -e $SOMEPATH/hepdata_lib
@@ -92,6 +92,15 @@ You can always activate the virtual environment in another shell by calling the 
     workon hepdata_git
     python myscript.py # Execute script using development branch
 
+Alternatively, if you don't want to install the additional virtualenv_ and virtualenvwrapper_ packages, you can simply
+use the venv_ module from the Python standard library.
+
+::
+
+    python3 -m venv env
+    source env/bin/activate
+
+.. _venv: https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment
 
 Setup on lxplus with CMSSW
 --------------------------

@@ -34,7 +34,7 @@ The files in which the versions are updated as well as the current version can b
 .. _sec-dev-pypi:
 
 Uploading to PyPI
------------------------------
+-----------------
 
 Once a new version has been tagged, the package should be uploaded to the Python Package Index (PyPI_).
 For the markdown formatting to work, ``twine>=1.11.0`` is required.
@@ -72,7 +72,7 @@ You should then find the new version at `this location`_. You need to be a maint
 .. _python packaging documentation: https://packaging.python.org/tutorials/packaging-projects/
 
 Creating a new release automatically via an issue
------------------------------
+-------------------------------------------------
 
 Opening an new issue automatically creates a new release if:
 

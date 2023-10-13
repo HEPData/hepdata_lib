@@ -1,21 +1,22 @@
 Developer information
-======================
+=====================
 
 The testing system
---------------------
+------------------
 
 While further developing the code base, we want to ensure that any changes we make do not accidentally break existing functionality. For this purpose, we use continuous integration via GitHub Actions_. Practically, this means that we define a set of test code that is automatically run in a predefined environment every time we push to a branch or create a pull request. If the test code runs successfully, we know that everything works as expected.
 
-To run the tests, move into the ``hepdata_lib`` directory and run
+To run the tests, move into the ``hepdata_lib`` directory while in your virtual environment and run
 
 ::
 
-    python setup.py test
+    pip install -e ".[test]"
+    pytest tests
 
 It is a good idea to run the tests manually to ensure that your changes do not cause any issues.
 
 Definition of test cases
-+++++++++++++++++++++++++
+++++++++++++++++++++++++
 
 Test cases are defined in the ``test`` subfolder of the repository. Independent sets of test code are defined in individual files in that directory, with each files being named like ``test_*.py``.
 
@@ -40,12 +41,12 @@ If all functions run without raising exceptions, the test is considered to be pa
 
 
 When to test
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
 
 Tests should be added any time functionality is added. If functionality is modified, so should the tests.
 
 What to test
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
 
 Generally, the tests should ensure that the code behaves as expected, whatever that may mean. They should be sufficiently rigorous to make sure that nothing can break silently, and that outputs are correct.
 
@@ -57,7 +58,7 @@ Broad inspiration for aspects to check:
 
 
 How to test
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
 
 The ``TestCase`` base class provides functionality to help implement simple checks to verify the behavior. A test can immediately be made to fail by calling ``self.fail()``. For convenience, additional functions like ``assertTrue``, ``assertFalse``, etc. are provided, which work like normal python assertions. If the assertion fails, the test is considered to be failed. Additionally, the ``assertRaises`` method can be used as a context to ensure that exceptions are raised as expected. Here's a simple example:
 
@@ -95,10 +96,17 @@ Note that this is an overly simple example case: In a real testing case, you sho
 
 Check out the unittest package documentation_ for details of the available testing functionality.
 
-
-
-
-
-
 .. _Actions: https://docs.github.com/en/actions
 .. _documentation: https://docs.python.org/2/library/unittest.html#unittest.TestCase
+
+
+Building the documentation
+--------------------------
+
+After installing the ``hepdata_lib`` package, move into the ``hepdata_lib/docs`` directory and install the additional necessary packages into your virtual environment:
+
+::
+
+    pip install -r requirements.txt
+
+Then you can build the documentation locally with Sphinx using ``make html`` and view the output by opening a web browser at ``_build/html/index.html``.
