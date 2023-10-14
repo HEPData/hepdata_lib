@@ -1,6 +1,6 @@
 # hepdata_lib
 
-[![DOI](https://zenodo.org/badge/129248575.svg)](https://zenodo.org/badge/latestdoi/129248575)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1217998.svg)](https://doi.org/10.5281/zenodo.1217998)
 [![PyPI version](https://badge.fury.io/py/hepdata-lib.svg)](https://badge.fury.io/py/hepdata-lib)
 [![Actions Status](https://github.com/HEPData/hepdata_lib/workflows/tests/badge.svg)](https://github.com/HEPData/hepdata_lib/actions)
 [![Coverage Status](https://codecov.io/gh/HEPData/hepdata_lib/graph/badge.svg?branch=master)](https://codecov.io/gh/HEPData/hepdata_lib?branch=master)
@@ -10,6 +10,8 @@
 Library for getting your data into HEPData
 
 - Documentation: https://hepdata-lib.readthedocs.io
+
+This code works with Python 3.6, 3.7, 3.8, 3.9 or 3.10.
 
 ## Installation
 
