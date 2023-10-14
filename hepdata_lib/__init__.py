@@ -70,7 +70,7 @@ class AdditionalResourceMixin:
         submission object is called.
 
         :param description: Description of what the resource is.
-        :type description: string.
+        :type description: string
 
         :param location: Can be either a URL pointing to a web-based resource or a local file path.
         :type location: string
@@ -79,6 +79,7 @@ class AdditionalResourceMixin:
         :type copy_file: bool
 
         :param file_type: Type of the resource file.  Currently, only "HistFactory" has any effect.
+        :type file_type: string
         """
 
         resource = {}
