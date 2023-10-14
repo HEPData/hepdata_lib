@@ -6,7 +6,7 @@ import string
 from unittest import TestCase
 import tarfile
 from test_utilities import tmp_directory_name
-from hepdata_lib import Submission, Table, Variable, Uncertainty
+from hepdata_lib import Submission, Table, Variable, Uncertainty  # pylint: disable-msg=E0401
 
 class TestSubmission(TestCase):
     """Test the Submission class."""
@@ -60,7 +60,8 @@ class TestSubmission(TestCase):
         with open(testpath, "wb") as testfile:
             testfile.write(bytes("\0" * size, "utf-8"))
         try:
-            test_submission.add_additional_resource("Some description", testpath, copy_file=True, type="HistFactory")
+            test_submission.add_additional_resource("Some description", testpath,
+                                                    copy_file=True, file_type="HistFactory")
         except RuntimeError:
             self.fail("Submission.add_additional_resource raised an unexpected RuntimeError.")
 

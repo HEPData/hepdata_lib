@@ -6,7 +6,7 @@ import shutil
 import os
 import yaml
 from test_utilities import tmp_directory_name
-from hepdata_lib import Submission, Table, Variable
+from hepdata_lib import Submission, Table, Variable  # pylint: disable-msg=E0401
 
 class TestOutput(TestCase):
     """Test output"""

@@ -1,6 +1,6 @@
 """.C file reader"""
 import io
-from array import array
+from array import array  # pylint: disable-msg=E0611
 from future.utils import raise_from
 from ROOT import TGraph, TGraphErrors
 import hepdata_lib.root_utils as ru

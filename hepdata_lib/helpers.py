@@ -68,7 +68,7 @@ def get_number_precision(value):
     if value == 0 or isinstance(value, str) or np.isnan(value) or np.isinf(value):
         return value
 
-    return math.ceil(math.log10(abs(value)))
+    return math.ceil(math.log10(abs(value)))  # pylint: disable-msg=I1101
 
 
 def relative_round(value, relative_digits):

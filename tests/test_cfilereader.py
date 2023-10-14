@@ -3,7 +3,7 @@
 from unittest import TestCase
 import os
 import numpy as np
-from hepdata_lib.c_file_reader import CFileReader
+from hepdata_lib.c_file_reader import CFileReader  # pylint: disable-msg=E0401
 
 class TestCFileReader(TestCase):
     """Test the CFileReader class."""

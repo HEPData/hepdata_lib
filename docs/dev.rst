@@ -110,3 +110,14 @@ After installing the ``hepdata_lib`` package, move into the ``hepdata_lib/docs``
     pip install -r requirements.txt
 
 Then you can build the documentation locally with Sphinx using ``make html`` and view the output by opening a web browser at ``_build/html/index.html``.
+
+
+Analysing the code
+------------------
+
+::
+
+    pylint hepdata_lib/*.py
+    pylint tests/*.py --rcfile=tests/pylintrc
+
+These commands are run by GitHub Actions, so you should first check locally that no issues are flagged.

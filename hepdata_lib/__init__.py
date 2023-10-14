@@ -55,7 +55,7 @@ class AdditionalResourceMixin:
         self.files_to_copy = []
         self.additional_resources = []
 
-    def add_additional_resource(self, description, location, copy_file=False, type=None):
+    def add_additional_resource(self, description, location, copy_file=False, file_type=None):
         """
         Add any kind of additional resource.
         If copy_file is set to False, the location and description will be added as-is.
@@ -78,7 +78,7 @@ class AdditionalResourceMixin:
         :param copy_file: If set to true, will attempt to copy a local file to the tar ball.
         :type copy_file: bool
 
-        :param type: Type of the resource file.  Currently, only "HistFactory" has any effect.
+        :param file_type: Type of the resource file.  Currently, only "HistFactory" has any effect.
         """
 
         resource = {}
@@ -91,8 +91,8 @@ class AdditionalResourceMixin:
         else:
             resource["location"] = location
 
-        if type:
-            resource["type"] = type
+        if file_type:
+            resource["type"] = file_type
 
         self.additional_resources.append(resource)
 

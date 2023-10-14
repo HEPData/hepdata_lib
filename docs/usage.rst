@@ -123,11 +123,11 @@ Additional resources, hosted either externally or locally, can be linked with th
 
     sub.add_additional_resource("Web page with auxiliary material", "https://atlas.web.cern.ch/Atlas/GROUPS/PHYSICS/PAPERS/STDM-2012-02/")
     sub.add_additional_resource("Some file", "root_file.root", copy_file=True)
-    sub.add_additional_resource("Archive of full likelihoods in the HistFactory JSON format", "Likelihoods.tar.gz", copy_file=True, type="HistFactory")
+    sub.add_additional_resource("Archive of full likelihoods in the HistFactory JSON format", "Likelihoods.tar.gz", copy_file=True, file_type="HistFactory")
 
 The first argument is a ``description`` and the second is the ``location`` of the external link or local resource file.
 The optional argument ``copy_file=True`` (default value of ``False``) will copy a local file into the output directory.
-The optional argument ``type="HistFactory"`` (default value of ``None``) can be used to identify statistical models provided in the HistFactory JSON
+The optional argument ``file_type="HistFactory"`` (default value of ``None``) can be used to identify statistical models provided in the HistFactory JSON
 format rather than relying on certain trigger words in the ``description`` (see `pyhf section of submission documentation`_).
 
 The ``add_link`` function can alternatively be used to add a link to an external resource:

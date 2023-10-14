@@ -4,10 +4,10 @@ from unittest import TestCase
 
 import numpy as np
 
-from hepdata_lib.helpers import relative_round
-from hepdata_lib.helpers import get_number_precision
-from hepdata_lib.helpers import get_value_precision_wrt_reference
-from hepdata_lib.helpers import round_value_and_uncertainty
+from hepdata_lib.helpers import relative_round  # pylint: disable-msg=E0401
+from hepdata_lib.helpers import get_number_precision  # pylint: disable-msg=E0401
+from hepdata_lib.helpers import get_value_precision_wrt_reference  # pylint: disable-msg=E0401
+from hepdata_lib.helpers import round_value_and_uncertainty  # pylint: disable-msg=E0401
 
 
 class TestHelpers(TestCase):

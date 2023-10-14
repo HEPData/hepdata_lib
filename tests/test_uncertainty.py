@@ -3,7 +3,7 @@
 import random
 from unittest import TestCase
 import test_utilities
-from hepdata_lib import Variable, Uncertainty
+from hepdata_lib import Variable, Uncertainty  # pylint: disable-msg=E0401
 
 
 class TestUncertainty(TestCase):

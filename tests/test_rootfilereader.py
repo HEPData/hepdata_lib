@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 """Test RootFileReader."""
 from unittest import TestCase
-from array import array
+from array import array  # pylint: disable-msg=E0611
 import os
 import ctypes
 import numpy as np
 import ROOT
 from test_utilities import float_compare, tuple_compare, histogram_compare_1d, make_tmp_root_file
-from hepdata_lib.root_utils import RootFileReader
+from hepdata_lib.root_utils import RootFileReader  # pylint: disable-msg=E0401
 
 
 class TestRootFileReader(TestCase):
