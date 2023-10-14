@@ -42,12 +42,18 @@ Setup for developers
 
 The general comments about installing a python package (see :ref:`sec-setup-users`) apply here, too. Use a virtual environment (see :ref:`sec-setup-virtualenv`)!
 
-If you would like to develop the code, you need to install the package from the up-to-date git repository rather than the stable release in pypi. To do this, you can use the pip `-e` syntax:
+If you would like to develop the code, you need to install the package from the up-to-date `GitHub repository`_ rather than the stable release in PyPI. To do this, you can use the pip `-e` syntax.
+The GitHub repository can be cloned using either an `HTTPS URL`_ or an `SSH URL`_.
+
+.. _GitHub repository: https://github.com/HEPData/hepdata_lib
+.. _HTTPS URL: https://docs.github.com/en/get-started/getting-started-with-git/about-remote-repositories#cloning-with-https-urls
+.. _SSH URL: https://docs.github.com/en/get-started/getting-started-with-git/about-remote-repositories#cloning-with-ssh-urls
 
 ::
 
     cd $SOMEPATH
     git clone https://github.com/HEPData/hepdata_lib.git
+ OR git clone git@github.com:HEPData/hepdata_lib.git
 
     workon myhepdata # activate virtual environment!
     pip install -e $SOMEPATH/hepdata_lib
