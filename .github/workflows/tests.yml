@@ -26,10 +26,12 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         root-version: ["6.24", "6.26", "6.28"]
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11"]
         exclude:
           - root-version: "6.24"
             python-version: "3.10"
+          - root-version: "6.24"
+            python-version: "3.11"
           - root-version: "6.26"
             python-version: "3.6"
           - root-version: "6.26"
@@ -41,7 +43,7 @@ jobs:
         include:
           - os: macos-latest
             root-version: "6.28"
-            python-version: "3.10"
+            python-version: "3.11"
 
     steps:
     - uses: actions/checkout@v3
@@ -108,7 +110,7 @@ jobs:
         path: examples/*.html
 
     - name: Run pylint
-      if: ${{ always() }}
+      if: ${{ always() && matrix.python-version != '3.11' }}
       run: |
         python -m pylint hepdata_lib/*.py
         python -m pylint tests/*.py --rcfile=tests/pylintrc

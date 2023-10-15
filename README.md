@@ -11,7 +11,7 @@ Library for getting your data into HEPData
 
 - Documentation: https://hepdata-lib.readthedocs.io
 
-This code works with Python 3.6, 3.7, 3.8, 3.9 or 3.10.
+This code works with Python 3.6, 3.7, 3.8, 3.9, 3.10 or 3.11.
 
 ## Installation
 
