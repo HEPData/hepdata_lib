@@ -4,8 +4,8 @@ import os
 import shutil
 from unittest import TestCase
 
-from test_utilities import tmp_directory_name
-from hepdata_lib import Table, Variable, Uncertainty  # pylint: disable-msg=E0401
+from hepdata_lib import Table, Variable, Uncertainty
+from .test_utilities import tmp_directory_name
 
 class TestTable(TestCase):
     """Test the Table class."""

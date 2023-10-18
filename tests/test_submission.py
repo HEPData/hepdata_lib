@@ -5,8 +5,8 @@ import shutil
 import string
 from unittest import TestCase
 import tarfile
-from test_utilities import tmp_directory_name
-from hepdata_lib import Submission, Table, Variable, Uncertainty  # pylint: disable-msg=E0401
+from hepdata_lib import Submission, Table, Variable, Uncertainty
+from .test_utilities import tmp_directory_name
 
 class TestSubmission(TestCase):
     """Test the Submission class."""

@@ -1,7 +1,7 @@
 # !/usr/bin/env python
 """Test execute_command() function."""
 from unittest import TestCase
-from hepdata_lib.helpers import execute_command  # pylint: disable-msg=E0401
+from hepdata_lib.helpers import execute_command
 
 class TestExecuteCommand(TestCase):
     """Test execute_command() function."""

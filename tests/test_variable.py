@@ -2,8 +2,8 @@
 """Test Variable."""
 import random
 from unittest import TestCase
-import test_utilities
-from hepdata_lib import Variable, Uncertainty  # pylint: disable-msg=E0401
+from hepdata_lib import Variable, Uncertainty
+from .test_utilities import tuple_compare
 
 
 class TestVariable(TestCase):
@@ -23,12 +23,12 @@ class TestVariable(TestCase):
             # Check that scaling works
             testvar.scale_values(factor)
             scaled_values = [(factor * x[0], factor * x[1]) for x in values]
-            assert(all(test_utilities.tuple_compare(x, y)
+            assert(all(tuple_compare(x, y)
                        for x, y in zip(testvar.values, scaled_values)))
 
             # Check that inverse also works
             testvar.scale_values(1. / factor)
-            self.assertTrue(all(test_utilities.tuple_compare(x, y)
+            self.assertTrue(all(tuple_compare(x, y)
                                 for x, y in zip(testvar.values, values)))
 
     def test_add_uncertainty(self):
