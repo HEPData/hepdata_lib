@@ -9,7 +9,7 @@ Setup for users
 With Python 3 locally available
 +++++++++++++++++++++++++++++++
 
-The library is available for installation as a pypi package and can be installed from the terminal with pip:
+The library is available for installation as a PyPI package and can be installed from the terminal with ``pip``:
 
 
 ::
@@ -42,21 +42,23 @@ Setup for developers
 
 The general comments about installing a python package (see :ref:`sec-setup-users`) apply here, too. Use a virtual environment (see :ref:`sec-setup-virtualenv`)!
 
-If you would like to develop the code, you need to install the package from the up-to-date `GitHub repository`_ rather than the stable release in PyPI. To do this, you can use the pip `-e` syntax.
-The GitHub repository can be cloned using either an `HTTPS URL`_ or an `SSH URL`_.
-
-.. _GitHub repository: https://github.com/HEPData/hepdata_lib
-.. _HTTPS URL: https://docs.github.com/en/get-started/getting-started-with-git/about-remote-repositories#cloning-with-https-urls
-.. _SSH URL: https://docs.github.com/en/get-started/getting-started-with-git/about-remote-repositories#cloning-with-ssh-urls
+If you would like to develop the code, you need to install the package from the up-to-date `GitHub repository`_ rather than the stable release in PyPI. To do this, you can use the pip ``-e`` syntax.
+The GitHub repository can be cloned using either an `HTTPS URL`_ (``git clone https://github.com/HEPData/hepdata_lib.git``)
+or an `SSH URL`_:
 
 ::
 
     cd $SOMEPATH
-    git clone https://github.com/HEPData/hepdata_lib.git
- OR git clone git@github.com:HEPData/hepdata_lib.git
+    git clone git@github.com:HEPData/hepdata_lib.git
+    cd $SOMEPATH/hepdata_lib
 
-    workon myhepdata # activate virtual environment!
+    python3 -m venv myhepdata
+    source myhepdata/bin/activate  # activate virtual environment!
     pip install -e $SOMEPATH/hepdata_lib
+
+.. _GitHub repository: https://github.com/HEPData/hepdata_lib
+.. _HTTPS URL: https://docs.github.com/en/get-started/getting-started-with-git/about-remote-repositories#cloning-with-https-urls
+.. _SSH URL: https://docs.github.com/en/get-started/getting-started-with-git/about-remote-repositories#cloning-with-ssh-urls
 
 Any changes you now make in your local copy of the repository (editing files, checking out different branches...) will be picked up by the python installation in your virtual environment.
 
@@ -68,45 +70,40 @@ Setting up a virtual environment
 
 The goal of a virtual environment is to have a clean python copy to work with for each of possibly many projects you work on. This makes it easy to keep track of which python packages you installed for what purpose and gives you a way of installing different versions of the package.
 
-For documentation on how to set up and work with virtual environments, please check out the virtualenv_ and virtualenvwrapper_ packages.
+For documentation on how to set up and work with virtual environments, please check out `Installing packages using pip and virtual environments`_.
+The venv_ module has been provided in the standard Python library since Python 3.3, avoiding the need to install
+separate virtualenv_ and virtualenvwrapper_ packages as was the case with earlier Python versions.
 
-.. _virtualenv: https://pypi.org/project/virtualenv/
-.. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.io/en/latest/
-
-Once you have both of them setup, you can create a virtual environment to work in:
+You can create a virtual environment to work in:
 
 ::
 
-   mkvirtualenv hepdata_pypi
+   python3 -m venv hepdata_pypi
+   source hepdata_pypi/bin/activate
    pip install hepdata_lib
 
 You can then have a second virtual environment for installing the development branch:
 
 ::
 
-    mkvirtualenv hepdata_git
+    python3 -m venv hepdata_pypi hepdata_git
+    source hepdata_git/bin/activate
     pip install -e $SOMEPATH/hepdata_lib
 
-You can always activate the virtual environment in another shell by calling the workon command, which also allows you to easily switch between the two instances:
+You can always activate the virtual environment in another shell by sourcing the relevant ``activate`` script,
+which also allows you to easily switch between the two instances:
 
 ::
 
-    workon hepdata_pypi
-    python myscript.py # Execute script using pypi package
+    source hepdata_pypi/bin/activate
+    python myscript.py  # Execute script using pypi package
 
 
-    workon hepdata_git
-    python myscript.py # Execute script using development branch
-
-Alternatively, if you don't want to install the additional virtualenv_ and virtualenvwrapper_ packages, you can simply
-use the venv_ module from the Python standard library.
-
-::
-
-    python3 -m venv env
-    source env/bin/activate
-
+.. _`Installing packages using pip and virtual environments`: https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/
 .. _venv: https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment
+.. _virtualenv: https://pypi.org/project/virtualenv/
+.. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.io/en/latest/
+
 
 Setup on lxplus with CMSSW
 --------------------------
