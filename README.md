@@ -57,22 +57,18 @@ Unpacking the image can take a few minutes the first time you use it. Please be 
 
 There are a few more examples available that can directly be run using the [binder](https://mybinder.org/) links below or using [SWAN](https://swan.cern.ch/) (CERN-only, please use LCG release LCG_94 or later) and selecting the corresponding notebook manually:
 
-- [Reading in text files](https://github.com/HEPData/hepdata_lib/blob/main/examples/Getting_started.ipynb)\
+- [Reading in text files](https://github.com/HEPData/hepdata_lib/blob/main/examples/Getting_started.ipynb)
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/HEPData/hepdata_lib/main?filepath=examples/Getting_started.ipynb)
 <br/><br/>
-
-- [Reading in a CMS combine ntuple](https://github.com/HEPData/hepdata_lib/blob/main/examples/combine_limits.ipynb)\
+- [Reading in a CMS combine ntuple](https://github.com/HEPData/hepdata_lib/blob/main/examples/combine_limits.ipynb)
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/HEPData/hepdata_lib/main?filepath=examples/combine_limits.ipynb)
 <br/><br/>
-
-- [Reading in ROOT histograms](https://github.com/HEPData/hepdata_lib/blob/main/examples/reading_histograms.ipynb)\
+- [Reading in ROOT histograms](https://github.com/HEPData/hepdata_lib/blob/main/examples/reading_histograms.ipynb)
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/HEPData/hepdata_lib/main?filepath=examples/reading_histograms.ipynb)
 <br/><br/>
-
-- [Reading a correlation matrix](https://github.com/HEPData/hepdata_lib/blob/main/examples/correlation.ipynb)\
+- [Reading a correlation matrix](https://github.com/HEPData/hepdata_lib/blob/main/examples/correlation.ipynb)
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/HEPData/hepdata_lib/main?filepath=examples/correlation.ipynb)
 <br/><br/>
-
 - [Reading TGraph and TGraphError from '.C' files](https://github.com/HEPData/hepdata_lib/blob/main/examples/read_c_file.ipynb)
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/HEPData/hepdata_lib/main?filepath=examples/read_c_file.ipynb)
 <br/><br/>

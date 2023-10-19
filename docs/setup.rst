@@ -86,7 +86,7 @@ You can then have a second virtual environment for installing the development br
 
 ::
 
-    python3 -m venv hepdata_pypi hepdata_git
+    python3 -m venv hepdata_git
     source hepdata_git/bin/activate
     pip install -e $SOMEPATH/hepdata_lib
 
