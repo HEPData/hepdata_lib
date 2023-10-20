@@ -56,7 +56,8 @@ release = '0.13.0'
 extensions = [
     'sphinx.ext.githubpages',
     'sphinx_mdinclude',
-    'sphinx.ext.autodoc'
+    'sphinx.ext.autodoc',
+    'sphinx.ext.imgconverter',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
