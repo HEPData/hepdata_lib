@@ -2,8 +2,8 @@
 """Test Uncertainty."""
 import random
 from unittest import TestCase
-import test_utilities
 from hepdata_lib import Variable, Uncertainty
+from .test_utilities import float_compare, tuple_compare
 
 
 class TestUncertainty(TestCase):
@@ -32,16 +32,16 @@ class TestUncertainty(TestCase):
             testvar.scale_values(factor)
             scaled_values = [factor * x for x in values]
             scaled_uncertainty = [factor * x for x in uncertainty]
-            self.assertTrue(all(test_utilities.float_compare(x, y)
+            self.assertTrue(all(float_compare(x, y)
                                 for x, y in zip(testvar.values, scaled_values)))
-            self.assertTrue(all(test_utilities.float_compare(x, y)
+            self.assertTrue(all(float_compare(x, y)
                                 for x, y in zip(testunc.values, scaled_uncertainty)))
 
             # Check that inverse also works
             testvar.scale_values(1. / factor)
-            self.assertTrue(all(test_utilities.float_compare(x, y)
+            self.assertTrue(all(float_compare(x, y)
                                 for x, y in zip(testvar.values, values)))
-            self.assertTrue(all(test_utilities.float_compare(x, y)
+            self.assertTrue(all(float_compare(x, y)
                                 for x, y in zip(testunc.values, uncertainty)))
 
     def test_set_values_from_intervals(self):
@@ -68,7 +68,7 @@ class TestUncertainty(TestCase):
         testunc.set_values_from_intervals(intervals, nominal=values)
 
         # Check that both agree
-        self.assertTrue(all((test_utilities.tuple_compare(tup1, tup2)
+        self.assertTrue(all((tuple_compare(tup1, tup2)
                         for tup1, tup2 in zip(testunc.values, refunc.values))))
 
     def test_mixed_uncertainties(self):

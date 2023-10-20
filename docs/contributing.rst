@@ -13,7 +13,7 @@ Please see :ref:`sec-setup-developers` on how to set up the library for developm
 Using bumpversion
 -----------------------------
 
-bumpversion_ allows to update the library version consistently over all files. Please do not change the version manually, but use the following steps instead after a pull request has been merged into the ``master`` branch. Depending on the amount of changes, choose accordingly from:
+bumpversion_ allows to update the library version consistently over all files. Please do not change the version manually, but use the following steps instead after a pull request has been merged into the ``main`` branch. Depending on the amount of changes, choose accordingly from:
 
 - ``patch`` = ``+0.0.1``
 - ``minor`` = ``+0.1.0``
@@ -24,17 +24,17 @@ Execute the following commands:
 ::
 
     pip install --upgrade bumpversion
-    git checkout master
+    git checkout main
     git pull
     bumpversion patch # adjust accordingly
-    git push origin master --tags
+    git push origin main --tags
 
 The files in which the versions are updated as well as the current version can be found in the `.bumpversion.cfg`_. You need appropriate rights for the repository to be able to push the tag.
 
 .. _sec-dev-pypi:
 
 Uploading to PyPI
------------------------------
+-----------------
 
 Once a new version has been tagged, the package should be uploaded to the Python Package Index (PyPI_).
 For the markdown formatting to work, ``twine>=1.11.0`` is required.
@@ -65,14 +65,14 @@ You should then find the new version at `this location`_. You need to be a maint
 
 
 .. _bumpversion: https://github.com/peritus/bumpversion
-.. _.bumpversion.cfg: https://github.com/HEPData/hepdata_lib/blob/master/.bumpversion.cfg
+.. _.bumpversion.cfg: https://github.com/HEPData/hepdata_lib/blob/main/.bumpversion.cfg
 .. _PyPI: https://pypi.org
 .. _PyPI test server: https://test.pypi.org/project/hepdata_lib/
 .. _this location: https://pypi.org/project/hepdata_lib/
 .. _python packaging documentation: https://packaging.python.org/tutorials/packaging-projects/
 
 Creating a new release automatically via an issue
------------------------------
+-------------------------------------------------
 
 Opening an new issue automatically creates a new release if:
 

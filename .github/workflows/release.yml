@@ -53,7 +53,7 @@ jobs:
         with:
           github_token: ${{ secrets.access_token }}
           tags: true
-          branch: master
+          branch: main
 
   # Action to build and publish distribution to PyPI and TestPyPI
   build-and-publish:
@@ -147,6 +147,6 @@ jobs:
 
     # Close issue
     - name: Close Issue
-      uses: peter-evans/close-issue@v1
+      uses: peter-evans/close-issue@v3
       with:
         issue-number: ${{ github.event.issue.number }}

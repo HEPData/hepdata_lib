@@ -6,8 +6,8 @@ import os
 import ctypes
 import numpy as np
 import ROOT
-from test_utilities import float_compare, tuple_compare, histogram_compare_1d, make_tmp_root_file
 from hepdata_lib.root_utils import RootFileReader
+from .test_utilities import float_compare, tuple_compare, histogram_compare_1d, make_tmp_root_file
 
 
 class TestRootFileReader(TestCase):

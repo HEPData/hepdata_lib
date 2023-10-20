@@ -1,6 +1,8 @@
 # output from examples
 examples/submission.tar.gz
 examples/example_output/
+examples/output/
+examples/correlation.root
 
 # test output
 submission.tar.gz

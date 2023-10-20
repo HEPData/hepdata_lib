@@ -55,7 +55,7 @@ class AdditionalResourceMixin:
         self.files_to_copy = []
         self.additional_resources = []
 
-    def add_additional_resource(self, description, location, copy_file=False):
+    def add_additional_resource(self, description, location, copy_file=False, file_type=None):
         """
         Add any kind of additional resource.
         If copy_file is set to False, the location and description will be added as-is.
@@ -70,13 +70,16 @@ class AdditionalResourceMixin:
         submission object is called.
 
         :param description: Description of what the resource is.
-        :type description: string.
+        :type description: string
 
         :param location: Can be either a URL pointing to a web-based resource or a local file path.
-        :type: string
+        :type location: string
 
         :param copy_file: If set to true, will attempt to copy a local file to the tar ball.
         :type copy_file: bool
+
+        :param file_type: Type of the resource file.  Currently, only "HistFactory" has any effect.
+        :type file_type: string
         """
 
         resource = {}
@@ -88,6 +91,9 @@ class AdditionalResourceMixin:
             self.files_to_copy.append(location)
         else:
             resource["location"] = location
+
+        if file_type:
+            resource["type"] = file_type
 
         self.additional_resources.append(resource)
 
@@ -495,7 +501,7 @@ class Submission(AdditionalResourceMixin):
         self.related_records = []
         self.add_additional_resource(
             "Created with hepdata_lib " + __version__,
-            "https://zenodo.org/record/4946277")
+            "https://doi.org/10.5281/zenodo.1217998")
 
     @staticmethod
     def get_license():

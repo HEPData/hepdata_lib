@@ -1,5 +1,5 @@
 Usage
-=======================
+=====
 
 The library aims to offer tools for two main operations:
 
@@ -11,7 +11,7 @@ All of this happens in a user-friendly python interface. :ref:`sec-usage-reading
 In the following sections, there are
 
 HEPData and its data format
------------------------------
+---------------------------
 
 The HEPData data model revolves around **Tables** and **Variables**. At its core, a Variable is a one-dimensional array of numbers with some additional (meta-)data, such as uncertainties, units, etc. assigned to it. A Table is simply a set of multiple Variables. This definition will immediately make sense to you when you think of a general table, which has multiple columns representing different variables.
 
@@ -19,10 +19,10 @@ The HEPData data model revolves around **Tables** and **Variables**. At its core
 .. _sec-usage-reading:
 
 Reading data
--------------------------------
+------------
 
 Reading from plain text
-+++++++++++++++++++++++++++++++
++++++++++++++++++++++++
 
 If you save your data in a text file, a simple-to-use tool is the ``numpy.loadtxt`` function,
 which loads column-wise data from plain-text files and returns it as a ``numpy.array``.
@@ -35,12 +35,12 @@ which loads column-wise data from plain-text files and returns it as a ``numpy.a
 A detailed example is available here_.
 For documentation on the `loadtxt` function, please refer the `numpy documentation`_.
 
-.. _here: https://github.com/HEPData/hepdata_lib/blob/master/examples/Getting_started.ipynb
+.. _here: https://github.com/HEPData/hepdata_lib/blob/main/examples/Getting_started.ipynb
 .. _numpy documentation: https://docs.scipy.org/doc/numpy/reference/generated/numpy.loadtxt.html
 
 
 Reading from ROOT files
-+++++++++++++++++++++++++++++++
++++++++++++++++++++++++
 
 In many cases, data in the experiments is available as one of various ROOT data types, such as ``TGraphs``, ``TH1``, ``TH2``, etc, which are saved in ``*.root`` files.
 
@@ -76,12 +76,12 @@ For detailed descriptions of the extraction logic and returned data, please refe
 
 An `example notebook`_ shows how to read histograms from a ROOT file.
 
-.. _example notebook: https://github.com/HEPData/hepdata_lib/blob/master/examples/reading_histograms.ipynb
+.. _example notebook: https://github.com/HEPData/hepdata_lib/blob/main/examples/reading_histograms.ipynb
 
 .. _sec-usage-writing:
 
 Writing data
--------------------------------
+------------
 
 Following the HEPData data model, the hepdata_lib implements four main classes for writing data:
 
@@ -94,7 +94,7 @@ Following the HEPData data model, the hepdata_lib implements four main classes f
 .. _sec-usage-submission:
 
 The Submission object
-+++++++++++++++++++++++++++++++
++++++++++++++++++++++
 
 The Submission object is the central object where all threads come together. It represents the whole HEPData entry and thus carries the top-level meta data that is equally valid for all the tables and variables you may want to enter. The object is also used to create the physical submission files you will upload to the HEPData web interface.
 
@@ -112,12 +112,40 @@ The ``create_files`` function writes all the YAML output files you need and pack
 
 **Please note**: creating the output files also creates a ``submission`` folder containing the individual files going into the tarball. This folder exists merely for convenience, in order to make it easy to inspect each individual file. It is not recommended to attempt to manually manage or edit the files in the folder, and there is no guarantee that ``hepdata_lib`` will handle any of the changes you make in a graceful manner. As far as we are aware, there is no use case where manual editing of the files is necessary. If you have such a use case, please report it in a Github issue.
 
+.. _sec-usage-resource:
+
+Adding resource links or files
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Additional resources, hosted either externally or locally, can be linked with the ``add_additional_resource`` function of the Submission object.
+
+::
+
+    sub.add_additional_resource("Web page with auxiliary material", "https://atlas.web.cern.ch/Atlas/GROUPS/PHYSICS/PAPERS/STDM-2012-02/")
+    sub.add_additional_resource("Some file", "root_file.root", copy_file=True)
+    sub.add_additional_resource("Archive of full likelihoods in the HistFactory JSON format", "Likelihoods.tar.gz", copy_file=True, file_type="HistFactory")
+
+The first argument is a ``description`` and the second is the ``location`` of the external link or local resource file.
+The optional argument ``copy_file=True`` (default value of ``False``) will copy a local file into the output directory.
+The optional argument ``file_type="HistFactory"`` (default value of ``None``) can be used to identify statistical models provided in the HistFactory JSON
+format rather than relying on certain trigger words in the ``description`` (see `pyhf section of submission documentation`_).
+
+The ``add_link`` function can alternatively be used to add a link to an external resource:
+
+::
+
+    sub.add_link("Web page with auxiliary material", "https://atlas.web.cern.ch/Atlas/GROUPS/PHYSICS/PAPERS/STDM-2012-02/")
+
+Again, the first argument is a ``description`` and the second is the ``location`` of the external link.
+
+.. _`pyhf section of submission documentation`: https://hepdata-submission.readthedocs.io/en/latest/analyses.html#pyhf
+
 Adding links to related records
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To add a link to a related record object, you can use the `add_related_recid` function of the Submission object.
+To add a link to a related record object, you can use the ``add_related_recid`` function of the Submission object.
 
-**Please note**: Values must be entered as integers.
+**Please note**: values must be entered as integers.
 
 ::
 
@@ -125,17 +153,17 @@ To add a link to a related record object, you can use the `add_related_recid` fu
     sub.add_related_recid(2)
     sub.add_related_recid(3)
 
-In this example, we are adding a link to the submission with the record ID value of `"1"`.
+In the last example, we are adding a link to the submission with the record ID value of ``3``.
 
-The documentation for this feature can be found here: (`Linking Records`_).
+The documentation for this feature can be found here: `Linking records`_.
 
-.. _`Linking Records` : https://hepdata-submission.readthedocs.io/en/latest/bidirectional.html#linking-records
+.. _`Linking records`: https://hepdata-submission.readthedocs.io/en/latest/bidirectional.html#linking-records
 
 
 .. _sec-usage-tab-var:
 
 Tables and Variables
-+++++++++++++++++++++++++++++++
+++++++++++++++++++++
 
 The real data is stored in Variables and Tables. Variables come in two flavors: *independent* and *dependent*. Whether a variable is independent or dependent may change with context, but the general idea is that the independent variable is what you put in, the dependent variable is what comes out. Example: if you calculate a cross-section limit as a function of the mass of a hypothetical new particles, the mass would be independent, the limit dependent. The number of either type of variables is not limited, so if you have a scenario where you give N results as a function of M model parameters, you can have N dependent and M independent variables.
 All the variables are then bundled up and added into a Table object.
@@ -172,7 +200,7 @@ That's it! We have successfully created the Table and Variables and stored our r
 After we have done this, the table will be included in the output files the ``Submission.create_files`` function writes (see  :ref:`sec-usage-submission`).
 
 Binned Variables
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
 The above example uses unbinned Variables, which means that every point is simply a single number reflecting a localized value. In many cases, it is useful to use binned Variables, e.g. to represent the x axis of a histogram.
 In this case, everything works the same way as in the unbinned case, except that we have to specify ``is_binned=True`` in the Variable constructor, and change how we format the list of values:
 
@@ -186,7 +214,7 @@ In this case, everything works the same way as in the unbinned case, except that
 The list of values has an entry for each bin of the Variable. The entry is a tuple, where the first entry represents the lower edge of the bin, while the second entry represents the upper edge of the bin. You can simply plug this definition into the code snippet of the unbinned case above to go from an unbinned mass to a binned value. Note that binning a Variable only really makes sense for independent variables.
 
 Two-dimensional plots
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
 
 In some cases, you may want to define information based on multiple parameters, e.g. in the case of a two-dimensional histogram (TH2 in ROOT). This can be easily accomplished by defining two independent Variables in the same Table:
 
@@ -223,11 +251,11 @@ Note that you can add as many dependent Variables as you would like, and that yo
 
 One common use case with more than one independent Variable is that of correlation matrices. A detailed example implementation of this case is `available here`_.
 
-.. _available here: https://github.com/HEPData/hepdata_lib/blob/master/examples/correlation.ipynb
+.. _available here: https://github.com/HEPData/hepdata_lib/blob/main/examples/correlation.ipynb
 
-Adding a  plot thumb nail to a table
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-HepData supports the addition of thumb nail images to each table. This makes it easier for the consumer of your entry to find what they are looking for, since they can simply look for the table that has the thumb nail of the plot they are interested in.
+Adding a plot thumb nail to a table
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+HEPData supports the addition of thumb nail images to each table. This makes it easier for the consumer of your entry to find what they are looking for, since they can simply look for the table that has the thumb nail of the plot they are interested in.
 If you have the full-size plot available on your drive, you can add it to your entry very easily:
 
 ::
@@ -236,12 +264,25 @@ If you have the full-size plot available on your drive, you can add it to your e
 
 The library code then takes care of all the necessary steps, like converting the image to the right format and size, and copying it into your submission folder. The conversion relies on the ImageMagick library, and will only work if the ``convert`` command is available on your machine.
 
+Adding resource links or files
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In the same way as for the Submission object, additional resources, hosted either externally or locally, can be linked with the ``add_additional_resource`` function of the Table object.
+
+::
+
+    table.add_additional_resource("Web page with auxiliary material", "https://atlas.web.cern.ch/Atlas/GROUPS/PHYSICS/PAPERS/STDM-2012-02/")
+    table.add_additional_resource("Some file", "root_file.root", copy_file=True)
+
+For a description of the arguments, see :ref:`sec-usage-resource` for the Submission object.
+A possible use case is to attach the data for the table in its original format before it was transformed into the HEPData YAML format.
+
 Adding keywords to a table
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To make hepdata entries more searchable, keywords should be used to define what information is shown in a table. HEPData keeps track of keywords separately from the rest of the information in an entry, and provides dedicated functionalities to search for and filter by a given set of keywords. If a user is e.g. interested in finding all tables relevant to graviton production, they can do so quite easily if the tables are labelled properly. This procedure becomes much harder, or even impossible, if no keywords are used. It is therefore considered good practice to add a number of sensible keywords to your tables.
+To make HEPData entries more searchable, keywords should be used to define what information is shown in a table. HEPData keeps track of keywords separately from the rest of the information in an entry, and provides dedicated functionalities to search for and filter by a given set of keywords. If a user is e.g. interested in finding all tables relevant to graviton production, they can do so quite easily if the tables are labelled properly. This procedure becomes much harder, or even impossible, if no keywords are used. It is therefore considered good practice to add a number of sensible keywords to your tables.
 
-The keywords are stored as a simply dictionary for each table:
+The keywords are stored as a simple dictionary for each table:
 
 ::
 
@@ -252,33 +293,31 @@ In this example, we specify that the observables shown in a table are acceptance
 
 Lists of recognized keywords are available from the hepdata documentation for `Observables`_, `Phrases`_, and `Particles`_.
 
-.. _`examples`: https://github.com/HEPData/hepdata_lib/blob/master/examples/Getting_started.ipynb
+.. _`examples`: https://github.com/HEPData/hepdata_lib/blob/main/examples/Getting_started.ipynb
 .. _`Observables`: https://hepdata-submission.readthedocs.io/en/latest/keywords/observables.html
 .. _`Phrases`: https://hepdata-submission.readthedocs.io/en/latest/keywords/phrases.html
 .. _`Particles`: https://hepdata-submission.readthedocs.io/en/latest/keywords/partlist.html
 
-
 Adding links to related tables
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To add a link to a related table object, you can use the `add_related_doi` function of the Table class.
+To add a link to a related table object, you can use the ``add_related_doi`` function of the Table class.
 
-**Please note**: Your DOIs must match the format: `10.17182/hepdata.[RecordID].v[Version]/t[Table]`
+**Please note**: your DOIs must match the format: ``10.17182/hepdata.[RecordID].v[Version]/t[Table]``.
 
 ::
 
     table.add_related_doi("10.17182/hepdata.72886.v2/t3")
     table.add_related_doi("10.17182/hepdata.12882.v1/t2")
 
-In this example, we are adding a link to the table with a DOI value of: `10.17182/hepdata.12882.v1/t2 <https://doi.org/10.17182/hepdata.12882.v1/t2>`__.
+In the second example, we are adding a link to the table with a DOI value of `10.17182/hepdata.12882.v1/t2 <https://doi.org/10.17182/hepdata.12882.v1/t2>`_.
 
+The documentation for this feature can be found here: `Linking tables`_.
 
-The documentation for this feature can be found here: `Linking Tables`_.
-
-.. _`Linking Tables` : https://hepdata-submission.readthedocs.io/en/latest/bidirectional.html#linking-tables
+.. _`Linking tables`: https://hepdata-submission.readthedocs.io/en/latest/bidirectional.html#linking-tables
 
 Uncertainties
-++++++++++++++++++++++++++++++++
++++++++++++++
 
 In many cases, you will want to give uncertainties on the central values provided in the Variable objects. Uncertainties can be *symmetric* or *asymmetric* (up and down variations of the central value either have the same or different magnitudes). For symmetric uncertainties, the values of the uncertainties are simply stored as a one-dimensional list. For asymmetric uncertainties, the up- and downward variations are stored as a list of two-component tuples:
 

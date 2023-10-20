@@ -5,8 +5,8 @@ import shutil
 import string
 from unittest import TestCase
 import tarfile
-from test_utilities import tmp_directory_name
 from hepdata_lib import Submission, Table, Variable, Uncertainty
+from .test_utilities import tmp_directory_name
 
 class TestSubmission(TestCase):
     """Test the Submission class."""
@@ -41,7 +41,7 @@ class TestSubmission(TestCase):
         test_submission = Submission()
         self.addCleanup(os.remove, testpath)
 
-        # Check with non-existant file
+        # Check with non-existent file
         with self.assertRaises(RuntimeError):
             test_submission.add_additional_resource("Some description", testpath, copy_file=True)
 
@@ -60,7 +60,8 @@ class TestSubmission(TestCase):
         with open(testpath, "wb") as testfile:
             testfile.write(bytes("\0" * size, "utf-8"))
         try:
-            test_submission.add_additional_resource("Some description", testpath, copy_file=True)
+            test_submission.add_additional_resource("Some description", testpath,
+                                                    copy_file=True, file_type="HistFactory")
         except RuntimeError:
             self.fail("Submission.add_additional_resource raised an unexpected RuntimeError.")
 

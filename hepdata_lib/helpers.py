@@ -161,9 +161,11 @@ def round_value_and_uncertainty(cont, val_key="y", unc_key="dy", sig_digits_unc=
     round values and uncertainty according to the precision of the uncertainty,
     and also round uncertainty to a given number of significant digits
     Typical usage:
+
          reader = RootFileReader("rootfile.root")
          data = reader.read_hist_1d("histogramName")
          round_value_and_uncertainty(data,"y","dy",2)
+
     will round data["y"] to match the precision of data["dy"] for each element, after
     rounding each element of data["dy"] to 2 significant digits
     e.g. 26.5345 +/- 1.3456 --> 26.5 +/- 1.3
