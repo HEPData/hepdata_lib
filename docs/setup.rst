@@ -100,7 +100,7 @@ which also allows you to easily switch between the two instances:
 
 
 .. _`Installing packages using pip and virtual environments`: https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/
-.. _venv: https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment
+.. _venv: https://docs.python.org/3/library/venv.html
 .. _virtualenv: https://pypi.org/project/virtualenv/
 .. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.io/en/latest/
 
