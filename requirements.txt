@@ -1,4 +1,5 @@
 numpy
 PyYAML>=4.0
 future
+hist
 hepdata-validator>=0.3.5

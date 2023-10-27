@@ -60,7 +60,8 @@ def _get_histaxis_array(axis, flow: bool) -> numpy.ndarray:
     categorical axes, the return will be a N array of bin content values. If the
     flow is set to true, the function will also add the overflow/underflow bins
     according to the settings found in axis.traits. For categorical axis, this
-    will include an extra `__UNDETERMINED__` entry or a +1 entry.
+    will include an extra `"__UNDETERMINED__"` entry (for StrCategory) or an +1
+    entry (for IntCategory).
     """
 
     ## Getting the entries as a simple list
@@ -95,7 +96,28 @@ def hist_as_variable(
 ) -> Variable:
     """
     Returning this histogram entries as a Variable object, with a simpler
-    interface for modifying uncertainty
+    interface for automatically generating values uncertainties.
+
+    The `h` and `flow` inputs are passed directly to the `read_hist` method to
+    extract the value to be used for the variable.
+
+    The `uncertainty` is a dictionary defining how uncertainties should be
+    defined. Dictionary keys are used as the name of the uncertainty, while the
+    value defines how the uncertainty should be constructed. This can either be:
+
+    - `str`: either "poisson_asym" or "poisson_sym", indicating to extract
+      Poisson uncertainty directly from the histogram values. (Either the
+      asymmetric Garwood interval defined by `hist.intervals` or a simply,
+      symmetric `sqrt(n)`.)
+    - `float`: A flat uncertainty to be used on all bins.
+    - `numpy.ndarray`: An array indicating the uncertainty for each bin. The
+      array should be compatible with the output of `read_hist['hist_values']`
+    - `hist.Hist`: The histogram with bin values indicating the uncertainty to
+      be used for each bin. The histogram should be compatible with the input
+      histogram.
+    - `tuple(T,T)` where `T` can either be a `float`, `numpy.ndarray` or
+      `hist.Hist`. This is used to indicate asymmetric uncertainties, following
+      the lower/upper ordering convention of hepdata_lib
     """
     if uncertainty is None:
         uncertainty = {}
@@ -151,9 +173,15 @@ def hist_as_variable(
 def _make_poisson_unc_array(
     readout: Dict[str, numpy.ndarray], symmetric: bool
 ) -> numpy.ndarray:
+    """
+    Given the results of `read_hist`, extract the Poisson uncertainty using
+    hist.intervals. Automatically detecting the histogram storage type to handle
+    weighted uncertainties
+    """
     if symmetric:
         if "hist_variance" not in readout.keys():
             numpy.sqrt(readout["hist_value"])
+            return numpy.sqrt(n_events)
         else:  # Effective number of events
             sw, sw2 = readout["hist_value"], readout["hist_variance"]
             n_events = numpy.divide(
@@ -166,7 +194,6 @@ def _make_poisson_unc_array(
                 where=(n_events != 0),
             )
             return sw * rel_unc
-        return numpy.sqrt(n_events)
     else:
         sw, sw2 = readout["hist_value"], readout["hist_value"]
         if "hist_variance" in readout.keys():
@@ -180,12 +207,13 @@ def create_hist_base_table(
     table_name: str,
     h: hist.Hist,
     flow: bool = False,
-    axes_rename: Optional[Dict[str, str]] = None,  # Additional axes proces
-    axes_units: Optional[Dict[str, str]] = None,  # Additional axes proces
+    axes_rename: Optional[Dict[str, str]] = None,
+    axes_units: Optional[Dict[str, str]] = None,
 ) -> Table:
     """
-    Preparing the table based on hist, allows for the additional exclusion of
-    axes via a list of string names
+    Preparing the table based on hist. This constructs just the histogram axis
+    as the table variable. Histogram entries should be added via the
+    `hist_as_variable` method.
     """
     if axes_rename is None:
         axes_rename = {}
