@@ -38,12 +38,20 @@ def read_hist(histo: hist.Hist, flow: bool = False) -> Dict[str, numpy.ndarray]:
 
     _storage_keys = {
         hist.storage.Weight: ["value", "variance"],
-        hist.storage.Mean: ["value", ""],
+        hist.storage.Mean: ["value", "count", "_sum_of_deltas_squared"],
+        hist.storage.WeightedMean: [
+            "value",
+            "sum_of_weights",
+            "sum_of_weights_squared",
+            "_sum_of_weighted_deltas_squared",
+        ],
     }
 
-    if (
+    if (  # Single value storages
         histo.storage_type is hist.storage.Int64
         or histo.storage_type is hist.storage.Double
+        or histo.storage_type is hist.storage.AtomicInt64
+        or histo.storage_type is hist.storage.Unlimited
     ):
         readout["hist_value"] = view.flatten()
     elif histo.storage_type in _storage_keys:

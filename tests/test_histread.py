@@ -43,19 +43,55 @@ class TestHistUtils(TestCase):
     def test_default_read(self):
         """
         Ensure basic readout function generates arrays with compatible
-        dimensions with given the base-level histogram.
+        dimensions with given the base-level histogram. Also checking alternate
+        binning methods.
         """
-        try:
-            readout = read_hist(TestHistUtils.base_hist)
-        # pylint: disable=W0702
-        except:
-            self.fail("Histogram reading raised an unexpected exception.")
-        # pylint: enable=W0702
+        # Always test the base histogram
+        readout = read_hist(TestHistUtils.base_hist)
 
         # Checking dimension compatibility
-        self.assertTrue(len(readout["dataset"]) == len(readout["flavor"]))
-        self.assertTrue(len(readout["dataset"]) == len(readout["eta"]))
-        self.assertTrue(len(readout["dataset"]) == len(readout["pt"]))
+        self.assertTrue(len(readout["hist_value"]) == len(readout["hist_variance"]))
+        self.assertTrue(len(readout["hist_value"]) == len(readout["dataset"]))
+        self.assertTrue(len(readout["hist_value"]) == len(readout["flavor"]))
+        self.assertTrue(len(readout["hist_value"]) == len(readout["eta"]))
+        self.assertTrue(len(readout["hist_value"]) == len(readout["pt"]))
+        self.assertTrue(len(readout.keys()) == 6)
+
+        ## Histograms with alternate types
+        # Simple double
+        h_double = hist.Hist(hist.axis.Regular(10, 0, 1, name="x"))  # Double
+        readout = read_hist(h_double)
+        self.assertTrue(len(readout["hist_value"]) == len(readout["x"]))
+        self.assertTrue(len(readout.keys()) == 2)
+
+        h_mean = hist.Hist(
+            hist.axis.Regular(10, 0, 1, name="x"), storage=hist.storage.Mean()
+        )
+        readout = read_hist(h_mean)
+        self.assertTrue(len(readout["hist_value"]) == len(readout["x"]))
+        self.assertTrue(len(readout["hist_value"]) == len(readout["hist_count"]))
+        self.assertTrue(
+            len(readout["hist_value"]) == len(readout["hist__sum_of_deltas_squared"])
+        )
+        self.assertTrue(len(readout.keys()) == 4)
+
+        h_mean = hist.Hist(
+            hist.axis.Regular(10, 0, 1, name="x"), storage=hist.storage.WeightedMean()
+        )
+        readout = read_hist(h_mean)
+        self.assertTrue(len(readout["hist_value"]) == len(readout["x"]))
+        self.assertTrue(
+            len(readout["hist_value"]) == len(readout["hist_sum_of_weights"])
+        )
+        self.assertTrue(
+            len(readout["hist_value"]) == len(readout["hist_sum_of_weights_squared"])
+        )
+        self.assertTrue(
+            len(readout["hist_value"])
+            == len(readout["hist__sum_of_weighted_deltas_squared"])
+        )
+        self.assertTrue(len(readout.keys()) == 5)
+
         self.doCleanups()
 
     def test_projection_read(self):
@@ -63,22 +99,22 @@ class TestHistUtils(TestCase):
         Ensure basic readout function generates arrays with compatible
         dimensions with histogram slicing operations.
         """
-        # Default read with simple projection
-        try:
-            read1 = read_hist(
-                TestHistUtils.base_hist[{"dataset": "data", "flavor": sum}]
-            )
-            read2 = read_hist(TestHistUtils.base_hist[{"dataset": "QCD", "flavor": 0j}])
-        # pylint: disable=W0702
-        except:
-            self.fail("Histogram reading raised an unexpected exception.")
-        # pylint: enable=W0702
+        # Default read with slicing projection
+        read1 = read_hist(TestHistUtils.base_hist[{"dataset": "data", "flavor": sum}])
+        read2 = read_hist(TestHistUtils.base_hist[{"dataset": "QCD", "flavor": 0j}])
 
         # Checking dimension compatibility
         self.assertTrue(len(read1["eta"]) == len(read1["pt"]))
         self.assertTrue(len(read1["eta"]) == len(read2["pt"]))
         self.assertTrue(np.all(read1["eta"] == read2["eta"]))
         self.assertTrue(np.all(read1["pt"] == read2["pt"]))
+
+        # Profiling histogram conversion
+        read3 = read_hist(
+            TestHistUtils.base_hist[{"dataset": sum, "flavor": sum}].profile("eta")
+        )
+        self.assertTrue(len(read3["pt"]) == len(read3["hist_value"]))
+        self.assertTrue(len(read3.keys()) == 4)
 
         # Clean up
         self.doCleanups()
@@ -95,26 +131,21 @@ class TestHistUtils(TestCase):
 
         d_arr = d_h.view(flow=True)["value"].flatten()
         unc_arr = np.ones_like(d_arr) * np.random.random(size=d_arr.shape[0])
-        try:
-            auto_var = hist_as_variable(
-                "testing",
-                d_h,
-                flow=True,
-                uncertainty={
-                    "symmetric stat": "poisson_sym",
-                    "asymmetric stat": "poisson_asym",
-                    "symmetric float": 1.5,
-                    "asymmetric float": (1.5, 2.2),
-                    "symmetric array": unc_arr,
-                    "asymmetric array": (-0.8 * unc_arr, unc_arr),
-                    "symmetric histogram": q_h,
-                    "asymmetric histogram": (q_h, t_h),
-                },
-            )
-        # pylint: disable=W0702
-        except:
-            self.fail("Unexpected exception of automatic uncertainty generation.")
-        # pylint: enable=W0702
+        auto_var = hist_as_variable(
+            "testing",
+            d_h,
+            flow=True,
+            uncertainty={
+                "symmetric stat": "poisson_sym",
+                "asymmetric stat": "poisson_asym",
+                "symmetric float": 1.5,
+                "asymmetric float": (1.5, 2.2),
+                "symmetric array": unc_arr,
+                "asymmetric array": (-0.8 * unc_arr, unc_arr),
+                "symmetric histogram": q_h,
+                "asymmetric histogram": (q_h, t_h),
+            },
+        )
 
         def check_val(arr1, arr2):
             return self.assertTrue(
@@ -157,17 +188,13 @@ class TestHistUtils(TestCase):
             "pt": r"Jet $p_{T}$",
         }
         _units_ = {"pt": "GeV"}
-        try:
-            table = create_hist_base_table(
-                "my_table",
-                TestHistUtils.base_hist,
-                axes_rename=_rename_,
-                axes_units=_units_,
-            )
-        # pylint: disable=W0702
-        except:
-            self.fail("Unexpected exception of table generation.")
-        # pylint: enable=W0702
+
+        table = create_hist_base_table(
+            "my_table",
+            TestHistUtils.base_hist,
+            axes_rename=_rename_,
+            axes_units=_units_,
+        )
 
         readout = read_hist(TestHistUtils.base_hist)
 
