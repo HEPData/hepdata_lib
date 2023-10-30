@@ -1,15 +1,15 @@
 """hepdata_lib utilities for interacting with scikit-hep hist histograms"""
-from typing import Tuple, Optional, Union, List, Dict
+from typing import Optional, Union, Dict
 import numpy
-
-from hepdata_lib import Table, Variable, Uncertainty
 
 # scikit-hep hist package
 import hist
 import hist.intervals
 
+from hepdata_lib import Table, Variable, Uncertainty
 
-def read_hist(h: hist.Hist, flow: bool = False) -> Dict[str, numpy.ndarray]:
+
+def read_hist(histo: hist.Hist, flow: bool = False) -> Dict[str, numpy.ndarray]:
     """
     Converting the scikit-hep histogram in to a dictionary of numpy arrays that
     can be used for hepdata_lib Variable and Uncertainty declaration.
@@ -25,28 +25,33 @@ def read_hist(h: hist.Hist, flow: bool = False) -> Dict[str, numpy.ndarray]:
     The storage content will be returned as is, so additional uncertainty
     processing will need to be handled by the user using the return values.
     """
-    axes_entries = [_get_histaxis_array(ax, flow=flow) for ax in h.axes]
+    axes_entries = [_get_histaxis_array(ax, flow=flow) for ax in histo.axes]
     axes_entries = numpy.meshgrid(*axes_entries)
 
     ## Getting axes return values
-    readout = {ax.name: axes_entries[idx].flatten() for idx, ax in enumerate(h.axes)}
+    readout = {
+        ax.name: axes_entries[idx].flatten() for idx, ax in enumerate(histo.axes)
+    }
 
     ## Getting the histogram return values
-    view = h.view(flow=flow)
+    view = histo.view(flow=flow)
 
     _storage_keys = {
         hist.storage.Weight: ["value", "variance"],
         hist.storage.Mean: ["value", ""],
     }
 
-    if h.storage_type is hist.storage.Int64 or h.storage_type is hist.storage.Double:
+    if (
+        histo.storage_type is hist.storage.Int64
+        or histo.storage_type is hist.storage.Double
+    ):
         readout["hist_value"] = view.flatten()
-    elif h.storage_type in _storage_keys:
-        for key in _storage_keys[h.storage_type]:
+    elif histo.storage_type in _storage_keys:
+        for key in _storage_keys[histo.storage_type]:
             readout["hist_" + key] = view[key].flatten()
     else:
         raise NotImplementedError(
-            f"Storage type {h.storage_type} currently not implemented"
+            f"Storage type {histo.storage_type} currently not implemented"
         )
 
     return readout
@@ -65,7 +70,7 @@ def _get_histaxis_array(axis, flow: bool) -> numpy.ndarray:
     """
 
     ## Getting the entries as a simple list
-    entries = [x for x in axis]
+    entries = list(axis)
 
     ## Adding overflow bin
     if flow and axis.traits.overflow:
@@ -82,14 +87,16 @@ def _get_histaxis_array(axis, flow: bool) -> numpy.ndarray:
 
     ## Converting to numpy array
     if axis.traits.continuous:
-        return numpy.array(entries, dtype="f,f")
+        entries = numpy.array(entries, dtype="f,f")
     else:
-        return numpy.array(entries)
+        entries = numpy.array(entries)
+
+    return entries
 
 
 def hist_as_variable(
     var_name,
-    h: hist.Hist,
+    histo: hist.Hist,
     flow: bool = False,
     uncertainty: Optional[Dict[str, Union[str, hist.Hist, numpy.ndarray]]] = None,
     **kwargs,
@@ -122,7 +129,7 @@ def hist_as_variable(
     if uncertainty is None:
         uncertainty = {}
 
-    readout = read_hist(h, flow=flow)
+    readout = read_hist(histo, flow=flow)
     var = Variable(
         var_name,
         is_independent=False,
@@ -131,15 +138,14 @@ def hist_as_variable(
     )
     var.values = readout["hist_value"]
 
-    def _make_unc_array(x):
-        if isinstance(x, float):
-            return numpy.ones_like(readout["hist_value"]) * x
-        elif isinstance(x, numpy.ndarray):
-            return x
-        elif isinstance(x, hist.Hist):
-            return read_hist(x, flow=flow)["hist_value"]
-        else:
-            raise NotImplementedError(f"Unknown uncertainty format! {type(x)}")
+    def _make_unc_array(unc_val):
+        if isinstance(unc_val, float):
+            return numpy.ones_like(readout["hist_value"]) * unc_val
+        if isinstance(unc_val, numpy.ndarray):
+            return unc_val
+        if isinstance(unc_val, hist.Hist):
+            return read_hist(unc_val, flow=flow)["hist_value"]
+        raise NotImplementedError(f"Unknown uncertainty format! {type(unc_val)}")
 
     for unc_name, unc_proc in uncertainty.items():
         is_symmetric = None
@@ -155,8 +161,8 @@ def hist_as_variable(
         elif isinstance(unc_proc, tuple):  # Asymmetric uncertainty
             is_symmetric = False  #
             assert len(unc_proc) == 2, "Asymmetric uncertainty can only have 2 entries"
-            lo, up = _make_unc_array(unc_proc[0]), _make_unc_array(unc_proc[1])
-            arr = [x for x in zip(lo, up)]
+            _lo, _up = _make_unc_array(unc_proc[0]), _make_unc_array(unc_proc[1])
+            arr = list(zip(_lo, _up))
         else:  # Assuming symmetric error
             is_symmetric = True
             arr = _make_unc_array(unc_proc)
@@ -180,32 +186,34 @@ def _make_poisson_unc_array(
     """
     if symmetric:
         if "hist_variance" not in readout.keys():
-            numpy.sqrt(readout["hist_value"])
-            return numpy.sqrt(n_events)
+            n_events = numpy.sqrt(readout["hist_value"])
+            unc_arr = numpy.sqrt(n_events)
         else:  # Effective number of events
-            sw, sw2 = readout["hist_value"], readout["hist_variance"]
+            _sw, _sw2 = readout["hist_value"], readout["hist_variance"]
             n_events = numpy.divide(
-                sw**2, sw2, out=numpy.zeros_like(sw), where=(sw2 != 0)
+                _sw**2, _sw2, out=numpy.zeros_like(_sw), where=(_sw2 != 0)
             )
             rel_unc = numpy.divide(
                 numpy.sqrt(n_events),
                 n_events,
-                out=numpy.zeros_like(sw),
+                out=numpy.zeros_like(_sw),
                 where=(n_events != 0),
             )
-            return sw * rel_unc
+            unc_arr = _sw * rel_unc
     else:
-        sw, sw2 = readout["hist_value"], readout["hist_value"]
+        _sw, _sw2 = readout["hist_value"], readout["hist_value"]
         if "hist_variance" in readout.keys():
-            sw2 = readout["hist_variance"]
-        lo, up = hist.intervals.poisson_interval(sw, sw2)
-        lo, up = lo - sw, up - sw
-        return [x for x in zip(lo, up)]
+            _sw2 = readout["hist_variance"]
+        _lo, _up = hist.intervals.poisson_interval(_sw, _sw2)
+        _lo, _up = _lo - _sw, _up - _sw
+        unc_arr = list(zip(_lo, _up))
+
+    return unc_arr
 
 
 def create_hist_base_table(
     table_name: str,
-    h: hist.Hist,
+    histo: hist.Hist,
     flow: bool = False,
     axes_rename: Optional[Dict[str, str]] = None,
     axes_units: Optional[Dict[str, str]] = None,
@@ -221,21 +229,21 @@ def create_hist_base_table(
         axes_units = {}
     table = Table(table_name)
 
-    readout = read_hist(h)
+    readout = read_hist(histo, flow=flow)
 
-    for ax in h.axes:
-        var_name = ax.name
-        if ax.name in axes_rename:
-            var_name = axes_rename[ax.name]
-        elif ax.label:
-            var_name = ax.label
+    for axis in histo.axes:
+        var_name = axis.name
+        if axis.name in axes_rename:
+            var_name = axes_rename[axis.name]
+        elif axis.label:
+            var_name = axis.label
         var = Variable(
             var_name,
             is_independent=True,
-            is_binned=ax.traits.continuous,
-            units=axes_units.get(ax.name, ""),
+            is_binned=axis.traits.continuous,
+            units=axes_units.get(axis.name, ""),
         )
-        var.values = readout[ax.name]
+        var.values = readout[axis.name]
         table.add_variable(var)
 
     return table
