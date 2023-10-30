@@ -84,6 +84,9 @@ language = 'en'
 # This pattern also affects html_static_path and html_extra_path .
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+# Suppress warnings for unknown epub files (.nojekyll)
+suppress_warnings = ['epub.unknown_project_files']
+
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
