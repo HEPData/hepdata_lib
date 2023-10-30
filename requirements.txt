@@ -1,5 +1,5 @@
 numpy
 PyYAML>=4.0
 future
-hist
+hist[plot] # Required for intervals
 hepdata-validator>=0.3.5
