@@ -4,7 +4,7 @@ from unittest import TestCase
 import numpy as np
 import hist
 import hist.intervals
-from hepdata_lib.hist_utils import *
+from hepdata_lib.hist_utils import read_hist, hist_as_variable, create_hist_base_table
 
 
 class TestHistUtils(TestCase):
@@ -41,7 +41,10 @@ class TestHistUtils(TestCase):
     )
 
     def test_default_read(self):
-        # Default read with no projection
+        """
+        Ensure basic readout function generates arrays with compatible
+        dimensions with given the base-level histogram.
+        """
         try:
             readout = read_hist(TestHistUtils.base_hist)
         except:
@@ -51,34 +54,46 @@ class TestHistUtils(TestCase):
         self.assertTrue(len(readout["dataset"]) == len(readout["flavor"]))
         self.assertTrue(len(readout["dataset"]) == len(readout["eta"]))
         self.assertTrue(len(readout["dataset"]) == len(readout["pt"]))
+        self.doCleanups()
 
     def test_projection_read(self):
+        """
+        Ensure basic readout function generates arrays with compatible
+        dimensions with histogram slicing operations.
+        """
         # Default read with simple projection
         try:
-            r1 = read_hist(TestHistUtils.base_hist[{"dataset": "data", "flavor": sum}])
-            r2 = read_hist(TestHistUtils.base_hist[{"dataset": "QCD", "flavor": 0j}])
+            read1 = read_hist(
+                TestHistUtils.base_hist[{"dataset": "data", "flavor": sum}]
+            )
+            read2 = read_hist(TestHistUtils.base_hist[{"dataset": "QCD", "flavor": 0j}])
         except:
             self.fail("Histogram reading raised an unexpected exception.")
         # Checking dimension compatibility
-        self.assertTrue(len(r1["eta"]) == len(r1["pt"]))
-        self.assertTrue(len(r1["eta"]) == len(r2["pt"]))
-        self.assertTrue(np.all(r1["eta"] == r2["eta"]))
-        self.assertTrue(np.all(r1["pt"] == r2["pt"]))
+        self.assertTrue(len(read1["eta"]) == len(read1["pt"]))
+        self.assertTrue(len(read1["eta"]) == len(read2["pt"]))
+        self.assertTrue(np.all(read1["eta"] == read2["eta"]))
+        self.assertTrue(np.all(read1["pt"] == read2["pt"]))
 
         # Clean up
         self.doCleanups()
 
     def test_uncertainty_generation(self):
-        h = TestHistUtils.base_hist[{"dataset": "data"}]
+        """
+        Exhaustively testing automatic variable generation with all defined
+        uncertainty formats
+        """
+
+        d_h = TestHistUtils.base_hist[{"dataset": "data"}]
         q_h = TestHistUtils.base_hist[{"dataset": "QCD"}]
         t_h = TestHistUtils.base_hist[{"dataset": "ttbar"}]
 
-        h_arr = h.view(flow=True)["value"].flatten()
-        unc_arr = np.ones_like(h_arr) * np.random.random(size=h_arr.shape[0])
+        d_arr = d_h.view(flow=True)["value"].flatten()
+        unc_arr = np.ones_like(d_arr) * np.random.random(size=d_arr.shape[0])
         try:
-            r = hist_as_variable(
+            auto_var = hist_as_variable(
                 "testing",
-                h,
+                d_h,
                 flow=True,
                 uncertainty={
                     "symmetric stat": "poisson_sym",
@@ -94,41 +109,45 @@ class TestHistUtils(TestCase):
         except:
             self.fail("Unexpected exception of automatic uncertainty generation.")
 
-        def check_val(a, b):
-            return self.assertTrue(np.all(np.isclose(a, b) | np.isnan(a) | np.isnan(b)))
+        def check_val(arr1, arr2):
+            return self.assertTrue(
+                np.all(np.isclose(arr1, arr2) | np.isnan(arr1) | np.isnan(arr2))
+            )
 
-        h_arr = h.view(flow=True)["value"].flatten()
-        check_val(r.values, h_arr)
+        check_val(auto_var.values, d_arr)
         # Symmetric Poisson
-        check_val(r.uncertainties[0].values, np.sqrt(h_arr))
+        check_val(auto_var.uncertainties[0].values, np.sqrt(d_arr))
 
         # Asymmetric Poisson
-        l, u = hist.intervals.poisson_interval(h_arr)
-        l, u = l - h_arr, u - h_arr
-        check_val(r.uncertainties[1].values, list(zip(l, u)))
+        _l, _u = hist.intervals.poisson_interval(d_arr)
+        _l, _u = _l - d_arr, _u - d_arr
+        check_val(auto_var.uncertainties[1].values, list(zip(_l, _u)))
 
         # Flat uncertainties
-        check_val(r.uncertainties[2].values, 1.5)
-        check_val(r.uncertainties[3].values, (1.5, 2.2))
+        check_val(auto_var.uncertainties[2].values, 1.5)
+        check_val(auto_var.uncertainties[3].values, (1.5, 2.2))
 
         # Array defined uncertainties
-        check_val(r.uncertainties[4].values, unc_arr)
-        check_val(r.uncertainties[5].values, list(zip(-0.8 * unc_arr, unc_arr)))
+        check_val(auto_var.uncertainties[4].values, unc_arr)
+        check_val(auto_var.uncertainties[5].values, list(zip(-0.8 * unc_arr, unc_arr)))
 
         # Histogram defined uncertainties
         q_arr = q_h.view(flow=True)["value"].flatten()
         t_arr = t_h.view(flow=True)["value"].flatten()
-        check_val(r.uncertainties[6].values, q_arr)
-        check_val(r.uncertainties[7].values, list(zip(q_arr, t_arr)))
+        check_val(auto_var.uncertainties[6].values, q_arr)
+        check_val(auto_var.uncertainties[7].values, list(zip(q_arr, t_arr)))
 
         self.doCleanups()
 
     def test_table_generation(self):
+        """
+        Base table generation with base histogram
+        """
         _rename_ = {
             "dataset": "Data set",
             "flavor": "Jet flavor",
-            "eta": "Jet $\eta$",
-            "pt": "Jet $p_{T}$",
+            "eta": r"Jet $\eta$",
+            "pt": r"Jet $p_{T}$",
         }
         _units_ = {"pt": "GeV"}
         try:
