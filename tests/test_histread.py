@@ -47,8 +47,10 @@ class TestHistUtils(TestCase):
         """
         try:
             readout = read_hist(TestHistUtils.base_hist)
+        # pylint: disable=W0702
         except:
             self.fail("Histogram reading raised an unexpected exception.")
+        # pylint: enable=W0702
 
         # Checking dimension compatibility
         self.assertTrue(len(readout["dataset"]) == len(readout["flavor"]))
@@ -67,8 +69,11 @@ class TestHistUtils(TestCase):
                 TestHistUtils.base_hist[{"dataset": "data", "flavor": sum}]
             )
             read2 = read_hist(TestHistUtils.base_hist[{"dataset": "QCD", "flavor": 0j}])
+        # pylint: disable=W0702
         except:
             self.fail("Histogram reading raised an unexpected exception.")
+        # pylint: enable=W0702
+
         # Checking dimension compatibility
         self.assertTrue(len(read1["eta"]) == len(read1["pt"]))
         self.assertTrue(len(read1["eta"]) == len(read2["pt"]))
@@ -106,8 +111,10 @@ class TestHistUtils(TestCase):
                     "asymmetric histogram": (q_h, t_h),
                 },
             )
+        # pylint: disable=W0702
         except:
             self.fail("Unexpected exception of automatic uncertainty generation.")
+        # pylint: enable=W0702
 
         def check_val(arr1, arr2):
             return self.assertTrue(
@@ -157,8 +164,10 @@ class TestHistUtils(TestCase):
                 axes_rename=_rename_,
                 axes_units=_units_,
             )
+        # pylint: disable=W0702
         except:
             self.fail("Unexpected exception of table generation.")
+        # pylint: enable=W0702
 
         readout = read_hist(TestHistUtils.base_hist)
 
