@@ -150,7 +150,7 @@ def hist_as_variable(
         if isinstance(unc_val, float):
             return numpy.ones_like(readout["hist_value"]) * unc_val
         if isinstance(unc_val, numpy.ndarray):
-            return unc_val
+            return unc_val.flatten()
         if isinstance(unc_val, hist.Hist):
             return read_hist(unc_val, flow=flow)["hist_value"]
         raise NotImplementedError(f"Unknown uncertainty format! {type(unc_val)}")
@@ -214,6 +214,9 @@ def _make_poisson_unc_array(
             _sw2 = readout["hist_variance"]
         _lo, _up = hist.intervals.poisson_interval(_sw, _sw2)
         _lo, _up = _lo - _sw, _up - _sw
+        # Suppressing the NAN for zero-entry events
+        _lo = numpy.nan_to_num(_lo, nan=0.0)
+        _up = numpy.nan_to_num(_up, nan=0.0)
         unc_arr = list(zip(_lo, _up))
 
     return unc_arr
