@@ -157,7 +157,7 @@ class TestHistUtils(TestCase):
         check_val(auto_var.uncertainties[0].values, np.sqrt(d_arr))
 
         # Asymmetric Poisson
-        _l, _u = hist.intervals.poisson_interval(d_arr)
+        _l, _u = hist.intervals.poisson_interval(d_arr, d_arr)
         _l, _u = _l - d_arr, _u - d_arr
         check_val(auto_var.uncertainties[1].values, list(zip(_l, _u)))
 

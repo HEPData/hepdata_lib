@@ -47,20 +47,11 @@ def read_hist(histo: hist.Hist, flow: bool = False) -> Dict[str, numpy.ndarray]:
         ],
     }
 
-    if (  # Single value storages
-        histo.storage_type is hist.storage.Int64
-        or histo.storage_type is hist.storage.Double
-        or histo.storage_type is hist.storage.AtomicInt64
-        or histo.storage_type is hist.storage.Unlimited
-    ):
+    if view.dtype.names is None:  # Single value storages
         readout["hist_value"] = view.flatten()
-    elif histo.storage_type in _storage_keys:
-        for key in _storage_keys[histo.storage_type]:
-            readout["hist_" + key] = view[key].flatten()
     else:
-        raise NotImplementedError(
-            f"Storage type {histo.storage_type} currently not implemented"
-        )
+        for var_name in view.dtype.names:
+            readout["hist_" + var_name] = view[var_name].flatten()
 
     return readout
 
