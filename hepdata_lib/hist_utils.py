@@ -77,12 +77,17 @@ def _get_histaxis_array(axis, flow: bool) -> numpy.ndarray:
             entries.append("__UNDETERMINED__")
         elif isinstance(axis, hist.axis.IntCategory):
             entries.append(entries[-1] + 1)
+        elif isinstance(axis, hist.axis.Integer):
+            entries.append(numpy.inf)
         else:
             entries.append((axis.edges[-1], numpy.inf))
 
     ## Adding underflow bin
     if flow and axis.traits.underflow:
-        entries = [(-numpy.inf, axis.edges[0])] + entries
+        if isinstance(axis,hist.axis.Integer):
+            entries = [-numpy.inf] + entries
+        else:
+            entries = [(-numpy.inf, axis.edges[0])] + entries
 
     ## Converting to numpy array
     if axis.traits.continuous:
