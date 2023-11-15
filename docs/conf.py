@@ -56,7 +56,8 @@ release = '0.13.0'
 extensions = [
     'sphinx.ext.githubpages',
     'sphinx_mdinclude',
-    'sphinx.ext.autodoc'
+    'sphinx.ext.autodoc',
+    'sphinx.ext.imgconverter',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -82,6 +83,9 @@ language = 'en'
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path .
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+# Suppress warnings for unknown epub files (.nojekyll)
+suppress_warnings = ['epub.unknown_project_files']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'

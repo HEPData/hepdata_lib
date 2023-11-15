@@ -110,6 +110,7 @@ After installing the ``hepdata_lib`` package, move into the ``hepdata_lib/docs``
     pip install -r requirements.txt
 
 Then you can build the documentation locally with Sphinx using ``make html`` and view the output by opening a web browser at ``_build/html/index.html``.
+In addition, please also test whether building the LateX (``make latexpdf``) and epub (``make epub``) versions works.
 
 
 Analysing the code
