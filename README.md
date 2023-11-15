@@ -72,6 +72,9 @@ There are a few more examples available that can directly be run using the [bind
 - [Reading TGraph and TGraphError from '.C' files](https://github.com/HEPData/hepdata_lib/blob/main/examples/read_c_file.ipynb)
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/HEPData/hepdata_lib/main?filepath=examples/read_c_file.ipynb)
 <br/><br/>
+- [Preparing scikit-hep histograms](https://github.com/HEPData/hepdata_lib/blob/main/examples/reading_scikithep_histogram.ipynb)
+[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/HEPData/hepdata_lib/main?filepath=examples/reading_scikihep_histogram.ipynb)
+<br/><br/>
 
 ## External dependencies
 
