@@ -21,7 +21,7 @@ It is highly recommended you install `hepdata_lib` into a [virtual environment](
 pip install hepdata_lib
 ```
 
-If you are not sure about your Python environment, please also see below how to use `hepdata_lib` in a Docker or Singularity container.
+If you are not sure about your Python environment, please also see below how to use `hepdata_lib` in a Docker or Apptainer container.
 
 ## Getting started
 
@@ -44,11 +44,11 @@ If you prefer a shell, instead run:
 docker run --rm -it -p 8888:8888 -v ${PWD}:/home/hepdata ghcr.io/hepdata/hepdata_lib:latest bash
 ```
 
-If on CERN LXPLUS or anywhere else where there is Singularity available but not Docker, you can still use the docker image:
+If on CERN LXPLUS or anywhere else where there is Apptainer available but not Docker, you can still use the docker image:
 
 ```shell
-export SINGULARITY_CACHEDIR="/tmp/$(whoami)/singularity"
-singularity shell -B /afs -B /eos docker://ghcr.io/hepdata/hepdata_lib:latest bash
+export APPTAINER_CACHEDIR="/tmp/$(whoami)/apptainer"
+apptainer shell -B /afs -B /eos docker://ghcr.io/hepdata/hepdata_lib:latest bash
 ```
 
 Unpacking the image can take a few minutes the first time you use it. Please be patient. Both EOS and AFS should be available and the output will be in your current working directory.

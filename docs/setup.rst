@@ -22,17 +22,17 @@ If you are running on your own computer or laptop, it's up to you to decide wher
 
 This setup naturally restricts you to use the latest stable version of the package in pypi. If you would like to use the code as it is the github repository, please follow the instructions in :ref:`sec-setup-developers`.
 
-Using Singularity/Apptainer
+Using Apptainer
 +++++++++++++++++++++++++++++++
 
-On LXPLUS and many other local computing sites with CVMFS and Singularity/Apptainer available, you can use the library without having to install anything:
+On LXPLUS and many other local computing sites with CVMFS and Apptainer (previously called Singularity) available, you can use the library without having to install anything:
 
 ::
 
     apptainer run /cvmfs/unpacked.cern.ch/ghcr.io/hepdata/hepdata_lib:latest /bin/bash
 
 This opens a new shell with ``hepdata_lib``, ROOT, and Python 3 available.
-Your home directory and most other user directories on the machine on which you execute Singularity/Apptainer will also be accessible from within this shell.
+Your home directory and most other user directories on the machine on which you execute Apptainer will also be accessible from within this shell.
 
 
 .. _sec-setup-developers:
@@ -119,7 +119,7 @@ After running ``cmsenv``, you can check the installed version as follows:
 
 (mind the use of ``hepdata-lib`` above, when importing, the package is still
 called ``hepdata_lib``). If the version is significantly older than the one
-on PyPI_, please use the Singularity/Apptainer container as described at
+on PyPI_, please use the Apptainer container as described at
 :ref:`sec-setup-users` above.
 
 .. _cmsdist: https://github.com/cms-sw/cmsdist/
