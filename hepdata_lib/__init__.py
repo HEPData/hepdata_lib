@@ -369,7 +369,35 @@ class Table(AdditionalResourceMixin):
             self.related_tables.append(to_string)
         else:
             raise ValueError(f"DOI does not match the correct pattern: {pattern}.")
+    
+    def add_data_licence(self, name, url, description=None):
+        """
+        Verify and store the given licence data.
 
+        :param name: The licence name
+        :type name: string
+        :param url:
+        :type url: string
+        :param description:
+        :type description: string
+        """
+        licence_data = {}
+
+        if name:
+            licence_data["name"] = name
+        else:
+            raise ValueError("You must insert a value for the licence's name.")
+        
+        if url:
+            licence_data["url"] = url
+        else:
+            raise ValueError("You must insert a value for the licence's url.")
+        
+        if description:
+            licence_data["description"] = description
+
+        self.licence = licence_data
+        
     def write_output(self, outdir):
         """
         Write the table files into the output directory.
