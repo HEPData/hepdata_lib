@@ -55,7 +55,7 @@ class AdditionalResourceMixin:
         self.files_to_copy = []
         self.additional_resources = []
 
-    def add_additional_resource(self, description, location, copy_file=False, file_type=None):
+    def add_additional_resource(self, description, location, copy_file=False, file_type=None, licence=None):
         """
         Add any kind of additional resource.
         If copy_file is set to False, the location and description will be added as-is.
@@ -80,6 +80,9 @@ class AdditionalResourceMixin:
 
         :param file_type: Type of the resource file.  Currently, only "HistFactory" has any effect.
         :type file_type: string
+
+        :param licence: Licence information for the resource
+        :type licence: string
         """
 
         resource = {}
@@ -94,6 +97,9 @@ class AdditionalResourceMixin:
 
         if file_type:
             resource["type"] = file_type
+        
+        if licence:
+            resource["licence"] = licence
 
         self.additional_resources.append(resource)
 
@@ -306,6 +312,7 @@ class Table(AdditionalResourceMixin):
         self.location = "Example location"
         self.keywords = {}
         self.image_files = set()
+        self.licence = {}
 
     @property
     def name(self):
