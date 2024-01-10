@@ -4,7 +4,7 @@ import os
 import shutil
 from unittest import TestCase
 
-from hepdata_lib import Table, Variable, Uncertainty
+from hepdata_lib import Table, Variable, Uncertainty, helpers
 from .test_utilities import tmp_directory_name
 
 class TestTable(TestCase):
@@ -194,9 +194,10 @@ class TestTable(TestCase):
                 file_type=test["type"],
                 licence=test["licence"]
             )
+            resource = test_table.additional_resources[-1]
 
             # Check resource and mandatory arguments
-            resource = test_table.additional_resources[-1]
+            assert resource
             assert resource["description"] == test["description"]
             assert resource["location"] == test["location"]
 
@@ -214,6 +215,23 @@ class TestTable(TestCase):
         testdir = tmp_directory_name()
         self.addCleanup(shutil.rmtree, testdir)
         os.makedirs(testdir)
+        test_table.add_additional_resource("a plot", some_pdf, copy_file=True)
 
-        test_table.add_additional_resource("a plot",some_pdf, copy_file=True)
-        test_table.copy_files(testdir)
+        # Check that the file has been created
+        assert helpers.check_file_existence(some_pdf)
+
+        # Explicitly test for lack of an error
+        try:
+            # No boundaries
+            helpers.check_file_size(some_pdf)
+            # Between boundaries
+            helpers.check_file_size(some_pdf, upper_limit=1, lower_limit=0.001)
+        except Exception as e:
+            self.fail(f"check_file_size() raised an Exception: {e}.")
+
+        # Check that both boundaries function correctly
+        with self.assertRaises(RuntimeError):
+            helpers.check_file_size(some_pdf, upper_limit=0.001)
+
+        with self.assertRaises(RuntimeError):
+            helpers.check_file_size(some_pdf, lower_limit=1)
