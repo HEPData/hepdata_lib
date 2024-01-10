@@ -82,7 +82,7 @@ class AdditionalResourceMixin:
         :type file_type: string
 
         :param licence: Licence information for the resource
-        :type licence: string
+        :type licence: dict
         """
 
         resource = {}
