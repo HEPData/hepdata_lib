@@ -169,14 +169,43 @@ class TestTable(TestCase):
         self.assertTrue(modified_time_main < os.path.getmtime(expected_main_file))
         self.assertTrue(modified_time_thumbnail < os.path.getmtime(expected_thumbnail_file))
 
-
-
-
-
     def test_add_additional_resource(self): # pylint: disable=no-self-use
         """Test the add_additional_resource function."""
         test_table = Table("Some Table")
-        test_table.add_additional_resource("some link","www.cern.ch")
+        test_data = [
+            {
+                "description": "SomeLink",
+                "location": "www.cern.ch",
+                "type": None,
+                "licence": None
+            },
+            {
+                "description": "SomeLink",
+                "location": "www.cern.ch",
+                "type": "HistFactory",
+                "licence": {"name": "LicenceName", "url": "www.cern.ch", "description": "LicenceDesc"}
+            }
+        ]
+
+        for test in test_data:
+            test_table.add_additional_resource(
+                test["description"],
+                test["location"],
+                file_type=test["type"],
+                licence=test["licence"]
+            )
+
+            # Check resource and mandatory arguments
+            resource = test_table.additional_resources[-1]
+            assert resource["description"] == test["description"]
+            assert resource["location"] == test["location"]
+
+            # Check optional arguments type and licence
+            if test["type"]:
+                assert resource["type"] == test["type"]
+
+            if test["licence"]:
+                assert resource["licence"] == test["licence"]
 
     def test_copy_files(self):
         """Test the copy_files function."""
