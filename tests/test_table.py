@@ -226,8 +226,8 @@ class TestTable(TestCase):
             helpers.check_file_size(some_pdf)
             # Between boundaries
             helpers.check_file_size(some_pdf, upper_limit=1, lower_limit=0.001)
-        except Exception as e:
-            self.fail(f"check_file_size() raised an Exception: {e}.")
+        except RuntimeError:
+            self.fail("Table.check_file_size raised an unexpected RuntimeError.")
 
         # Check that both boundaries function correctly
         with self.assertRaises(RuntimeError):
