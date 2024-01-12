@@ -208,6 +208,70 @@ class TestTable(TestCase):
             if test["licence"]:
                 assert resource["licence"] == test["licence"]
 
+    def test_add_additional_resource_licence_check(self):
+        """ Test the licence value check in Table.add_additional_resource """
+        # First two pass, last two fail
+        licence_data = [
+            {
+                "error": None,
+                "licence_data": {
+                    "name": "Name",
+                    "description": "Desc"
+                }
+            },
+            {
+                "error": None,
+                "licence_data": {
+                    "name": "Name",
+                    "description": "Desc",
+                    "url": "URL"
+                }
+            },
+            {
+                "error": ValueError,
+                "licence_data": {
+                    "name": "Name",
+                    "description": "Desc",
+                    "shouldnotbehere": "shouldnotbehere"
+                }
+            },
+            {
+                "error": ValueError,
+                "licence_data": {
+                    "name": "Name",
+                    "description": "Desc",
+                    "url": "URL",
+                    "toomany": "toomany"
+                }
+            }]
+
+        # Create test table and get the test pdf
+        test_table = Table("Some Table")
+        some_pdf = "%s/minimal.pdf" % os.path.dirname(__file__)
+
+        # Set default description, location and type arguments for a table object
+        resource_args = ["Description", some_pdf, "Type"]
+
+        for data in licence_data:
+            # If error is expected, we check for the error
+            # Otherwise, just add and check length later
+            if data["error"]:
+                with self.assertRaises(ValueError):
+                    test_table.add_additional_resource(
+                        *resource_args,
+                        licence=data["licence_data"]
+                    )
+            else:
+                # Check for lack of failure
+                try:
+                    test_table.add_additional_resource(
+                        *resource_args,
+                        licence=data["licence_data"]
+                    )
+                except ValueError:
+                    self.fail("Table.add_additional_resource raised an unexpected ValueError.")
+
+
     def test_copy_files(self):
         """Test the copy_files function."""
         test_table = Table("Some Table")
