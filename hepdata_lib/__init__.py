@@ -97,9 +97,23 @@ class AdditionalResourceMixin:
 
         if file_type:
             resource["type"] = file_type
-        
+
+        # Confirm that licence does not contain extra keys, and has the mandatory name and description values
         if licence:
-            resource["licence"] = licence
+            # Get the licence dict keys as a set
+            licence_keys = set(licence.keys())
+
+            # Create sets for both possibilities
+            mandatory_keys = {"name", "description"}
+            all_keys = mandatory_keys.union(["url"])
+
+            # If licence matches either of the correct values
+            if licence_keys == mandatory_keys or licence_keys == all_keys:
+                resource["licence"] = licence
+            else:
+                raise ValueError("Incorrect licence format: \
+                                 Licence must be a dictionary containing a \
+                                 name, description and optional URL value.")
 
         self.additional_resources.append(resource)
 
