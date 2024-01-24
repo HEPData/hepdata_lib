@@ -124,11 +124,14 @@ Additional resources, hosted either externally or locally, can be linked with th
     sub.add_additional_resource("Web page with auxiliary material", "https://atlas.web.cern.ch/Atlas/GROUPS/PHYSICS/PAPERS/STDM-2012-02/")
     sub.add_additional_resource("Some file", "root_file.root", copy_file=True)
     sub.add_additional_resource("Archive of full likelihoods in the HistFactory JSON format", "Likelihoods.tar.gz", copy_file=True, file_type="HistFactory")
+    sub.add_additional_resource("Some file", "root_file.root", licence={"name": "CC BY 4.0", "url": "https://creativecommons.org/licenses/by/4.0/", "description": "This license enables reusers to distribute, remix, adapt, and build upon the material in any medium or format, so long as attribution is given to the creator."})
 
 The first argument is a ``description`` and the second is the ``location`` of the external link or local resource file.
 The optional argument ``copy_file=True`` (default value of ``False``) will copy a local file into the output directory.
 The optional argument ``file_type="HistFactory"`` (default value of ``None``) can be used to identify statistical models provided in the HistFactory JSON
 format rather than relying on certain trigger words in the ``description`` (see `pyhf section of submission documentation`_).
+The optional argument ``licence`` can be used to define a data licence for an additional resource.
+The ``licence`` is in the form of a dictionary with mandatory string ``name`` and ``url`` values, and an optional ``description``.
 
 The ``add_link`` function can alternatively be used to add a link to an external resource:
 
@@ -315,6 +318,17 @@ In the second example, we are adding a link to the table with a DOI value of `10
 The documentation for this feature can be found here: `Linking tables`_.
 
 .. _`Linking tables`: https://hepdata-submission.readthedocs.io/en/latest/bidirectional.html#linking-tables
+
+Adding a Data Licence
+^^^^^^^^^^^^^^^^^^^^^
+
+You can add data licence information to a table using the ``add_data_licence`` function of the Table class.
+This function takes mandatory ``name`` and ``url`` string arguments, as well as an optional ``description``.
+
+::
+
+    table.add_data_licence("CC BY 4.0", "https://creativecommons.org/licences/by/4.0/")
+    table.add_data_licence("CC BY 4.0", "https://creativecommons.org/licences/by/4.0/", "This license enables reusers to distribute, remix, adapt, and build upon the material in any medium or format, so long as attribution is given to the creator.")
 
 Uncertainties
 +++++++++++++
