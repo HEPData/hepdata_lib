@@ -1,12 +1,12 @@
 """hepdata_lib utilities for interacting with scikit-hep hist histograms"""
-from typing import Optional, Union, Dict
-import numpy
+from typing import Dict, Optional, Union
 
 # scikit-hep hist package
 import hist
 import hist.intervals
+import numpy
 
-from hepdata_lib import Table, Variable, Uncertainty
+from hepdata_lib import Table, Uncertainty, Variable
 
 
 def read_hist(histo: hist.Hist, flow: bool = False) -> Dict[str, numpy.ndarray]:
@@ -15,37 +15,27 @@ def read_hist(histo: hist.Hist, flow: bool = False) -> Dict[str, numpy.ndarray]:
     can be used for hepdata_lib Variable and Uncertainty declaration.
 
     For all axes define in the histogram, a `hepdata_lib.Variable` with
-    `is_independent=True` should be declared. The `values` of this variable will
-    be stored in the return dictionary following the axes names.
+    `is_independent=True` should be declared. The `values` of this variable
+    will be stored in the return dictionary following the axes names.
 
-    Overflow and underflow bin will be handled using a single flag for all axes,
-    so be sure to declare/modify histogram axes properties according to your
-    needs.
+    Overflow and underflow bin will be handled using a single flag for all
+    axes, so be sure to declare/modify histogram axes properties according to
+    your needs.
 
     The storage content will be returned as is, so additional uncertainty
     processing will need to be handled by the user using the return values.
     """
-    axes_entries = [_get_histaxis_array(ax, flow=flow) for ax in histo.axes]
+    axes_entries = [_get_histaxis_array(ax, flow=flow) for ax in reversed(histo.axes)]
     axes_entries = numpy.meshgrid(*axes_entries)
 
-    ## Getting axes return values
+    # Getting axes return values
     readout = {
-        ax.name: axes_entries[idx].flatten() for idx, ax in enumerate(histo.axes)
+        ax.name: axes_entries[idx].flatten()
+        for idx, ax in enumerate(reversed(histo.axes))
     }
 
-    ## Getting the histogram return values
+    # Getting the histogram return values
     view = histo.view(flow=flow)
-
-    _storage_keys = {
-        hist.storage.Weight: ["value", "variance"],
-        hist.storage.Mean: ["value", "count", "_sum_of_deltas_squared"],
-        hist.storage.WeightedMean: [
-            "value",
-            "sum_of_weights",
-            "sum_of_weights_squared",
-            "_sum_of_weighted_deltas_squared",
-        ],
-    }
 
     if view.dtype.names is None:  # Single value storages
         readout["hist_value"] = view.flatten()
@@ -61,17 +51,17 @@ def _get_histaxis_array(axis, flow: bool) -> numpy.ndarray:
     Given an axis array, return the bin entries and a numpy array.
 
     For continuous axes, the return will be a Nx2 array of bin edge pairs. For
-    categorical axes, the return will be a N array of bin content values. If the
-    flow is set to true, the function will also add the overflow/underflow bins
-    according to the settings found in axis.traits. For categorical axis, this
-    will include an extra `"__UNDETERMINED__"` entry (for StrCategory) or an +1
-    entry (for IntCategory).
+    categorical axes, the return will be a N array of bin content values. If
+    the flow is set to true, the function will also add the overflow/underflow
+    bins according to the settings found in axis.traits. For categorical axis,
+    this will include an extra `"__UNDETERMINED__"` entry (for StrCategory) or
+    an +1 entry (for IntCategory).
     """
 
-    ## Getting the entries as a simple list
+    # Getting the entries as a simple list
     entries = list(axis)
 
-    ## Adding overflow bin
+    # Adding overflow bin
     if flow and axis.traits.overflow:
         if isinstance(axis, hist.axis.StrCategory):
             entries.append("__UNDETERMINED__")
@@ -82,14 +72,14 @@ def _get_histaxis_array(axis, flow: bool) -> numpy.ndarray:
         else:
             entries.append((axis.edges[-1], numpy.inf))
 
-    ## Adding underflow bin
+    # Adding underflow bin
     if flow and axis.traits.underflow:
-        if isinstance(axis,hist.axis.Integer):
+        if isinstance(axis, hist.axis.Integer):
             entries = [-numpy.inf] + entries
         else:
             entries = [(-numpy.inf, axis.edges[0])] + entries
 
-    ## Converting to numpy array
+    # Converting to numpy array
     if axis.traits.continuous:
         entries = numpy.array(entries, dtype="f,f")
     else:
@@ -114,7 +104,8 @@ def hist_as_variable(
 
     The `uncertainty` is a dictionary defining how uncertainties should be
     defined. Dictionary keys are used as the name of the uncertainty, while the
-    value defines how the uncertainty should be constructed. This can either be:
+    value defines how the uncertainty should be constructed. This can either
+    be:
 
     - `str`: either "poisson_asym" or "poisson_sym", indicating to extract
       Poisson uncertainty directly from the histogram values. (Either the
@@ -185,8 +176,8 @@ def _make_poisson_unc_array(
 ) -> numpy.ndarray:
     """
     Given the results of `read_hist`, extract the Poisson uncertainty using
-    hist.intervals. Automatically detecting the histogram storage type to handle
-    weighted uncertainties
+    hist.intervals. Automatically detecting the histogram storage type to
+    handle weighted uncertainties
     """
     if symmetric:
         if "hist_variance" not in readout.keys():
