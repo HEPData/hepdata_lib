@@ -115,13 +115,15 @@ class Variable:
     # pylint: disable=too-many-instance-attributes
     # Eight is reasonable in this case.
 
-    def __init__(self, name, is_independent=True, is_binned=True, units="", values=None):
+    def __init__(self, name, is_independent=True, is_binned=True, units="", values=None,
+                 zero_uncertainties_warning=True):
         # pylint: disable=too-many-arguments
         self.name = name
         self.is_independent = is_independent
         self.is_binned = is_binned
         self.qualifiers = []
         self.units = units
+        self.zero_uncertainties_warning = zero_uncertainties_warning
         # needed to make pylint happy, see https://github.com/PyCQA/pylint/issues/409
         self._values = None
         self.values = values if values else []
@@ -273,7 +275,7 @@ class Variable:
                                 },
                                 "label": unc.label
                             })
-            elif self.uncertainties:
+            elif self.uncertainties and self.zero_uncertainties_warning:
                 print(
                     "Warning: omitting 'errors' since all uncertainties " \
                     "are zero for bin {} of variable '{}'.".format(i+1, self.name)

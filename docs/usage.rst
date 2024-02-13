@@ -337,4 +337,12 @@ After creating the Uncertainty objects, the only additional step is to attach th
     variable.add_uncertainty(unc1)
     variable.add_uncertainty(unc2)
 
+See `Uncertainties`_ for more guidance. In particular, note that ``hepdata_lib`` will omit the ``errors`` key from the
+YAML output if all uncertainties are zero for a particular bin, printing a warning message "Note that bins with zero
+content should preferably be omitted completely from the HEPData table". A legitimate use case is where there are
+multiple dependent variables and a (different) subset of the bins has missing content for some dependent variables.
+In this case the uncertainties should be set to zero for the missing bins with a non-numeric central value like ``'-'``.
+The warning message can be suppressed by passing an optional argument ``zero_uncertainties_warning=False`` when
+defining an instance of the ``Variable`` class.
 
+.. _`Uncertainties`: https://hepdata-submission.readthedocs.io/en/latest/data_yaml.html#uncertainties
