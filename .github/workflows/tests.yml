@@ -105,7 +105,7 @@ jobs:
       if: ${{ always() }}
       uses: actions/upload-artifact@v4
       with:
-        name: notebooks py3
+        name: notebooks-${{ matrix.root-version }}-${{ matrix.python-version }}-${{ matrix.os }} py3-${{ matrix.root-version }}-${{ matrix.python-version }}-${{ matrix.os }}
         path: examples/*.html
 
     - name: Run pylint
