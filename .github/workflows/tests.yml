@@ -47,7 +47,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Setup Micromamba environment
-      uses: mamba-org/provision-with-micromamba@v15
+      uses: mamba-org/provision-with-micromamba@v16
       with:
         environment-file: false
         environment-name: ci
