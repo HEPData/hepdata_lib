@@ -47,7 +47,7 @@ class TestUncertainty(TestCase):
     def test_set_values_from_intervals(self):
         '''Test behavior of Uncertainy.test_set_values_from_intervals function'''
 
-        # Dummy central values and variatons relative to central value
+        # Dummy central values and variations relative to central value
         npoints = 100
         values = list(range(0, npoints, 1))
         uncertainty = [(-random.uniform(0, 1), random.uniform(0, 1))
@@ -91,3 +91,27 @@ class TestUncertainty(TestCase):
         pattern = ['symerror', 'asymerror', 'asymerror', 'symerror']
         self.assertTrue((list(dictionary['values'][i]['errors'][0].keys())[
                         0], value) for i, value in enumerate(pattern))
+
+    def test_zero_uncertainties(self):
+        '''Test cases where a data point has zero uncertainties'''
+
+        # Asymmetric uncertainties
+        var = Variable("testvar", is_binned=False, values=[1, 2, 3, 4])
+        unc = Uncertainty("fake_unc", is_symmetric=False)
+        unc.values = [(-1, 1), (-1.5, 2), (0, 0), (-2.5, 2.5)]
+        var.add_uncertainty(unc)
+        dictionary = var.make_dict()
+        # Check that 'errors' key is missing only if zero uncertainties
+        self.assertTrue(all('errors' in dictionary['values'][i] for i in [0, 1, 3]))
+        self.assertTrue('errors' not in dictionary['values'][2])
+
+        # Symmetric uncertainties (and use "zero_uncertainties_warning=False" option)
+        var = Variable("testvar", is_binned=False, values=[1, 2, 3, 4],
+                       zero_uncertainties_warning=False)
+        unc = Uncertainty("fake_unc", is_symmetric=True)
+        unc.values = [1, 1.5, 0, 2.5]
+        var.add_uncertainty(unc)
+        dictionary = var.make_dict()
+        # Check that 'errors' key is missing only if zero uncertainties
+        self.assertTrue(all('errors' in dictionary['values'][i] for i in [0, 1, 3]))
+        self.assertTrue('errors' not in dictionary['values'][2])
