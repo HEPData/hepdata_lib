@@ -102,7 +102,7 @@ jobs:
 
     - name: Upload notebooks
       if: ${{ always() }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: notebooks py3
         path: examples/*.html
