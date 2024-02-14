@@ -34,6 +34,21 @@ On LXPLUS and many other local computing sites with CVMFS and Apptainer (previou
 This opens a new shell with ``hepdata_lib``, ROOT, and Python 3 available.
 Your home directory and most other user directories on the machine on which you execute Apptainer will also be accessible from within this shell.
 
+Using SWAN
+++++++++++
+
+`SWAN`_ requires a CERN account. ``hepdata_lib`` should already be installed in most recent `LCG Releases`_ used by
+SWAN. The latest LCG Release might not contain the latest ``hepdata_lib`` version. The `LCG Nightly`_, possibly
+containing a more recent ``hepdata_lib`` version, can be used by selecting the "Bleeding Edge" software stack in the
+SWAN configuration. Alternatively, you can upgrade ``hepdata_lib`` by adding a local installation path to the
+``$PYTHONPATH`` in a startup script specified as the "Environment script" in the SWAN configuration (see
+`Install packages in CERNBox`_). Then execute ``!pip install hepdata_lib --user --upgrade`` in your Jupyter notebook
+to upgrade ``hepdata_lib`` to the latest version.
+
+.. _SWAN: http://swan.cern.ch/
+.. _LCG Releases: https://lcginfo.cern.ch/pkg/hepdata_lib/
+.. _LCG Nightly: https://lcginfo.cern.ch/#nightlies
+.. _Install packages in CERNBox: https://swan.docs.cern.ch/advanced/install_packages/
 
 .. _sec-setup-developers:
 
