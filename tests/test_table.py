@@ -177,13 +177,14 @@ class TestTable(TestCase):
                 "description": "SomeLink",
                 "location": "www.cern.ch",
                 "type": None,
-                "licence": None
+                "license": None
             },
             {
                 "description": "SomeLink",
                 "location": "www.cern.ch",
                 "type": "HistFactory",
-                "licence": {"name": "LicenceName", "url": "www.cern.ch", "description": "LicenceDesc"}
+                "license": {"name": "licenseName", "url": "www.cern.ch",
+                            "description": "licenseDesc"}
             }
         ]
 
@@ -192,7 +193,7 @@ class TestTable(TestCase):
                 test["description"],
                 test["location"],
                 file_type=test["type"],
-                licence=test["licence"]
+                resource_license=test["license"]
             )
             resource = test_table.additional_resources[-1]
 
@@ -201,46 +202,46 @@ class TestTable(TestCase):
             assert resource["description"] == test["description"]
             assert resource["location"] == test["location"]
 
-            # Check optional arguments type and licence
+            # Check optional arguments type and license
             if test["type"]:
                 assert resource["type"] == test["type"]
 
-            if test["licence"]:
-                assert resource["licence"] == test["licence"]
+            if test["license"]:
+                assert resource["license"] == test["license"]
 
-    def test_add_additional_resource_licence_check(self):
-        """ Test the licence value check in Table.add_additional_resource """
+    def test_add_additional_resource_license_check(self):
+        """ Test the license value check in Table.add_additional_resource """
         # First two pass, last two fail
-        licence_data = [
+        license_data = [
             {
                 "error": None,
-                "licence_data": {
+                "license_data": {
                     "name": "Name",
-                    "description": "Desc"
-                }
-            },
-            {
-                "error": None,
-                "licence_data": {
-                    "name": "Name",
-                    "description": "Desc",
                     "url": "URL"
                 }
             },
             {
-                "error": ValueError,
-                "licence_data": {
+                "error": None,
+                "license_data": {
                     "name": "Name",
-                    "description": "Desc",
+                    "url": "URL",
+                    "description": "Desc"
+                }
+            },
+            {
+                "error": ValueError,
+                "license_data": {
+                    "name": "Name",
+                    "url": "URL",
                     "shouldnotbehere": "shouldnotbehere"
                 }
             },
             {
                 "error": ValueError,
-                "licence_data": {
+                "license_data": {
                     "name": "Name",
-                    "description": "Desc",
                     "url": "URL",
+                    "description": "Desc",
                     "toomany": "toomany"
                 }
             }]
@@ -252,21 +253,21 @@ class TestTable(TestCase):
         # Set default description, location and type arguments for a table object
         resource_args = ["Description", some_pdf, "Type"]
 
-        for data in licence_data:
+        for data in license_data:
             # If error is expected, we check for the error
             # Otherwise, just add and check length later
             if data["error"]:
                 with self.assertRaises(ValueError):
                     test_table.add_additional_resource(
                         *resource_args,
-                        licence=data["licence_data"]
+                        resource_license=data["license_data"]
                     )
             else:
                 # Check for lack of failure
                 try:
                     test_table.add_additional_resource(
                         *resource_args,
-                        licence=data["licence_data"]
+                        resource_license=data["license_data"]
                     )
                 except ValueError:
                     self.fail("Table.add_additional_resource raised an unexpected ValueError.")

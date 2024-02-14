@@ -55,7 +55,8 @@ class AdditionalResourceMixin:
         self.files_to_copy = []
         self.additional_resources = []
 
-    def add_additional_resource(self, description, location, copy_file=False, file_type=None, licence=None):
+    def add_additional_resource(self, description, location, copy_file=False, file_type=None,
+                                resource_license=None):
         """
         Add any kind of additional resource.
         If copy_file is set to False, the location and description will be added as-is.
@@ -81,9 +82,11 @@ class AdditionalResourceMixin:
         :param file_type: Type of the resource file.  Currently, only "HistFactory" has any effect.
         :type file_type: string
 
-        :param licence: Licence information for the resource
-        :type licence: dict
+        :param resource_license: License information comprising name, url and optional description.
+        :type resource_license: dict
         """
+
+        #pylint: disable=too-many-arguments
 
         resource = {}
         resource["description"] = description
@@ -98,22 +101,27 @@ class AdditionalResourceMixin:
         if file_type:
             resource["type"] = file_type
 
-        # Confirm that licence does not contain extra keys, and has the mandatory name and description values
-        if licence:
-            # Get the licence dict keys as a set
-            licence_keys = set(licence.keys())
+        # Confirm that license does not contain extra keys,
+        # and has the mandatory name and description values
+        if resource_license:
+
+            if isinstance(resource_license) != dict:
+                raise ValueError("resource_license must be a dictionary.")
+
+            # Get the license dict keys as a set
+            license_keys = set(resource_license.keys())
 
             # Create sets for both possibilities
-            mandatory_keys = {"name", "description"}
-            all_keys = mandatory_keys.union(["url"])
+            mandatory_keys = {"name", "url"}
+            all_keys = mandatory_keys.union(["description"])
 
-            # If licence matches either of the correct values
-            if licence_keys == mandatory_keys or licence_keys == all_keys:
-                resource["licence"] = licence
+            # If license matches either of the correct values
+            if license_keys in (mandatory_keys, all_keys):
+                resource["license"] = resource_license
             else:
-                raise ValueError("Incorrect licence format: \
-                                 Licence must be a dictionary containing a \
-                                 name, description and optional URL value.")
+                raise ValueError("Incorrect resource_license format: "
+                                 "resource_license must be a dictionary containing a "
+                                 "name, url and optional description.")
 
         self.additional_resources.append(resource)
 
@@ -326,7 +334,7 @@ class Table(AdditionalResourceMixin):
         self.location = "Example location"
         self.keywords = {}
         self.image_files = set()
-        self.licence = {}
+        self.data_license = {}
 
     @property
     def name(self):
@@ -383,35 +391,35 @@ class Table(AdditionalResourceMixin):
             self.related_tables.append(to_string)
         else:
             raise ValueError(f"DOI does not match the correct pattern: {pattern}.")
-    
-    def add_data_licence(self, name, url, description=None):
-        """
-        Verify and store the given licence data.
 
-        :param name: The licence name
+    def add_data_license(self, name, url, description=None):
+        """
+        Verify and store the given license data.
+
+        :param name: The license name
         :type name: string
-        :param url:
+        :param url: The license URL
         :type url: string
-        :param description:
+        :param description: The (optional) license description
         :type description: string
         """
-        licence_data = {}
+        license_data = {}
 
         if name:
-            licence_data["name"] = name
+            license_data["name"] = name
         else:
-            raise ValueError("You must insert a value for the licence's name.")
-        
-        if url:
-            licence_data["url"] = url
-        else:
-            raise ValueError("You must insert a value for the licence's url.")
-        
-        if description:
-            licence_data["description"] = description
+            raise ValueError("You must insert a value for the license's name.")
 
-        self.licence = licence_data
-        
+        if url:
+            license_data["url"] = url
+        else:
+            raise ValueError("You must insert a value for the license's url.")
+
+        if description:
+            license_data["description"] = description
+
+        self.data_license = license_data
+
     def write_output(self, outdir):
         """
         Write the table files into the output directory.
@@ -523,6 +531,8 @@ class Table(AdditionalResourceMixin):
             submission["keywords"] = []
             if self.additional_resources:
                 submission["additional_resources"] = self.additional_resources
+            if self.data_license:
+                submission["data_license"] = self.data_license
 
             for name, values in list(self.keywords.items()):
                 submission["keywords"].append({"name": name, "values": values})

@@ -191,21 +191,21 @@ class TestSubmission(TestCase):
                 assert int(test["recid"]) == sub.related_records[-1]
         assert len(sub.related_records) == 2
 
-    def test_add_data_licence(self):
-        """Test addition of data licence entries to the table class"""
+    def test_add_data_license(self):
+        """Test addition of data license entries to the Table class"""
         test_data = [
-            {"expected_err": None, "licence": ["name", "url", "desc"]},  # Valid, full
-            {"expected_err": None, "licence": ["name", "url", None]},  # Valid, no desc
-            {"expected_err": ValueError, "licence": ["name", None, "desc"]},  # Error, no url
-            {"expected_err": ValueError, "licence": [None, "url", "desc"]}  # Error, no name
+            {"expected_err": None, "data_license": ["name", "url", "desc"]},  # Valid, full
+            {"expected_err": None, "data_license": ["name", "url", None]},  # Valid, no desc
+            {"expected_err": ValueError, "data_license": ["name", None, "desc"]},  # Error, no url
+            {"expected_err": ValueError, "data_license": [None, "url", "desc"]}  # Error, no name
         ]
         tab = Table("Table")  # Test table class
         for test in test_data:
             # Check if an error is expected here or not
             if test["expected_err"]:
-                self.assertRaises(test["expected_err"], tab.add_data_licence, *test["licence"])
+                self.assertRaises(test["expected_err"], tab.add_data_license, *test["data_license"])
             else:
                 # Check data exists and is correct
-                tab.add_data_licence(*test["licence"])
-                assert tab.licence["name"] == test["licence"][0]
-                assert tab.licence["url"] == test["licence"][1]
+                tab.add_data_license(*test["data_license"])
+                assert tab.data_license["name"] == test["data_license"][0]
+                assert tab.data_license["url"] == test["data_license"][1]
