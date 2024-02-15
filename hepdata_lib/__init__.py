@@ -105,7 +105,7 @@ class AdditionalResourceMixin:
         # and has the mandatory name and description values
         if resource_license:
 
-            if isinstance(resource_license) != dict:
+            if not isinstance(resource_license, dict):
                 raise ValueError("resource_license must be a dictionary.")
 
             # Get the license dict keys as a set
@@ -526,7 +526,8 @@ class Table(AdditionalResourceMixin):
             submission["name"] = self.name
             submission["description"] = self.description
             submission["location"] = self.location
-            submission["related_to_table_dois"] = self.related_tables
+            if self.related_tables:
+                submission["related_to_table_dois"] = self.related_tables
             submission["data_file"] = f'{shortname}.yaml'
             submission["keywords"] = []
             if self.additional_resources:
@@ -657,7 +658,8 @@ class Submission(AdditionalResourceMixin):
         # Write general info about submission
         submission = {}
         submission["comment"] = self.comment
-        submission["related_to_hepdata_records"] = self.related_records
+        if self.related_records:
+            submission["related_to_hepdata_records"] = self.related_records
 
         if self.additional_resources:
             submission["additional_resources"] = self.additional_resources

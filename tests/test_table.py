@@ -244,14 +244,18 @@ class TestTable(TestCase):
                     "description": "Desc",
                     "toomany": "toomany"
                 }
+            },
+            {
+                "error": ValueError,
+                "license_data": "a string not a dictionary"
             }]
 
         # Create test table and get the test pdf
         test_table = Table("Some Table")
         some_pdf = "%s/minimal.pdf" % os.path.dirname(__file__)
 
-        # Set default description, location and type arguments for a table object
-        resource_args = ["Description", some_pdf, "Type"]
+        # Set default description, location, copy_file and file_type arguments for a resource file
+        resource_args = ["Description", some_pdf, True, "Type"]
 
         for data in license_data:
             # If error is expected, we check for the error
