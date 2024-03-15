@@ -37,13 +37,13 @@ class RootFileReader:
                 raise RuntimeError(
                     "RootFileReader: Input file is not a ROOT file (name does not end in .root)!"
                     )
-            if check_file_existence(tfile):
-                self._tfile = TFile(tfile)
+            check_file_existence(tfile)
+            self._tfile = TFile(tfile)
         elif isinstance(tfile, TFile):
             self._tfile = tfile
         else:
             raise ValueError(
-                "RootReader: Encountered unkonown type of variable passed as tfile argument: "
+                "RootReader: Encountered unknown type of variable passed as tfile argument: "
                 + str(type(tfile)))
 
         if not self._tfile:
