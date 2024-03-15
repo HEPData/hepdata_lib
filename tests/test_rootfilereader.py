@@ -6,7 +6,7 @@ import os
 import ctypes
 import numpy as np
 import ROOT
-from hepdata_lib.root_utils import RootFileReader
+from hepdata_lib.root_utils import RootFileReader, get_graph_points
 from .test_utilities import float_compare, tuple_compare, histogram_compare_1d, make_tmp_root_file
 
 
@@ -18,11 +18,11 @@ class TestRootFileReader(TestCase):
         Test the behavior of the RootFileReader member setters.
         """
 
-        # Check with nonexistant file that ends in .root
+        # Check with nonexistent file that ends in .root
         with self.assertRaises(RuntimeError):
             _reader = RootFileReader("/path/to/nowhere/butEndsIn.root")
 
-        # Check with existant file that does not end in .root
+        # Check with existing file that does not end in .root
         path_to_file = "test.txt"
         self.addCleanup(os.remove, path_to_file)
 
@@ -42,9 +42,11 @@ class TestRootFileReader(TestCase):
 
         # Finally, try a good call
         path_to_file = make_tmp_root_file(close=True, testcase=self)
+        tfile = make_tmp_root_file(testcase=self)
 
         try:
             _reader = RootFileReader(path_to_file)
+            _reader = RootFileReader(tfile)
         # pylint: disable=W0702
         except:
             self.fail("RootFileReader raised an unexpected exception.")
@@ -817,3 +819,8 @@ class TestRootFileReader(TestCase):
 
         # Clean up
         self.doCleanups()
+
+    def test_get_graph_points(self):
+        '''Check that get_graph_points with input not a TGraph (or similar) gives an exception.'''
+        with self.assertRaises(TypeError):
+            get_graph_points(100)
