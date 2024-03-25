@@ -61,6 +61,12 @@ class TestTable(TestCase):
         test_table = Table("Some Table")
         test_variable = Variable("Some Variable")
         test_table.add_variable(test_variable)
+        test_table.add_related_doi("10.17182/hepdata.1.v1/t1")
+        test_table.add_data_license(
+            name="data_license",
+            url="test_url"
+        )
+        test_table.keywords = {"name": "keywords", "values": "1"}
         testdir = tmp_directory_name()
         self.addCleanup(shutil.rmtree, testdir)
         try:
