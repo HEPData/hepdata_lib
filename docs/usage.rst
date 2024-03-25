@@ -158,6 +158,8 @@ To add a link to a related record object, you can use the ``add_related_recid`` 
 
 In the last example, we are adding a link to the submission with the record ID value of ``3``.
 
+**Please note:** This field should not be used for self-referencing, the IDs inserted should be for OTHER related records.
+
 The documentation for this feature can be found here: `Linking records`_.
 
 .. _`Linking records`: https://hepdata-submission.readthedocs.io/en/latest/bidirectional.html#linking-records
@@ -314,6 +316,8 @@ To add a link to a related table object, you can use the ``add_related_doi`` fun
     table.add_related_doi("10.17182/hepdata.12882.v1/t2")
 
 In the second example, we are adding a link to the table with a DOI value of `10.17182/hepdata.12882.v1/t2 <https://doi.org/10.17182/hepdata.12882.v1/t2>`_.
+
+**Please note:** This field should not be used for self-referencing, the DOIs inserted should be for OTHER related tables.
 
 The documentation for this feature can be found here: `Linking tables`_.
 
