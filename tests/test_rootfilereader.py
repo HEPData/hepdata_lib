@@ -57,11 +57,11 @@ class TestRootFileReader(TestCase):
         Test the behavior of the read_graph function
         when reading a TGraph from file.
         """
-        N = 20
+        n = 20
         name = "testgraph"
 
-        x = np.random.uniform(-1e3, 1e3, N)
-        y = np.random.uniform(-1e3, 1e3, N)
+        x = np.random.uniform(-1e3, 1e3, n)
+        y = np.random.uniform(-1e3, 1e3, n)
 
         # Create a graph and write to file
         g = ROOT.TGraph()
@@ -90,13 +90,13 @@ class TestRootFileReader(TestCase):
         when reading a TGraphErrors from file.
         """
         # pylint: disable-msg=too-many-locals
-        N = 20
+        n = 20
         name = "testgraph"
 
-        x = np.random.uniform(-1e3, 1e3, N)
-        dx = np.random.uniform(-1e3, 1e3, N)
-        y = np.random.uniform(-1e3, 1e3, N)
-        dy = np.random.uniform(-1e3, 1e3, N)
+        x = np.random.uniform(-1e3, 1e3, n)
+        dx = np.random.uniform(-1e3, 1e3, n)
+        y = np.random.uniform(-1e3, 1e3, n)
+        dy = np.random.uniform(-1e3, 1e3, n)
 
         # Create a graph and write to file
         g = ROOT.TGraphErrors()
@@ -129,15 +129,15 @@ class TestRootFileReader(TestCase):
         when reading a TGraphAsymmErrors from file.
         """
         # pylint: disable-msg=too-many-locals
-        N = 20
+        n = 20
         name = "testgraph"
 
-        x = np.random.uniform(-1e3, 1e3, N)
-        dx1 = np.random.uniform(0, 1e3, N)
-        dx2 = np.random.uniform(0, 1e3, N)
-        y = np.random.uniform(-1e3, 1e3, N)
-        dy1 = np.random.uniform(0, 1e3, N)
-        dy2 = np.random.uniform(0, 1e3, N)
+        x = np.random.uniform(-1e3, 1e3, n)
+        dx1 = np.random.uniform(0, 1e3, n)
+        dx2 = np.random.uniform(0, 1e3, n)
+        y = np.random.uniform(-1e3, 1e3, n)
+        dy1 = np.random.uniform(0, 1e3, n)
+        dy2 = np.random.uniform(0, 1e3, n)
 
         # Create a graph and write to file
         g = ROOT.TGraphAsymmErrors()
@@ -172,12 +172,12 @@ class TestRootFileReader(TestCase):
         name = "test"
 
         # Create test histogram
-        N = 100
-        x_values = [0.5 + x for x in range(N)]
-        y_values = list(np.random.uniform(-1e3, 1e3, N))
-        dy_values = list(np.random.uniform(0, 1e3, N))
+        n = 100
+        x_values = [0.5 + x for x in range(n)]
+        y_values = list(np.random.uniform(-1e3, 1e3, n))
+        dy_values = list(np.random.uniform(0, 1e3, n))
         x_edges = []
-        hist = ROOT.TH1D("test1d_symm", "test1d_symm", N, 0, N)
+        hist = ROOT.TH1D("test1d_symm", "test1d_symm", n, 0, n)
         for i in range(1, hist.GetNbinsX()+1):
             hist.SetBinContent(i, y_values[i-1])
             hist.SetBinError(i, dy_values[i-1])
@@ -196,7 +196,7 @@ class TestRootFileReader(TestCase):
 
         # Check consistency
         for key in ["x", "y", "dy", "x_edges"]:
-            self.assertTrue(key in set(points.keys()))
+            self.assertTrue(key in set(points))
         self.assertTrue(all(float_compare(*tup) for tup in zip(points["x"], x_values)))
         self.assertTrue(all(float_compare(*tup) for tup in zip(points["y"], y_values)))
         self.assertTrue(all(float_compare(*tup) for tup in zip(points["dy"], dy_values)))
@@ -209,7 +209,7 @@ class TestRootFileReader(TestCase):
         """Test the read_hist_1d function for a histogram with symmetric errors."""
 
         # Create test histogram
-        N = 100
+        n = 100
         xmin = 20
         xmax = 80
         x_values = [0.5 + x for x in range(xmin, xmax)]
@@ -217,7 +217,7 @@ class TestRootFileReader(TestCase):
         dy_values = list(np.random.uniform(0, 1e3, xmax-xmin))
 
         testname = "test1d_symm"
-        hist = ROOT.TH1D(testname, testname, N, 0, N)
+        hist = ROOT.TH1D(testname, testname, n, 0, n)
         for i in range(xmin, xmax):
             hist.SetBinContent(i+1, y_values[i-xmin])
             hist.SetBinError(i+1, dy_values[i-xmin])
@@ -259,7 +259,7 @@ class TestRootFileReader(TestCase):
 
         # Check consistency
         for key in ["x", "y", "dy"]:
-            self.assertTrue(key in set(points.keys()))
+            self.assertTrue(key in set(points))
 
         self.assertTrue(all(float_compare(*tup) for tup in zip(points["x"], x_values)))
         self.assertTrue(all(float_compare(*tup) for tup in zip(points["y"], y_values)))
@@ -301,7 +301,7 @@ class TestRootFileReader(TestCase):
 
         # Check consistency
         for key in ["x", "y", "dy"]:
-            self.assertTrue(key in set(points.keys()))
+            self.assertTrue(key in set(points))
 
         self.assertTrue(all(float_compare(*tup) for tup in zip(points["x"], x_values)))
         self.assertTrue(all(float_compare(*tup) for tup in zip(points["y"], y_values)))
@@ -347,7 +347,7 @@ class TestRootFileReader(TestCase):
 
         # Check consistency
         for key in ["x", "y", "dy"]:
-            self.assertTrue(key in set(points.keys()))
+            self.assertTrue(key in set(points))
 
         self.assertTrue(all(float_compare(*tup) for tup in zip(points["x"], x_values)))
         self.assertTrue(all(float_compare(*tup) for tup in zip(points["y"], y_values)))
@@ -362,12 +362,12 @@ class TestRootFileReader(TestCase):
         name = "test"
 
         # Create test histogram
-        N = 100
-        y_values = list(np.random.uniform(-1e3, 1e3, N))
-        dy_values = list(np.random.uniform(0, 1e3, N))
+        n = 100
+        y_values = list(np.random.uniform(-1e3, 1e3, n))
+        dy_values = list(np.random.uniform(0, 1e3, n))
         labels = list(map(str,dy_values))
 
-        hist = ROOT.TH1D("test1d_labels", "test1d_labels", N, 0, N)
+        hist = ROOT.TH1D("test1d_labels", "test1d_labels", n, 0, n)
         for i in range(1, hist.GetNbinsX()+1):
             hist.SetBinContent(i, y_values[i-1])
             hist.SetBinError(i, dy_values[i-1])
@@ -381,7 +381,7 @@ class TestRootFileReader(TestCase):
         reader = RootFileReader(testfile.GetName())
         points = reader.read_hist_1d(name)
 
-        self.assertTrue("x_labels" in points.keys())
+        self.assertTrue("x_labels" in points)
 
         self.assertTrue(all(tup[0]==tup[1] for tup in zip(points["x_labels"], labels)))
 
@@ -393,15 +393,15 @@ class TestRootFileReader(TestCase):
         name = "test"
 
         # Create test histogram
-        NX = 13
-        NY = 37
-        y_values = np.random.uniform(-1e3, 1e3, (NX,NY))
-        xlabels = [f"X{i}" for i in range(NX)]
-        ylabels = [f"Y{i}" for i in range(NY)]
+        nx = 13
+        ny = 37
+        y_values = np.random.uniform(-1e3, 1e3, (nx,ny))
+        xlabels = [f"X{i}" for i in range(nx)]
+        ylabels = [f"Y{i}" for i in range(ny)]
 
-        hist = ROOT.TH2D("test2d_labels", "test2d_labels", NX, 0, NX, NY, 0, NY)
-        for i in range(NX):
-            for j in range(NY):
+        hist = ROOT.TH2D("test2d_labels", "test2d_labels", nx, 0, nx, ny, 0, ny)
+        for i in range(nx):
+            for j in range(ny):
                 hist.Fill(i,j,y_values[i,j])
                 hist.GetXaxis().SetBinLabel(i+1, xlabels[i])
                 hist.GetYaxis().SetBinLabel(j+1, ylabels[j])
@@ -414,14 +414,14 @@ class TestRootFileReader(TestCase):
         reader = RootFileReader(testfile.GetName())
         points = reader.read_hist_2d(name)
 
-        self.assertTrue("x_labels" in points.keys())
-        self.assertTrue("y_labels" in points.keys())
+        self.assertTrue("x_labels" in points)
+        self.assertTrue("y_labels" in points)
 
         # The output ordering is
         # [(x=0,y=0), (x=0,y=1), ...]
-        for i in range(NX):
-            for j in range(NY):
-                index = i*NY + j
+        for i in range(nx):
+            for j in range(ny):
+                index = i*ny + j
                 self.assertTrue(
                     points["x_labels"][index]==xlabels[i]
                 )
@@ -435,15 +435,15 @@ class TestRootFileReader(TestCase):
         """Test the read_hist_2d function with symmetric errors."""
         # pylint: disable-msg=too-many-locals
         # Create test histogram
-        NX = 100
-        NY = 100
-        x_values = [0.5 + x for x in range(NX)]
-        y_values = [0.5 + x for x in range(NY)]
-        z_values = np.random.uniform(-1e3, 1e3, (NX, NY))
-        dz_values = np.random.uniform(0, 1e3, (NX, NY))
+        nx = 100
+        ny = 100
+        x_values = [0.5 + x for x in range(nx)]
+        y_values = [0.5 + x for x in range(ny)]
+        z_values = np.random.uniform(-1e3, 1e3, (nx, ny))
+        dz_values = np.random.uniform(0, 1e3, (nx, ny))
 
         testname = "test2d_sym"
-        hist = ROOT.TH2D(testname, testname, NX, 0, NX, NY, 0, NY)
+        hist = ROOT.TH2D(testname, testname, nx, 0, nx, ny, 0, ny)
 
         for ix in range(1, hist.GetNbinsX()+1):
             for iy in range(1, hist.GetNbinsY()+1):
@@ -465,11 +465,11 @@ class TestRootFileReader(TestCase):
 
         # Check keys
         for key in ["x", "y", "z", "dz"]:
-            self.assertTrue(key in points.keys())
+            self.assertTrue(key in points)
 
         # Check length
         for v in points.values():
-            self.assertTrue(len(v) == NX*NY)
+            self.assertTrue(len(v) == nx*ny)
 
         # Check unordered contents
         self.assertTrue(set(points["x"]) == set(x_values))
@@ -496,8 +496,8 @@ class TestRootFileReader(TestCase):
         # pylint: disable-msg=too-many-statements
         # pylint: disable-msg=too-many-locals
         # Create test histogram
-        NX = 100
-        NY = 100
+        nx = 100
+        ny = 100
         xmin = 20
         xmax = 80
         ymin = 30
@@ -508,7 +508,7 @@ class TestRootFileReader(TestCase):
         dz_values = np.random.uniform(0, 1e3, (xmax-xmin, ymax-ymin))
 
         testname = "test2d_sym"
-        hist = ROOT.TH2D(testname, testname, NX, 0, NX, NY, 0, NY)
+        hist = ROOT.TH2D(testname, testname, nx, 0, nx, ny, 0, ny)
 
         for ix in range(xmin, xmax):
             for iy in range(ymin, ymax):
@@ -554,7 +554,7 @@ class TestRootFileReader(TestCase):
 
         # Check keys
         for key in ["x", "y", "z", "dz"]:
-            self.assertTrue(key in points.keys())
+            self.assertTrue(key in points)
 
         # Check length
         for v in points.values():
@@ -586,11 +586,11 @@ class TestRootFileReader(TestCase):
         _fpath = "testfile.root"
 
         # Create test histogram
-        NX = 17
-        NY = 17
+        nx = 17
+        ny = 17
         n_fill = 1000
 
-        hist = ROOT.TH2D("test2d_asym", "test2d_asym", NX, 0, 1, NY, 0, 1)
+        hist = ROOT.TH2D("test2d_asym", "test2d_asym", nx, 0, 1, ny, 0, 1)
         hist.SetBinErrorOption(ROOT.TH1.kPoisson)
         for val in np.random.normal(loc=0.5, scale=0.15, size=(n_fill, 2)):
             hist.Fill(*val)
@@ -610,11 +610,11 @@ class TestRootFileReader(TestCase):
 
         # Check keys
         for key in ["x", "y", "z", "dz"]:
-            self.assertTrue(key in points.keys())
+            self.assertTrue(key in points)
 
         # Check length
         for v in points.values():
-            self.assertTrue(len(v) == NX*NY)
+            self.assertTrue(len(v) == nx*ny)
 
         # Look up original bins and compare
         for x, y, z, dz in zip(points["x"], points["y"], points["z"], points["dz"]):
@@ -640,11 +640,11 @@ class TestRootFileReader(TestCase):
         _fpath = "testfile.root"
 
         # Create test histogram
-        NX = 17
-        NY = 17
+        nx = 17
+        ny = 17
         n_fill = 1000
 
-        hist = ROOT.TH2D("test2d_asym", "test2d_asym", NX, 0, 1, NY, 0, 1)
+        hist = ROOT.TH2D("test2d_asym", "test2d_asym", nx, 0, 1, ny, 0, 1)
         hist.SetBinErrorOption(ROOT.TH1.kPoisson)
         for val in np.random.normal(loc=0.5, scale=0.15, size=(n_fill, 2)):
             hist.Fill(*val)
@@ -664,11 +664,11 @@ class TestRootFileReader(TestCase):
 
         # Check keys
         for key in ["x", "y", "z", "dz"]:
-            self.assertTrue(key in points.keys())
+            self.assertTrue(key in points)
 
         # Check length
         for v in points.values():
-            self.assertTrue(len(v) == NX*NY)
+            self.assertTrue(len(v) == nx*ny)
 
         # Look up original bins and compare
         for x, y, z, dz in zip(points["x"], points["y"], points["z"], points["dz"]):

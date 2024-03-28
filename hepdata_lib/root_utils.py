@@ -317,7 +317,7 @@ def get_hist_2d_points(hist, **kwargs):
     ixmax = hist.GetXaxis().FindBin(xlim[1]) if xlim[1] is not None else hist.GetNbinsX() + 1
     iymin = hist.GetYaxis().FindBin(ylim[0]) if ylim[0] is not None else 1
     iymax = hist.GetYaxis().FindBin(ylim[1]) if ylim[1] is not None else hist.GetNbinsY() + 1
-    symmetric = (hist.GetBinErrorOption() == r.TH1.kNormal)
+    symmetric = hist.GetBinErrorOption() == r.TH1.kNormal
     if force_symmetric_errors:
         symmetric = True
     for x_bin in range(ixmin, ixmax):
@@ -388,7 +388,7 @@ def get_hist_1d_points(hist, **kwargs):
     for key in ["x", "y", "x_edges", "x_labels", "dy"]:
         points[key] = []
 
-    symmetric = (hist.GetBinErrorOption() == r.TH1.kNormal)
+    symmetric = hist.GetBinErrorOption() == r.TH1.kNormal
     if force_symmetric_errors:
         symmetric = True
     ixmin = hist.GetXaxis().FindBin(xlim[0]) if xlim[0] is not None else 1

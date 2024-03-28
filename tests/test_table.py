@@ -173,7 +173,7 @@ class TestTable(TestCase):
 
 
 
-    def test_add_additional_resource(self): # pylint: disable=no-self-use
+    def test_add_additional_resource(self):
         """Test the add_additional_resource function."""
         test_table = Table("Some Table")
         test_table.add_additional_resource("some link","www.cern.ch")

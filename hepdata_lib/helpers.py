@@ -17,14 +17,14 @@ def execute_command(command):
     :type command: string
     """
 
-    subprocess_args = dict(
-        args=command,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=True,
-        universal_newlines=True
-    )
+    subprocess_args = {
+        "args": command,
+        "stdin": subprocess.PIPE,
+        "stdout": subprocess.PIPE,
+        "stderr": subprocess.PIPE,
+        "shell": True,
+        "universal_newlines": True
+    }
     with subprocess.Popen(**subprocess_args) as proc:
         exit_code = proc.wait()
         if exit_code == 127:

@@ -25,23 +25,31 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        root-version: ["6.24", "6.26", "6.28"]
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        root-version: ["6.24", "6.26", "6.28", "6.30"]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11"]
         exclude:
           - root-version: "6.24"
             python-version: "3.10"
+          - root-version: "6.24"
+            python-version: "3.11"
           - root-version: "6.26"
             python-version: "3.6"
           - root-version: "6.26"
             python-version: "3.7"
+          - root-version: "6.26"
+            python-version: "3.11"
           - root-version: "6.28"
             python-version: "3.6"
           - root-version: "6.28"
+            python-version: "3.7"
+          - root-version: "6.30"
+            python-version: "3.6"
+          - root-version: "6.30"
             python-version: "3.7"
         include:
           - os: macos-latest
-            root-version: "6.28"
-            python-version: "3.10"
+            root-version: "6.30"
+            python-version: "3.11"
 
     steps:
     - uses: actions/checkout@v4
@@ -70,7 +78,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip setuptools wheel
         python -m pip install --upgrade \
-          'pylint==2.9.6' \
+          'pylint' \
           pytest_pylint \
           configparser \
           astroid \
@@ -109,7 +117,7 @@ jobs:
         path: examples/*.html
 
     - name: Run pylint
-      if: ${{ always() }}
+      if: ${{ always() && !startsWith(matrix.python-version, '3.6') && !startsWith(matrix.python-version, '3.7') }}
       run: |
         python -m pylint hepdata_lib/*.py
         python -m pylint tests/*.py --rcfile=tests/pylintrc

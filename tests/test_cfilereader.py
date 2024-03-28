@@ -165,7 +165,7 @@ class TestCFileReader(TestCase):
 
         reader = CFileReader(test_file)
         tgraphs = reader.get_graphs()
-        self.assertTrue(set(tgraphs.keys()) == {"tgraph", "tgraph"})
+        self.assertTrue(set(tgraphs.keys()) == {"tgraph"})
 
         self.addCleanup(os.remove, test_file)
         self.doCleanups()

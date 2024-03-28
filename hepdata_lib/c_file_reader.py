@@ -75,7 +75,6 @@ class CFileReader:
 
     def create_tgraph_dict(self, graph_list, list_of_tgraphs):
         """Function to create pyroot TGraph dict"""
-        # pylint: disable=no-self-use
 
         # Adding tgraphs into a dictionary
         y_values = []
@@ -100,7 +99,6 @@ class CFileReader:
 
     def create_tgrapherrors_dict(self, graph_list):
         """Function to create pyroot TGraphErrors dict"""
-        # pylint: disable=no-self-use
 
         # Adding TGraphErrors into a dictionary
         y_values = []
@@ -135,7 +133,6 @@ class CFileReader:
 
     def create_tgrapherrors(self, x_value, y_value, dx_value, dy_value):
         """Function to create pyroot TGraphErrors object"""
-        # pylint: disable=no-self-use
 
         # Creating pyroot TGraphErrors object
         x_values = array('i')
@@ -171,7 +168,6 @@ class CFileReader:
 
     def create_tgraph(self, x_value, y_value):
         """Function to create pyroot TGraph object"""
-        # pylint: disable=no-self-use
 
         # Creating pyroot TGraph object
         x_values = array('i')
@@ -197,7 +193,6 @@ class CFileReader:
 
     def check_for_comments(self, line):
         """Check line for comment"""
-        # pylint: disable=no-self-use
 
         _line = line
         ignoreline = 0
