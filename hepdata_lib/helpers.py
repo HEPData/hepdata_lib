@@ -294,10 +294,9 @@ def convert_pdf_to_png(source, target):
     :param target: Output file in PNG format.
     :type target: str
     """
-    assert os.path.exists(source), "Source file does not exist: %s" % source
+    assert os.path.exists(source), f"Source file does not exist: {source}"
 
-    command = "convert -flatten -density 300 -fuzz 1% -trim +repage {} {}".format(
-        source, target)
+    command = f"convert -flatten -density 300 -fuzz 1% -trim +repage {source} {target}"
     command_ok = execute_command(command)
     if not command_ok:
         print("ImageMagick does not seem to be installed \
@@ -314,8 +313,7 @@ def convert_png_to_thumbnail(source, target):
     :type target: str
     """
 
-    command = "convert -thumbnail 240x179 {} {}".format(
-                source, target)
+    command = f"convert -thumbnail 240x179 {source} {target}"
     command_ok = execute_command(command)
 
     if not command_ok:
@@ -334,7 +332,7 @@ def file_is_outdated(file_path, reference_file_path):
     :type reference_file_path: str
     """
     if not os.path.exists(reference_file_path):
-        raise RuntimeError("Reference file does not exist: %s" % reference_file_path)
+        raise RuntimeError(f"Reference file does not exist: {reference_file_path}")
     if not os.path.exists(file_path):
         return True
 

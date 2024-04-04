@@ -278,7 +278,7 @@ class Variable:
             elif self.uncertainties and self.zero_uncertainties_warning:
                 print(
                     "Warning: omitting 'errors' since all uncertainties " \
-                    "are zero for bin {} of variable '{}'.".format(i+1, self.name)
+                    f"are zero for bin {i+1} of variable '{self.name}'."
                     )
                 print(
                     "Note that bins with zero content should preferably " \
@@ -389,7 +389,7 @@ class Table(AdditionalResourceMixin):
 
         for image_file in self.image_files:
             if not os.path.isfile(image_file):
-                raise RuntimeError("File %s does not exist!" % image_file)
+                raise RuntimeError(f"File {image_file} does not exist!")
             if not os.path.exists(outdir):
                 os.makedirs(outdir)
 
@@ -408,16 +408,16 @@ class Table(AdditionalResourceMixin):
             if helpers.file_is_outdated(png_output_path, image_file):
                 helpers.convert_pdf_to_png(image_file, png_output_path)
             else:
-                print("Full-size PNG file %s is newer than its source file. \
+                print(f"Full-size PNG file {png_output_path} is newer than its source file. \
                        Remove the thumbnail file or use create_files(remove_old=True)\
-                           to force recreation." % png_output_path)
+                           to force recreation.")
 
             if helpers.file_is_outdated(thumbnail_output_path, png_output_path):
                 helpers.convert_png_to_thumbnail(png_output_path, thumbnail_output_path)
             else:
-                print("Thumbnail PNG file %s is newer than its source file. \
+                print("Thumbnail PNG file {thumbnail_output_path} is newer than its source file. \
                        Remove the thumbnail file or use create_files(remove_old=True)\
-                           to force recreation." % thumbnail_output_path)
+                           to force recreation.")
 
             image = {}
             image["description"] = "Image file"
@@ -461,12 +461,12 @@ class Table(AdditionalResourceMixin):
         shortname = self.name.lower().replace(" ", "_")
         outfile_path = os.path.join(
             outdir, f'{shortname}.yaml')
-        with open(outfile_path, 'w') as outfile:
+        with open(outfile_path, 'w', encoding='utf-8') as outfile:
             yaml.dump(table, outfile, default_flow_style=False)
 
         # Add entry to central submission file
         submission_path = os.path.join(outdir, 'submission.yaml')
-        with open(submission_path, 'a+') as submissionfile:
+        with open(submission_path, 'a+', encoding='utf-8') as submissionfile:
             submission = {}
             submission["name"] = self.name
             submission["description"] = self.description
@@ -574,7 +574,7 @@ class Submission(AdditionalResourceMixin):
         :param filepath: Path to text file containing abstract.
         :type filepath: string.
         """
-        with open(filepath) as afile:
+        with open(filepath, encoding='utf-8') as afile:
             raw = str(afile.read())
         raw = raw.replace("\r\n", "")
         raw = raw.replace("\n", "")
@@ -619,7 +619,7 @@ class Submission(AdditionalResourceMixin):
         if self.record_ids:
             submission["record_ids"] = self.record_ids
 
-        with open(os.path.join(outdir, 'submission.yaml'), 'w') as outfile:
+        with open(os.path.join(outdir, 'submission.yaml'), 'w', encoding='utf-8') as outfile:
             yaml.dump(
                 submission,
                 outfile,

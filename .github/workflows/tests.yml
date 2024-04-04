@@ -120,4 +120,4 @@ jobs:
       if: ${{ always() && !startsWith(matrix.python-version, '3.6') && !startsWith(matrix.python-version, '3.7') }}
       run: |
         python -m pylint hepdata_lib/*.py
-        python -m pylint tests/*.py --rcfile=tests/pylintrc
+        python -m pylint tests/*.py

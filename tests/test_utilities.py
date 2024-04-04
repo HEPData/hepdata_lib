@@ -101,7 +101,7 @@ def make_tmp_root_file(path_to_file='tmp_{RANDID}.root', mode="RECREATE",
             raise_from(IOError("String substitution failed. Your input path should not \
                            have any braces except possibly for the {RANDID} token!"), err)
 
-    rfile = ROOT.TFile(path_to_file, mode)
+    rfile = ROOT.TFile(path_to_file, mode)  # pylint: disable=no-member
 
     if not rfile:
         raise RuntimeError(f"Failed to create temporary file: {path_to_file}")

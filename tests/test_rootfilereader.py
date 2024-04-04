@@ -26,7 +26,7 @@ class TestRootFileReader(TestCase):
         path_to_file = "test.txt"
         self.addCleanup(os.remove, path_to_file)
 
-        with open(path_to_file, "w") as testfile:
+        with open(path_to_file, "w", encoding="utf-8") as testfile:
             testfile.write("TEST CONTENT")
 
         with self.assertRaises(RuntimeError):
@@ -64,7 +64,7 @@ class TestRootFileReader(TestCase):
         y = np.random.uniform(-1e3, 1e3, n)
 
         # Create a graph and write to file
-        g = ROOT.TGraph()
+        g = ROOT.TGraph()  # pylint: disable=no-member
         for i, (ix, iy) in enumerate(zip(x, y)):
             g.SetPoint(i, ix, iy)
 
@@ -99,7 +99,7 @@ class TestRootFileReader(TestCase):
         dy = np.random.uniform(-1e3, 1e3, n)
 
         # Create a graph and write to file
-        g = ROOT.TGraphErrors()
+        g = ROOT.TGraphErrors()  # pylint: disable=no-member
         for i, (ix, iy, idx, idy) in enumerate(zip(x, y, dx, dy)):
             g.SetPoint(i, ix, iy)
             g.SetPointError(i, idx, idy)
@@ -140,7 +140,7 @@ class TestRootFileReader(TestCase):
         dy2 = np.random.uniform(0, 1e3, n)
 
         # Create a graph and write to file
-        g = ROOT.TGraphAsymmErrors()
+        g = ROOT.TGraphAsymmErrors()  # pylint: disable=no-member
         for i, (ix, iy, idx1, idx2, idy1, idy2) in enumerate(zip(x, y, dx1, dx2, dy1, dy2)):
             g.SetPoint(i, ix, iy)
             g.SetPointError(i, idx1, idx2, idy1, idy2)
@@ -177,7 +177,7 @@ class TestRootFileReader(TestCase):
         y_values = list(np.random.uniform(-1e3, 1e3, n))
         dy_values = list(np.random.uniform(0, 1e3, n))
         x_edges = []
-        hist = ROOT.TH1D("test1d_symm", "test1d_symm", n, 0, n)
+        hist = ROOT.TH1D("test1d_symm", "test1d_symm", n, 0, n)  # pylint: disable=no-member
         for i in range(1, hist.GetNbinsX()+1):
             hist.SetBinContent(i, y_values[i-1])
             hist.SetBinError(i, dy_values[i-1])
@@ -217,7 +217,7 @@ class TestRootFileReader(TestCase):
         dy_values = list(np.random.uniform(0, 1e3, xmax-xmin))
 
         testname = "test1d_symm"
-        hist = ROOT.TH1D(testname, testname, n, 0, n)
+        hist = ROOT.TH1D(testname, testname, n, 0, n)  # pylint: disable=no-member
         for i in range(xmin, xmax):
             hist.SetBinContent(i+1, y_values[i-xmin])
             hist.SetBinError(i+1, dy_values[i-xmin])
@@ -274,8 +274,8 @@ class TestRootFileReader(TestCase):
         n_bin = 17
         n_fill = 1000
         testname = "test1d_asymm"
-        hist = ROOT.TH1D(testname, testname, n_bin, 0, 1)
-        hist.SetBinErrorOption(ROOT.TH1.kPoisson)
+        hist = ROOT.TH1D(testname, testname, n_bin, 0, 1)  # pylint: disable=no-member
+        hist.SetBinErrorOption(ROOT.TH1.kPoisson)  # pylint: disable=no-member
 
         for val in np.random.normal(loc=0.5, scale=0.15, size=n_fill):
             hist.Fill(val)
@@ -320,8 +320,8 @@ class TestRootFileReader(TestCase):
         n_bin = 17
         n_fill = 1000
         testname = "test1d_asymm"
-        hist = ROOT.TH1D(testname, testname, n_bin, 0, 1)
-        hist.SetBinErrorOption(ROOT.TH1.kPoisson)
+        hist = ROOT.TH1D(testname, testname, n_bin, 0, 1)  # pylint: disable=no-member
+        hist.SetBinErrorOption(ROOT.TH1.kPoisson)  # pylint: disable=no-member
 
         for val in np.random.normal(loc=0.5, scale=0.15, size=n_fill):
             hist.Fill(val)
@@ -367,7 +367,7 @@ class TestRootFileReader(TestCase):
         dy_values = list(np.random.uniform(0, 1e3, n))
         labels = list(map(str,dy_values))
 
-        hist = ROOT.TH1D("test1d_labels", "test1d_labels", n, 0, n)
+        hist = ROOT.TH1D("test1d_labels", "test1d_labels", n, 0, n)  # pylint: disable=no-member
         for i in range(1, hist.GetNbinsX()+1):
             hist.SetBinContent(i, y_values[i-1])
             hist.SetBinError(i, dy_values[i-1])
@@ -399,7 +399,7 @@ class TestRootFileReader(TestCase):
         xlabels = [f"X{i}" for i in range(nx)]
         ylabels = [f"Y{i}" for i in range(ny)]
 
-        hist = ROOT.TH2D("test2d_labels", "test2d_labels", nx, 0, nx, ny, 0, ny)
+        hist = ROOT.TH2D("test2d_labels", "test2d_labels", nx, 0, nx, ny, 0, ny)  # pylint: disable=no-member
         for i in range(nx):
             for j in range(ny):
                 hist.Fill(i,j,y_values[i,j])
@@ -439,11 +439,11 @@ class TestRootFileReader(TestCase):
         ny = 100
         x_values = [0.5 + x for x in range(nx)]
         y_values = [0.5 + x for x in range(ny)]
-        z_values = np.random.uniform(-1e3, 1e3, (nx, ny))
+        z_values = np.random.uniform(-1e3, 1e3, (nx, ny))  # pylint: disable=no-member
         dz_values = np.random.uniform(0, 1e3, (nx, ny))
 
         testname = "test2d_sym"
-        hist = ROOT.TH2D(testname, testname, nx, 0, nx, ny, 0, ny)
+        hist = ROOT.TH2D(testname, testname, nx, 0, nx, ny, 0, ny)  # pylint: disable=no-member
 
         for ix in range(1, hist.GetNbinsX()+1):
             for iy in range(1, hist.GetNbinsY()+1):
@@ -508,7 +508,7 @@ class TestRootFileReader(TestCase):
         dz_values = np.random.uniform(0, 1e3, (xmax-xmin, ymax-ymin))
 
         testname = "test2d_sym"
-        hist = ROOT.TH2D(testname, testname, nx, 0, nx, ny, 0, ny)
+        hist = ROOT.TH2D(testname, testname, nx, 0, nx, ny, 0, ny)  # pylint: disable=no-member
 
         for ix in range(xmin, xmax):
             for iy in range(ymin, ymax):
@@ -590,8 +590,8 @@ class TestRootFileReader(TestCase):
         ny = 17
         n_fill = 1000
 
-        hist = ROOT.TH2D("test2d_asym", "test2d_asym", nx, 0, 1, ny, 0, 1)
-        hist.SetBinErrorOption(ROOT.TH1.kPoisson)
+        hist = ROOT.TH2D("test2d_asym", "test2d_asym", nx, 0, 1, ny, 0, 1)  # pylint: disable=no-member
+        hist.SetBinErrorOption(ROOT.TH1.kPoisson)  # pylint: disable=no-member
         for val in np.random.normal(loc=0.5, scale=0.15, size=(n_fill, 2)):
             hist.Fill(*val)
 
@@ -644,8 +644,8 @@ class TestRootFileReader(TestCase):
         ny = 17
         n_fill = 1000
 
-        hist = ROOT.TH2D("test2d_asym", "test2d_asym", nx, 0, 1, ny, 0, 1)
-        hist.SetBinErrorOption(ROOT.TH1.kPoisson)
+        hist = ROOT.TH2D("test2d_asym", "test2d_asym", nx, 0, 1, ny, 0, 1)  # pylint: disable=no-member
+        hist.SetBinErrorOption(ROOT.TH1.kPoisson)  # pylint: disable=no-member
         for val in np.random.normal(loc=0.5, scale=0.15, size=(n_fill, 2)):
             hist.Fill(*val)
 
@@ -697,7 +697,7 @@ class TestRootFileReader(TestCase):
         data = np.random.normal(loc=0.5, scale=0.15, size=n_fill)
 
         number = array("f", [0])
-        tree = ROOT.TTree()
+        tree = ROOT.TTree()  # pylint: disable=no-member
         tree.Branch(branchname, number, "test/F")
         for inumber in data:
             number[0] = inumber
@@ -744,14 +744,14 @@ class TestRootFileReader(TestCase):
     def test_retrieve_object_canvas(self):
         '''Check that retrieve_object correctly reads from canvas.'''
         # Disable graphical output
-        ROOT.gROOT.SetBatch(ROOT.kTRUE)
+        ROOT.gROOT.SetBatch(ROOT.kTRUE)  # pylint: disable=no-member
 
         # Create test histogram, plot on canvas, save to file
         tfile = make_tmp_root_file(testcase=self)
-        histogram = ROOT.TH1D("testhist", "testhist", 10, 0, 1)
+        histogram = ROOT.TH1D("testhist", "testhist", 10, 0, 1)  # pylint: disable=no-member
         path_to_file = tfile.GetName()
 
-        canvas = ROOT.TCanvas()
+        canvas = ROOT.TCanvas()  # pylint: disable=no-member
         histogram.Draw("HIST")
         canvas.Write("canvas")
 
@@ -779,15 +779,15 @@ class TestRootFileReader(TestCase):
     def test_retrieve_object_canvas_tpad(self):
         '''Check that retrieve_object correctly reads from canvas.'''
         # Disable graphical output
-        ROOT.gROOT.SetBatch(ROOT.kTRUE)
+        ROOT.gROOT.SetBatch(ROOT.kTRUE)  # pylint: disable=no-member
 
         # Create test histogram, plot on canvas, save to file
         tfile = make_tmp_root_file(testcase=self)
-        histogram = ROOT.TH1D("testhist", "testhist", 10, 0, 1)
+        histogram = ROOT.TH1D("testhist", "testhist", 10, 0, 1)  # pylint: disable=no-member
         path_to_file = tfile.GetName()
 
-        canvas = ROOT.TCanvas()
-        pad1 = ROOT.TPad("pad1","pad1",0,0,1,1)
+        canvas = ROOT.TCanvas()  # pylint: disable=no-member
+        pad1 = ROOT.TPad("pad1","pad1",0,0,1,1)  # pylint: disable=no-member
         pad1.Draw()
         pad1.cd()
         histogram.Draw("HIST")

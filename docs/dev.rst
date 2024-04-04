@@ -119,7 +119,7 @@ Analysing the code
 ::
 
     pylint hepdata_lib/*.py
-    pylint tests/*.py --rcfile=tests/pylintrc
+    pylint tests/*.py
 
 These commands are run by GitHub Actions (for Python 3.8 or later),
 so you should first check locally that no issues are flagged.

@@ -22,7 +22,7 @@ class TestCFileReader(TestCase):
 
         # Check with existent file that does not end in .C
         _file = "text.txt"
-        with open(_file, "w") as testfile:
+        with open(_file, "w", encoding="utf-8") as testfile:
             testfile.write("TEST CONTENT")
 
         self.addCleanup(os.remove, _file)
@@ -39,7 +39,7 @@ class TestCFileReader(TestCase):
 
         # Finally, try with good calls
         _cfile = "test.C"
-        with open(_cfile, "w") as testfile:
+        with open(_cfile, "w", encoding="utf-8") as testfile:
             testfile.write("TGraph* c = new TGraph(60, x_values, y_values)")
 
         self.addCleanup(os.remove, _cfile)
@@ -54,7 +54,7 @@ class TestCFileReader(TestCase):
 
         # Use opened file (io.TextIOBase)
         try:
-            with open(_cfile) as testfile:
+            with open(_cfile, encoding="utf-8") as testfile:
                 _reader = CFileReader(testfile)
         # pylint: disable=W0702
         except:
@@ -70,7 +70,7 @@ class TestCFileReader(TestCase):
 
         # Test create a valid dictionary of TGraphs
         test_file = "test.C"
-        with open(test_file, "w") as testfile:
+        with open(test_file, "w", encoding="utf-8") as testfile:
             testfile.write(
                 'void test() {\n'
                 'Double_t Graph0_fx1[2] = {1,2};\n' +
@@ -112,7 +112,7 @@ class TestCFileReader(TestCase):
         self.assertTrue(tgraphs["Graph2"]["dy"] == graph2_dy)
 
         # Testing with invalid x and y values
-        with open(test_file, "w") as testfile:
+        with open(test_file, "w", encoding="utf-8") as testfile:
             testfile.write(
                 'void test() {\n' +
                 'Double_t Graph0_fx1[2] = {test,test};\n' +
@@ -125,7 +125,7 @@ class TestCFileReader(TestCase):
             reader.get_graphs()
 
         # Testing graphs with half float falf int values
-        with open(test_file, "w") as testfile:
+        with open(test_file, "w", encoding="utf-8") as testfile:
             testfile.write(
                 'void test() {\n' +
                 'Double_t Graph0_fx1[2] = {1,2};\n' +
@@ -150,7 +150,7 @@ class TestCFileReader(TestCase):
         self.assertTrue(tgraphs["Graph2"]["dy"] == [0, 0])
 
         # Testing graphs without name
-        with open(test_file, "w") as testfile:
+        with open(test_file, "w", encoding="utf-8") as testfile:
             testfile.write(
                 'void test() {\n' +
                 'Double_t Graph0_fx2[5] ={ 1.2, 2.2 };\n' +
@@ -181,7 +181,7 @@ class TestCFileReader(TestCase):
         dy_value = np.random.uniform(0, 0, _length)
 
         c_file = "test.C"
-        with open(c_file, "w") as testfile:
+        with open(c_file, "w", encoding="utf-8") as testfile:
             testfile.write('test')
         reader = CFileReader(c_file)
         graph = reader.create_tgrapherrors(x_value, y_value, dx_value, dy_value)
@@ -210,7 +210,7 @@ class TestCFileReader(TestCase):
         x_value = np.random.uniform(-1e3, 1e3, _length)
         y_value = np.random.uniform(-1e3, 1e3, _length)
         c_file = "test.C"
-        with open(c_file, "w") as testfile:
+        with open(c_file, "w", encoding="utf-8") as testfile:
             testfile.write('test')
         reader = CFileReader(c_file)
         graph = reader.create_tgraph(x_value, y_value)
@@ -226,7 +226,7 @@ class TestCFileReader(TestCase):
 
         # Test normal TGraph object
         c_file = "test.C"
-        with open(c_file, "w") as testfile:
+        with open(c_file, "w", encoding="utf-8") as testfile:
             testfile.write('void test() {\n' +
                            'TGraph *graph = new TGraph(5,Graph0_fx1,Graph0_fy1);' +
                            '\ngraph->SetName("Graph0");}')
@@ -240,7 +240,7 @@ class TestCFileReader(TestCase):
         self.assertTrue(test2 == graphs)
 
         # Test with whole line in comment
-        with open(c_file, "w") as testfile:
+        with open(c_file, "w", encoding="utf-8") as testfile:
             testfile.write('void test() {\n' +
                            '//TGraph *graph = new TGraph(5,Graph0_fx1,Graph0_fy1);' +
                            '\n//graph->SetName("Graph0");}')
@@ -252,7 +252,7 @@ class TestCFileReader(TestCase):
         self.assertFalse(test2 == graphs)
 
         # Test with comment block
-        with open(c_file, "w") as testfile:
+        with open(c_file, "w", encoding="utf-8") as testfile:
             testfile.write('void test() {\n' +
                            'TGraph *graph = new TGraph(5,Graph0_fx1,Graph0_fy1);' +
                            '\n/*graph->SetName("Graph0"*/);}')
@@ -268,7 +268,7 @@ class TestCFileReader(TestCase):
         self.doCleanups()
 
         # Test with whitespaces
-        with open(c_file, "w") as testfile:
+        with open(c_file, "w", encoding="utf-8") as testfile:
             testfile.write('void test() {\n' +
                            'TGraph *graph = new TGraph(5   ,Graph0_fx1  ,Graph0_fy1);' +
                            '\ngraph->SetName("Graph0"   );}')
@@ -280,7 +280,7 @@ class TestCFileReader(TestCase):
         self.assertTrue(test2 == graphs)
 
         # Test with line breaks
-        with open(c_file, "w") as testfile:
+        with open(c_file, "w", encoding="utf-8") as testfile:
             testfile.write('void test() {\n' +
                            'TGraph *graph = new TGraph(5,\n Graph0_fx1, Graph0_fy1);' +
                            '\ngraph->SetName(\n"Graph0");}')
@@ -294,7 +294,7 @@ class TestCFileReader(TestCase):
         # Testing with a good .C file
         graph_names = ["Graph0_fx1", "Graph0_fy1"]
         c_file = "test.C"
-        with open(c_file, "w") as testfile:
+        with open(c_file, "w", encoding="utf-8") as testfile:
             testfile.write('void test() {\n' +
                            'Double_t Graph0_fx1[5] = { ' +
                            '\n1.2,\n1.3};\n' +
@@ -309,7 +309,7 @@ class TestCFileReader(TestCase):
         self.assertListEqual(test_yvalues, y_values)
 
         # Testing with invalid values
-        with open(c_file, "w") as testfile:
+        with open(c_file, "w", encoding="utf-8") as testfile:
             testfile.write('void test() {\n' +
                            'Double_t Graph0_fx1[5] = { ' +
                            '\ntest,\n%&/};\n' +
@@ -321,7 +321,7 @@ class TestCFileReader(TestCase):
             reader.read_graph(graph_names[1])
 
         # Testing lines that end in comment
-        with open(c_file, "w") as testfile:
+        with open(c_file, "w", encoding="utf-8") as testfile:
             testfile.write('void test() {\n' +
                            'Double_t Graph0_fx1[5] = { //Comment ' +
                            '\n1.2,//Comment\n1.3};\n' +
@@ -333,7 +333,7 @@ class TestCFileReader(TestCase):
         self.assertListEqual(test_yvalues, y_values)
 
         # Testing lines that start with comment
-        with open(c_file, "w") as testfile:
+        with open(c_file, "w", encoding="utf-8") as testfile:
             testfile.write('void test() {\n' +
                            'Double_t Graph0_fx1[5] = { ' +
                            '\n//1.2,\n1.3};\n' +
@@ -347,7 +347,7 @@ class TestCFileReader(TestCase):
         self.assertListEqual(test_yvalues, y_values)
 
         # Testing lines with comment block
-        with open(c_file, "w") as testfile:
+        with open(c_file, "w", encoding="utf-8") as testfile:
             testfile.write('void test() {\n' +
                            '/*Double_t Graph0_fx1[5] = { ' +
                            '\n1.2,\n1.3*/};\n' +
@@ -368,7 +368,7 @@ class TestCFileReader(TestCase):
         # Test with a clean line
         test_line = "This is just a test"
         c_file = "test.C"
-        with open(c_file, "w") as testfile:
+        with open(c_file, "w", encoding="utf-8") as testfile:
             testfile.write('test')
         reader = CFileReader(c_file)
         line_test = reader.check_for_comments(test_line)
@@ -380,7 +380,7 @@ class TestCFileReader(TestCase):
         # Test with a comment block starting in the middle
         test_line = "This is /*just a test"
         c_file = "test.C"
-        with open(c_file, "w") as testfile:
+        with open(c_file, "w", encoding="utf-8") as testfile:
             testfile.write('test')
         reader = CFileReader(c_file)
         line_test = reader.check_for_comments(test_line)
@@ -391,7 +391,7 @@ class TestCFileReader(TestCase):
         # Test with a comment block that ends in mid line
         test_line = "This is */ just a test"
         c_file = "test.C"
-        with open(c_file, "w") as testfile:
+        with open(c_file, "w", encoding="utf-8") as testfile:
             testfile.write('test')
         reader = CFileReader(c_file)
         line_test = reader.check_for_comments(test_line)
@@ -403,7 +403,7 @@ class TestCFileReader(TestCase):
         # Test with whole line in a comment
         test_line = "//This is just a test"
         c_file = "test.C"
-        with open(c_file, "w") as testfile:
+        with open(c_file, "w", encoding="utf-8") as testfile:
             testfile.write('test')
         reader = CFileReader(c_file)
         line_test = reader.check_for_comments(test_line)
