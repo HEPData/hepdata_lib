@@ -73,6 +73,7 @@ class TestSubmission(TestCase):
 
         testdir = tmp_directory_name()
         test_submission = Submission()
+        test_submission.add_record_id(1657397, "inspire")
         tab = Table("test")
         test_submission.add_table(tab)
         test_submission.create_files(testdir)

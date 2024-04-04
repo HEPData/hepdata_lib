@@ -121,6 +121,10 @@ class TestTable(TestCase):
         expected_file = os.path.join(testdir, "minimal.png")
         self.assertTrue(os.path.exists(expected_file))
 
+        test_table.image_files = {"non_existing_file.pdf"}
+        with self.assertRaises(RuntimeError):
+            test_table.write_images(testdir)
+
         # Try wrong type of input argument
         bad_arguments = [None, 5, {}, []]
         for argument in bad_arguments:
