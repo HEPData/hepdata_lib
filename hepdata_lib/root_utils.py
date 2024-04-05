@@ -98,7 +98,10 @@ class RootFileReader:
         try:
             obj = self.tfile.Get(parts[0])
             for part in parts[1:]:
-                obj = obj.GetPrimitive(part)
+                if isinstance(obj,r.THStack):
+                    return obj.GetHists().FindObject(part)
+                else:
+                    obj = obj.GetPrimitive(part)
 
             assert obj
 
