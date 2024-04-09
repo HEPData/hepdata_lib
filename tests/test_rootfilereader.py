@@ -5,12 +5,17 @@ from array import array
 import os
 import ctypes
 import numpy as np
-import ROOT
+import pytest
+try:
+    import ROOT
+except ImportError as e:
+    print(f'Cannot import ROOT: {str(e)}')
 from hepdata_lib.root_utils import (RootFileReader, get_graph_points,
                                     get_hist_1d_points, get_hist_2d_points)
 from .test_utilities import float_compare, tuple_compare, histogram_compare_1d, make_tmp_root_file
 
 
+@pytest.mark.needs_root
 class TestRootFileReader(TestCase):
     """Test the RootFileReader class."""
 
