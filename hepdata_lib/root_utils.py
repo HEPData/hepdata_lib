@@ -99,7 +99,7 @@ class RootFileReader:
             obj = self.tfile.Get(parts[0])
             for part in parts[1:]:
                 if isinstance(obj,r.THStack):
-                    return obj.GetHists().FindObject(part)
+                    obj = obj.GetHists().FindObject(part)
                 else:
                     obj = obj.GetPrimitive(part)
 
