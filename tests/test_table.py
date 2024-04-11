@@ -74,7 +74,7 @@ class TestTable(TestCase):
     def test_add_image(self):
         """Get test PDF"""
         # Get test PDF
-        some_pdf = "%s/minimal.pdf" % os.path.dirname(__file__)
+        some_pdf = f"{os.path.dirname(__file__)}/minimal.pdf"
 
         test_table = Table("Some Table")
 
@@ -106,7 +106,7 @@ class TestTable(TestCase):
         test_table = Table("Some Table")
 
         # Get test PDF
-        some_pdf = "%s/minimal.pdf" % os.path.dirname(__file__)
+        some_pdf = f"{os.path.dirname(__file__)}/minimal.pdf"
 
         # This should work fine
         test_table.add_image(some_pdf)
@@ -120,6 +120,10 @@ class TestTable(TestCase):
         # Check that output file exists
         expected_file = os.path.join(testdir, "minimal.png")
         self.assertTrue(os.path.exists(expected_file))
+
+        test_table.image_files = {"non_existing_file.pdf"}
+        with self.assertRaises(RuntimeError):
+            test_table.write_images(testdir)
 
         # Try wrong type of input argument
         bad_arguments = [None, 5, {}, []]
@@ -136,7 +140,7 @@ class TestTable(TestCase):
         """
 
         test_table = Table("Some Table")
-        some_pdf = "%s/minimal.pdf" % os.path.dirname(__file__)
+        some_pdf = f"{os.path.dirname(__file__)}/minimal.pdf"
         test_table.add_image(some_pdf)
         testdir = "test_output"
         self.addCleanup(shutil.rmtree, testdir)
@@ -173,7 +177,7 @@ class TestTable(TestCase):
 
 
 
-    def test_add_additional_resource(self): # pylint: disable=no-self-use
+    def test_add_additional_resource(self):
         """Test the add_additional_resource function."""
         test_table = Table("Some Table")
         test_table.add_additional_resource("some link","www.cern.ch")
@@ -181,7 +185,7 @@ class TestTable(TestCase):
     def test_copy_files(self):
         """Test the copy_files function."""
         test_table = Table("Some Table")
-        some_pdf = "%s/minimal.pdf" % os.path.dirname(__file__)
+        some_pdf = f"{os.path.dirname(__file__)}/minimal.pdf"
         testdir = tmp_directory_name()
         self.addCleanup(shutil.rmtree, testdir)
         os.makedirs(testdir)

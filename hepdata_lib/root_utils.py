@@ -3,7 +3,10 @@ from collections import defaultdict
 import ctypes
 from future.utils import raise_from
 import numpy as np
-import ROOT as r
+try:
+    import ROOT as r
+except ImportError as e:  # pragma: no cover
+    print(f'Cannot import ROOT: {str(e)}')
 from hepdata_lib.helpers import check_file_existence
 
 class RootFileReader:
@@ -36,13 +39,13 @@ class RootFileReader:
                 raise RuntimeError(
                     "RootFileReader: Input file is not a ROOT file (name does not end in .root)!"
                     )
-            if check_file_existence(tfile):
-                self._tfile = r.TFile(tfile)
-        elif isinstance(tfile, r.TFile):
+            check_file_existence(tfile)
+            self._tfile = r.TFile(tfile)  # pylint: disable=no-member
+        elif isinstance(tfile, r.TFile):  # pylint: disable=no-member
             self._tfile = tfile
         else:
             raise ValueError(
-                "RootReader: Encountered unkonown type of variable passed as tfile argument: "
+                "RootReader: Encountered unknown type of variable passed as tfile argument: "
                 + str(type(tfile)))
 
         if not self._tfile:
@@ -160,7 +163,7 @@ class RootFileReader:
         ylim = kwargs.pop('ylim', (None, None))
         force_symmetric_errors = kwargs.pop('force_symmetric_errors', False)
         if kwargs:
-            raise TypeError('Unexpected **kwargs: %r' % kwargs)
+            raise TypeError(f'Unexpected **kwargs: {repr(kwargs)}')
         assert isinstance(xlim, (tuple, list))
         assert isinstance(ylim, (tuple, list))
         assert len(xlim) == 2
@@ -196,7 +199,7 @@ class RootFileReader:
         xlim = kwargs.pop('xlim', (None, None))
         force_symmetric_errors = kwargs.pop('force_symmetric_errors', False)
         if kwargs:
-            raise TypeError('Unexpected **kwargs: %r' % kwargs)
+            raise TypeError(f'Unexpected **kwargs: {repr(kwargs)}')
         assert isinstance(xlim, (tuple, list))
         assert len(xlim) == 2
         if xlim[0] and xlim[1]:
@@ -220,7 +223,7 @@ class RootFileReader:
 
         """
         tree = self.tfile.Get(path_to_tree)
-        if not tree or not isinstance(tree, r.TTree):
+        if not tree or not isinstance(tree, r.TTree):  # pylint: disable=no-member
             raise RuntimeError(f"No TTree found for path '{path_to_tree}'.")
         values = []
         for event in tree:
@@ -300,7 +303,7 @@ def get_hist_2d_points(hist, **kwargs):
     ylim = kwargs.pop('ylim', (None, None))
     force_symmetric_errors = kwargs.pop('force_symmetric_errors', False)
     if kwargs:
-        raise TypeError('Unexpected **kwargs: %r' % kwargs)
+        raise TypeError(f'Unexpected **kwargs: {repr(kwargs)}')
     assert isinstance(xlim, (tuple, list))
     assert isinstance(ylim, (tuple, list))
     assert len(xlim) == 2
@@ -320,7 +323,7 @@ def get_hist_2d_points(hist, **kwargs):
     ixmax = hist.GetXaxis().FindBin(xlim[1]) if xlim[1] is not None else hist.GetNbinsX() + 1
     iymin = hist.GetYaxis().FindBin(ylim[0]) if ylim[0] is not None else 1
     iymax = hist.GetYaxis().FindBin(ylim[1]) if ylim[1] is not None else hist.GetNbinsY() + 1
-    symmetric = (hist.GetBinErrorOption() == r.TH1.kNormal)
+    symmetric = hist.GetBinErrorOption() == r.TH1.kNormal  # pylint: disable=no-member
     if force_symmetric_errors:
         symmetric = True
     for x_bin in range(ixmin, ixmax):
@@ -380,7 +383,7 @@ def get_hist_1d_points(hist, **kwargs):
     xlim = kwargs.pop('xlim', (None, None))
     force_symmetric_errors = kwargs.pop('force_symmetric_errors', False)
     if kwargs:
-        raise TypeError('Unexpected **kwargs: %r' % kwargs)
+        raise TypeError(f'Unexpected **kwargs: {repr(kwargs)}')
     assert isinstance(xlim, (tuple, list))
     assert len(xlim) == 2
     if xlim[0] and xlim[1]:
@@ -391,7 +394,7 @@ def get_hist_1d_points(hist, **kwargs):
     for key in ["x", "y", "x_edges", "x_labels", "dy"]:
         points[key] = []
 
-    symmetric = (hist.GetBinErrorOption() == r.TH1.kNormal)
+    symmetric = hist.GetBinErrorOption() == r.TH1.kNormal  # pylint: disable=no-member
     if force_symmetric_errors:
         symmetric = True
     ixmin = hist.GetXaxis().FindBin(xlim[0]) if xlim[0] is not None else 1
@@ -433,10 +436,8 @@ def get_graph_points(graph):
     """
 
     # Check input
-    if not isinstance(graph, (r.TGraph, r.TGraphErrors, r.TGraphAsymmErrors)):
-        raise TypeError(
-            "Expected to input to be TGraph or similar, instead got '{0}'".
-            format(type(graph)))
+    if not isinstance(graph, (r.TGraph, r.TGraphErrors, r.TGraphAsymmErrors)):  # pylint: disable=no-member
+        raise TypeError(f"Expected to input to be TGraph or similar, instead got '{type(graph)}'")
 
     # Extract points
     points = defaultdict(list)
@@ -447,10 +448,10 @@ def get_graph_points(graph):
         graph.GetPoint(i, x_val, y_val)
         points["x"].append(float(x_val.value))
         points["y"].append(float(y_val.value))
-        if isinstance(graph, r.TGraphErrors):
+        if isinstance(graph, r.TGraphErrors):  # pylint: disable=no-member
             points["dx"].append(graph.GetErrorX(i))
             points["dy"].append(graph.GetErrorY(i))
-        elif isinstance(graph, r.TGraphAsymmErrors):
+        elif isinstance(graph, r.TGraphAsymmErrors):  # pylint: disable=no-member
             points["dx"].append((-graph.GetErrorXlow(i),
                                  graph.GetErrorXhigh(i)))
             points["dy"].append((-graph.GetErrorYlow(i),

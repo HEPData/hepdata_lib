@@ -33,6 +33,8 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
     ],
     keywords='HEPData physics OpenData',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
@@ -43,7 +45,7 @@ setup(
         'test': [
             'ipykernel',
             'papermill',
-            'pylint==2.9.6',
+            'pylint',
             'pytest',
             'pytest-cov',
         ]
