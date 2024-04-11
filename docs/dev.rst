@@ -15,6 +15,12 @@ To run the tests, move into the ``hepdata_lib`` directory while in your virtual 
 
 It is a good idea to run the tests manually to ensure that your changes do not cause any issues.
 
+If you don't have a working ROOT installation, a subset of the tests can still be run without ROOT:
+
+::
+
+    pytest tests -m "not needs_root"
+
 Definition of test cases
 ++++++++++++++++++++++++
 

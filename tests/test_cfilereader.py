@@ -3,8 +3,10 @@
 from unittest import TestCase
 import os
 import numpy as np
+import pytest
 from hepdata_lib.c_file_reader import CFileReader
 
+@pytest.mark.needs_root
 class TestCFileReader(TestCase):
     """Test the CFileReader class."""
 

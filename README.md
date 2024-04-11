@@ -72,8 +72,8 @@ There are a few more examples available that can directly be run using the [bind
 - [Reading TGraph and TGraphError from '.C' files](https://github.com/HEPData/hepdata_lib/blob/main/examples/read_c_file.ipynb)
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/HEPData/hepdata_lib/main?filepath=examples/read_c_file.ipynb)
 <br/><br/>
-- [Preparing scikit-hep histograms](https://github.com/HEPData/hepdata_lib/blob/main/examples/reading_scikithep_histogram.ipynb)
-[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/HEPData/hepdata_lib/main?filepath=examples/reading_scikihep_histogram.ipynb)
+- [Preparing scikit-hep histograms](https://github.com/HEPData/hepdata_lib/blob/main/examples/reading_scikithep_histograms.ipynb)
+[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/HEPData/hepdata_lib/main?filepath=examples/reading_scikihep_histograms.ipynb)
 <br/><br/>
 
 ## External dependencies
@@ -82,3 +82,8 @@ There are a few more examples available that can directly be run using the [bind
 - [ImageMagick](https://www.imagemagick.org)
 
 Make sure that you have `ROOT` in your `$PYTHONPATH` and that the `convert` command is available by adding its location to your `$PATH` if needed.
+
+A ROOT installation is not strictly required if your input data is not in a ROOT format, for example, if
+your input data is provided as text files or `scikit-hep/hist` histograms.  Most of the `hepdata_lib`
+functionality can be used without a ROOT installation, other than the `RootFileReader` and `CFileReader` classes,
+and other functions of the `hepdata_lib.root_utils` module.

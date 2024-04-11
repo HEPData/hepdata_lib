@@ -2,7 +2,10 @@
 import io
 from array import array
 from future.utils import raise_from
-from ROOT import TGraph, TGraphErrors  # pylint: disable=no-name-in-module
+try:
+    from ROOT import TGraph, TGraphErrors  # pylint: disable=no-name-in-module
+except ImportError as e:  # pragma: no cover
+    print(f'Cannot import ROOT: {str(e)}')
 import hepdata_lib.root_utils as ru
 from hepdata_lib.helpers import check_file_existence
 

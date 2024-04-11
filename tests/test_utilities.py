@@ -4,8 +4,10 @@
 import os
 import random
 import string
-
-import ROOT
+try:
+    import ROOT
+except ImportError as e:
+    print(f'Cannot import ROOT: {str(e)}')
 from future.utils import raise_from
 
 

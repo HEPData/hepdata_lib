@@ -3,7 +3,10 @@ from collections import defaultdict
 import ctypes
 from future.utils import raise_from
 import numpy as np
-import ROOT as r
+try:
+    import ROOT as r
+except ImportError as e:  # pragma: no cover
+    print(f'Cannot import ROOT: {str(e)}')
 from hepdata_lib.helpers import check_file_existence
 
 class RootFileReader:
