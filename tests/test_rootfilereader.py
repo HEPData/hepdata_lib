@@ -787,16 +787,16 @@ class TestRootFileReader(TestCase):
     def test_retrieve_object_stack(self):
         '''Check that retrieve_object correctly reads from stack in canvas.'''
         # Disable graphical output
-        ROOT.gROOT.SetBatch(ROOT.kTRUE)
+        ROOT.gROOT.SetBatch(ROOT.kTRUE)  # pylint: disable=no-member
 
         # Create test histogram, plot on canvas, save to file
         tfile = make_tmp_root_file(testcase=self)
-        histogram = ROOT.TH1D("testhist", "testhist", 10, 0, 1)
-        stack = ROOT.THStack("teststack","teststack")
+        histogram = ROOT.TH1D("testhist", "testhist", 10, 0, 1)  # pylint: disable=no-member
+        stack = ROOT.THStack("teststack","teststack")  # pylint: disable=no-member
         stack.Add(histogram)
         path_to_file = tfile.GetName()
 
-        canvas = ROOT.TCanvas()
+        canvas = ROOT.TCanvas()  # pylint: disable=no-member
         stack.Draw("HIST")
         canvas.Write("canvas")
 
