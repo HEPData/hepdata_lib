@@ -17,6 +17,7 @@ from .test_utilities import float_compare, tuple_compare, histogram_compare_1d, 
 
 @pytest.mark.needs_root
 class TestRootFileReader(TestCase):
+    # pylint: disable=R0904
     """Test the RootFileReader class."""
 
     def test_tfile_setter(self):
