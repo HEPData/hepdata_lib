@@ -71,11 +71,26 @@ class TestSubmission(TestCase):
     def test_create_files(self):
         """Test create_files() for Submission."""
 
+        # Set test directory/file pat
         testdir = tmp_directory_name()
+        testpath = "./testfile.txt"
+
+        # Create test file and set cleanup
+        f = open(testpath, "a")
+        f.close()
+        self.addCleanup(os.remove, testpath)
+
+        # Create submission and set values for testing
         test_submission = Submission()
         test_submission.add_record_id(1657397, "inspire")
-        tab = Table("test")
-        test_submission.add_table(tab)
+        test_submission.add_related_recid(111)
+        test_submission.add_additional_resource("Some description", testpath,
+                                                copy_file=True, file_type="HistFactory")
+        # Create table and set test values
+        test_table = Table("test")
+        test_table.add_related_doi("10.17182/hepdata.1.v1/t1")
+        test_submission.add_table(test_table)
+
         test_submission.create_files(testdir)
 
         self.doCleanups()
