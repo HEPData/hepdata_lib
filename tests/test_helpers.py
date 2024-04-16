@@ -8,6 +8,7 @@ from hepdata_lib.helpers import relative_round
 from hepdata_lib.helpers import get_number_precision
 from hepdata_lib.helpers import get_value_precision_wrt_reference
 from hepdata_lib.helpers import round_value_and_uncertainty
+from hepdata_lib.helpers import file_is_outdated
 
 
 class TestHelpers(TestCase):
@@ -116,3 +117,8 @@ class TestHelpers(TestCase):
         round_value_and_uncertainty(cont_asymm_err, "val", "unc", 2)
         self.assertTrue(cont_asymm_err["val"] == cont_asymm_err["val_round"])
         self.assertTrue(cont_asymm_err["unc"] == cont_asymm_err["unc_round"])
+
+    def test_file_is_outdated(self):
+        '''Test behavior of file_is_outdated function'''
+        with self.assertRaises(RuntimeError):
+            file_is_outdated(None, 'non_existing_file.png')

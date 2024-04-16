@@ -15,6 +15,12 @@ To run the tests, move into the ``hepdata_lib`` directory while in your virtual 
 
 It is a good idea to run the tests manually to ensure that your changes do not cause any issues.
 
+If you don't have a working ROOT installation, a subset of the tests can still be run without ROOT:
+
+::
+
+    pytest tests -m "not needs_root"
+
 Definition of test cases
 ++++++++++++++++++++++++
 
@@ -119,9 +125,10 @@ Analysing the code
 ::
 
     pylint hepdata_lib/*.py
-    pylint tests/*.py --rcfile=tests/pylintrc
+    pylint tests/*.py
 
-These commands are run by GitHub Actions, so you should first check locally that no issues are flagged.
+These commands are run by GitHub Actions (for Python 3.8 or later),
+so you should first check locally that no issues are flagged.
 
 
 Making a release

@@ -94,10 +94,10 @@ class TestVariable(TestCase):
             var.add_qualifier("Some Name 3", "Some value 3")
         with self.assertRaises(RuntimeError):
             var.add_qualifier("Some Name 4", "Some value 4", "Some unit 4")
-    # pylint: disable=R0201
+
     def test_make_dict(self):
         """Test the make_dict function."""
-	# pylint: disable=no-self-use
+
         var = Variable("testvar")
 
         # With or without units
