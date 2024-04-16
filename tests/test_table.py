@@ -179,7 +179,7 @@ class TestTable(TestCase):
         self.assertTrue(modified_time_main < os.path.getmtime(expected_main_file))
         self.assertTrue(modified_time_thumbnail < os.path.getmtime(expected_thumbnail_file))
 
-    def test_add_additional_resource(self): # pylint: disable=no-self-use
+    def test_add_additional_resource(self):
         """Test the add_additional_resource function."""
         test_table = Table("Some Table")
         test_data = [
@@ -262,7 +262,7 @@ class TestTable(TestCase):
 
         # Create test table and get the test pdf
         test_table = Table("Some Table")
-        some_pdf = "%s/minimal.pdf" % os.path.dirname(__file__)
+        some_pdf = f"{os.path.dirname(__file__)}/minimal.pdf"
 
         # Set default description, location, copy_file and file_type arguments for a resource file
         resource_args = ["Description", some_pdf, True, "Type"]
