@@ -337,8 +337,6 @@ This function takes mandatory ``name`` and ``url`` string arguments, as well as 
 **Please note:** The default license applied to all data uploaded to HEPData is `CC0`_. You do not
 need to specify a license for a data table unless it differs from `CC0`_.
 
-.. _`CC0`: https://creativecommons.org/public-domain/cc0/
-
 ::
 
     table.add_data_license("CC BY 4.0", "https://creativecommons.org/licenses/by/4.0/")
