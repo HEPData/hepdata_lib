@@ -75,9 +75,9 @@ class TestSubmission(TestCase):
         testdir = tmp_directory_name()
         testpath = "./testfile.txt"
 
-        # Create test file and set cleanup
-        f = open(testpath, "a")
-        f.close()
+        with open(testpath, "a", encoding="utf-8") as f:
+            f.close()
+
         self.addCleanup(os.remove, testpath)
 
         # Create submission and set values for testing
