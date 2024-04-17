@@ -11,7 +11,7 @@ Library for getting your data into HEPData
 
 - Documentation: https://hepdata-lib.readthedocs.io
 
-This code works with Python 3.6, 3.7, 3.8, 3.9 or 3.10.
+This code works with Python 3.6, 3.7, 3.8, 3.9, 3.10, 3.11 or 3.12.
 
 ## Installation
 
@@ -25,7 +25,7 @@ If you are not sure about your Python environment, please also see below how to 
 
 ## Getting started
 
-For using `hepdata_lib`, you don't even need to install it, but can use the [binder](https://mybinder.org/) or [SWAN](https://swan.cern.ch/) (CERN-only) services using one of the buttons below and following the instructions in the notebook with name [Getting_started](examples/Getting_started.ipynb):
+For using `hepdata_lib`, you don't even need to install it, but can use the [binder](https://mybinder.org/) or [SWAN](https://swan.cern.ch/) (CERN-only) services using one of the buttons below:
 
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/HEPData/hepdata_lib/main?filepath=examples/Getting_started.ipynb)
 [![SWAN](https://swanserver.web.cern.ch/swanserver/images/badge_swan_white_150.png)](https://cern.ch/swanserver/cgi-bin/go/?projurl=https://github.com/HEPData/hepdata_lib.git)
@@ -72,8 +72,8 @@ There are a few more examples available that can directly be run using the [bind
 - [Reading TGraph and TGraphError from '.C' files](https://github.com/HEPData/hepdata_lib/blob/main/examples/read_c_file.ipynb)
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/HEPData/hepdata_lib/main?filepath=examples/read_c_file.ipynb)
 <br/><br/>
-- [Preparing scikit-hep histograms](https://github.com/HEPData/hepdata_lib/blob/main/examples/reading_scikithep_histogram.ipynb)
-[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/HEPData/hepdata_lib/main?filepath=examples/reading_scikihep_histogram.ipynb)
+- [Preparing scikit-hep histograms](https://github.com/HEPData/hepdata_lib/blob/main/examples/reading_scikithep_histograms.ipynb)
+[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/HEPData/hepdata_lib/main?filepath=examples/reading_scikihep_histograms.ipynb)
 <br/><br/>
 
 ## External dependencies
@@ -82,3 +82,8 @@ There are a few more examples available that can directly be run using the [bind
 - [ImageMagick](https://www.imagemagick.org)
 
 Make sure that you have `ROOT` in your `$PYTHONPATH` and that the `convert` command is available by adding its location to your `$PATH` if needed.
+
+A ROOT installation is not strictly required if your input data is not in a ROOT format, for example, if
+your input data is provided as text files or `scikit-hep/hist` histograms.  Most of the `hepdata_lib`
+functionality can be used without a ROOT installation, other than the `RootFileReader` and `CFileReader` classes,
+and other functions of the `hepdata_lib.root_utils` module.

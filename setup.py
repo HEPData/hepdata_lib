@@ -17,7 +17,7 @@ with codecs.open(path.join(HERE, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='hepdata_lib',
-    version='0.14.1',
+    version='0.15.0',
     description='Library for getting your data into HEPData',
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',
@@ -33,6 +33,8 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
     ],
     keywords='HEPData physics OpenData',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
@@ -43,7 +45,7 @@ setup(
         'test': [
             'ipykernel',
             'papermill',
-            'pylint==2.9.6',
+            'pylint',
             'pytest',
             'pytest-cov',
         ]

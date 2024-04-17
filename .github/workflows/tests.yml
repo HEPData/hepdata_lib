@@ -25,28 +25,37 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        root-version: ["6.24", "6.26", "6.28"]
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        root-version: ["", "6.24", "6.26", "6.28", "6.30"]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11"]
         exclude:
           - root-version: "6.24"
             python-version: "3.10"
+          - root-version: "6.24"
+            python-version: "3.11"
           - root-version: "6.26"
             python-version: "3.6"
           - root-version: "6.26"
             python-version: "3.7"
+          - root-version: "6.26"
+            python-version: "3.11"
           - root-version: "6.28"
             python-version: "3.6"
           - root-version: "6.28"
+            python-version: "3.7"
+          - root-version: "6.30"
+            python-version: "3.6"
+          - root-version: "6.30"
             python-version: "3.7"
         include:
           - os: macos-latest
-            root-version: "6.28"
-            python-version: "3.10"
+            root-version: "6.30"
+            python-version: "3.11"
 
     steps:
     - uses: actions/checkout@v4
 
     - name: Setup Micromamba environment
+      if: ${{ matrix.root-version }}
       uses: mamba-org/setup-micromamba@v1
       with:
         environment-name: ci
@@ -60,7 +69,22 @@ jobs:
           channels:
             - conda-forge
 
+    - name: Setup Micromamba environment without ROOT
+      if: ${{ !matrix.root-version }}
+      uses: mamba-org/setup-micromamba@v1
+      with:
+        environment-name: ci
+        create-args: >-
+          python=${{ matrix.python-version }}
+          imagemagick
+          ghostscript
+          pip
+        condarc: |
+          channels:
+            - conda-forge
+
     - name: ROOT info
+      if: ${{ matrix.root-version }}
       run: |
         root-config --version
         root-config --python-version
@@ -70,7 +94,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip setuptools wheel
         python -m pip install --upgrade \
-          'pylint==2.9.6' \
+          'pylint' \
           pytest_pylint \
           configparser \
           astroid \
@@ -86,10 +110,17 @@ jobs:
 
     # Use python -m pytest to add current working dir as src/ dir layout not used
     - name: Run pytest
+      if: ${{ matrix.root-version }}
       run: |
         python -m pytest tests
 
+    - name: Run pytest without ROOT
+      if: ${{ !matrix.root-version }}
+      run: |
+        python -m pytest tests -m 'not needs_root'
+
     - name: Report coverage with Codecov
+      if: ${{ matrix.root-version }}
       uses: codecov/codecov-action@v4
       with:
         fail_ci_if_error: true
@@ -99,20 +130,20 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
     - name: Save notebooks
-      if: ${{ always() }}
+      if: ${{ always() && matrix.root-version }}
       run: |
         python -m jupyter kernelspec list
         python -m jupyter nbconvert --ExecutePreprocessor.timeout=600 --ExecutePreprocessor.allow_errors=True --to html --execute examples/*.ipynb
 
     - name: Upload notebooks
-      if: ${{ always() }}
+      if: ${{ always() && matrix.root-version }}
       uses: actions/upload-artifact@v4
       with:
         name: notebooks-${{ matrix.root-version }}-${{ matrix.python-version }}-${{ matrix.os }} py3-${{ matrix.root-version }}-${{ matrix.python-version }}-${{ matrix.os }}
         path: examples/*.html
 
     - name: Run pylint
-      if: ${{ always() }}
+      if: ${{ always() && !startsWith(matrix.python-version, '3.6') && !startsWith(matrix.python-version, '3.7') }}
       run: |
         python -m pylint hepdata_lib/*.py
-        python -m pylint tests/*.py --rcfile=tests/pylintrc
+        python -m pylint tests/*.py

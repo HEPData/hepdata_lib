@@ -155,6 +155,8 @@ To add a link to a related record object, you can use the ``add_related_recid`` 
 
 In the last example, we are adding a link to the submission with the record ID value of ``3``.
 
+**Please note:** This field should not be used for self-referencing, the IDs inserted should be for OTHER related records.
+
 The documentation for this feature can be found here: `Linking records`_.
 
 .. _`Linking records`: https://hepdata-submission.readthedocs.io/en/latest/bidirectional.html#linking-records
@@ -312,6 +314,8 @@ To add a link to a related table object, you can use the ``add_related_doi`` fun
 
 In the second example, we are adding a link to the table with a DOI value of `10.17182/hepdata.12882.v1/t2 <https://doi.org/10.17182/hepdata.12882.v1/t2>`_.
 
+**Please note:** This field should not be used for self-referencing, the DOIs inserted should be for OTHER related tables.
+
 The documentation for this feature can be found here: `Linking tables`_.
 
 .. _`Linking tables`: https://hepdata-submission.readthedocs.io/en/latest/bidirectional.html#linking-tables
@@ -337,4 +341,12 @@ After creating the Uncertainty objects, the only additional step is to attach th
     variable.add_uncertainty(unc1)
     variable.add_uncertainty(unc2)
 
+See `Uncertainties`_ for more guidance. In particular, note that ``hepdata_lib`` will omit the ``errors`` key from the
+YAML output if all uncertainties are zero for a particular bin, printing a warning message "Note that bins with zero
+content should preferably be omitted completely from the HEPData table". A legitimate use case is where there are
+multiple dependent variables and a (different) subset of the bins has missing content for some dependent variables.
+In this case the uncertainties should be set to zero for the missing bins with a non-numeric central value like ``'-'``.
+The warning message can be suppressed by passing an optional argument ``zero_uncertainties_warning=False`` when
+defining an instance of the ``Variable`` class.
 
+.. _`Uncertainties`: https://hepdata-submission.readthedocs.io/en/latest/data_yaml.html#uncertainties

@@ -73,6 +73,7 @@ class TestSubmission(TestCase):
 
         testdir = tmp_directory_name()
         test_submission = Submission()
+        test_submission.add_record_id(1657397, "inspire")
         tab = Table("test")
         test_submission.add_table(tab)
         test_submission.create_files(testdir)
@@ -87,7 +88,7 @@ class TestSubmission(TestCase):
         os.makedirs(testdir)
         self.addCleanup(shutil.rmtree, testdir)
         testfile = os.path.join(testdir, "test.txt")
-        with open(testfile, "w") as f:
+        with open(testfile, "w", encoding="utf-8") as f:
             f.write("test")
         self.assertTrue(os.path.isfile(testfile))
 
@@ -115,7 +116,7 @@ class TestSubmission(TestCase):
         testfile = "testfile.txt"
         self.addCleanup(os.remove, testfile)
 
-        with open(testfile, "w") as f:
+        with open(testfile, "w", encoding="utf-8") as f:
             f.write(some_string)
 
         test_submission = Submission()
@@ -129,7 +130,7 @@ class TestSubmission(TestCase):
         """Test that file copying works when tables have files."""
         # Create random test file
         testfile = "testfile.txt"
-        with open(testfile, "w") as f:
+        with open(testfile, "w", encoding="utf-8") as f:
             f.write("test")
         self.addCleanup(os.remove, testfile)
 
