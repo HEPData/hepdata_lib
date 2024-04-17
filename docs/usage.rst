@@ -133,8 +133,8 @@ The ``resource_license`` is in the form of a dictionary with mandatory string ``
 The optional argument ``file_type="HistFactory"`` (default value of ``None``) can be used to identify statistical models provided in the HistFactory JSON
 format rather than relying on certain trigger words in the ``description`` (see `pyhf section of submission documentation`_).
 
-**Please note:** The default license applied to records uploaded to HEPData is `CC0`_. You do not
-need to specify a license by default.
+**Please note:** The default license applied to all data uploaded to HEPData is `CC0`_. You do not
+need to specify a license for a resource file unless it differs from `CC0`_.
 
 .. _`CC0`: https://creativecommons.org/public-domain/cc0/
 
@@ -334,8 +334,8 @@ Adding a data license
 You can add data license information to a table using the ``add_data_license`` function of the Table class.
 This function takes mandatory ``name`` and ``url`` string arguments, as well as an optional ``description``.
 
-**Please note:** The default license applied to records uploaded to HEPData is `CC0`_. You do not
-need to specify a license by default.
+**Please note:** The default license applied to all data uploaded to HEPData is `CC0`_. You do not
+need to specify a license for a data table unless it differs from `CC0`_.
 
 .. _`CC0`: https://creativecommons.org/public-domain/cc0/
 
