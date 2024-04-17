@@ -121,10 +121,12 @@ jobs:
 
     - name: Report coverage with Codecov
       if: ${{ matrix.root-version }}
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
+        fail_ci_if_error: true
         files: ./coverage.xml
         flags: unittests-${{ matrix.python-version }}
+        token: ${{ secrets.CODECOV_TOKEN }}
 
     - name: Save notebooks
       if: ${{ always() && matrix.root-version }}
