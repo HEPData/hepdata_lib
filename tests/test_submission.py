@@ -71,11 +71,26 @@ class TestSubmission(TestCase):
     def test_create_files(self):
         """Test create_files() for Submission."""
 
+        # Set test directory/file pat
         testdir = tmp_directory_name()
+        testpath = "./testfile.txt"
+
+        with open(testpath, "a", encoding="utf-8") as f:
+            f.close()
+
+        self.addCleanup(os.remove, testpath)
+
+        # Create submission and set values for testing
         test_submission = Submission()
         test_submission.add_record_id(1657397, "inspire")
-        tab = Table("test")
-        test_submission.add_table(tab)
+        test_submission.add_related_recid(111)
+        test_submission.add_additional_resource("Some description", testpath,
+                                                copy_file=True, file_type="HistFactory")
+        # Create table and set test values
+        test_table = Table("test")
+        test_table.add_related_doi("10.17182/hepdata.1.v1/t1")
+        test_submission.add_table(test_table)
+
         test_submission.create_files(testdir)
 
         self.doCleanups()
@@ -157,7 +172,7 @@ class TestSubmission(TestCase):
 
     def test_add_related_doi(self):
         """Test insertion and retrieval of recid values in the Table object"""
-        # Possibly unneccessary boundary testing
+        # Possibly unnecessary boundary testing
         test_data = [
             {"doi": "10.17182/hepdata.1.v1/t1", "error": False},
             {"doi": "10.17182/hepdata.1", "error": ValueError},
@@ -191,3 +206,22 @@ class TestSubmission(TestCase):
                 sub.add_related_recid(test["recid"])
                 assert int(test["recid"]) == sub.related_records[-1]
         assert len(sub.related_records) == 2
+
+    def test_add_data_license(self):
+        """Test addition of data license entries to the Table class"""
+        test_data = [
+            {"expected_err": None, "data_license": ["name", "url", "desc"]},  # Valid, full
+            {"expected_err": None, "data_license": ["name", "url", None]},  # Valid, no desc
+            {"expected_err": ValueError, "data_license": ["name", None, "desc"]},  # Error, no url
+            {"expected_err": ValueError, "data_license": [None, "url", "desc"]}  # Error, no name
+        ]
+        tab = Table("Table")  # Test table class
+        for test in test_data:
+            # Check if an error is expected here or not
+            if test["expected_err"]:
+                self.assertRaises(test["expected_err"], tab.add_data_license, *test["data_license"])
+            else:
+                # Check data exists and is correct
+                tab.add_data_license(*test["data_license"])
+                assert tab.data_license["name"] == test["data_license"][0]
+                assert tab.data_license["url"] == test["data_license"][1]

@@ -4,7 +4,7 @@ import os
 import shutil
 from unittest import TestCase
 
-from hepdata_lib import Table, Variable, Uncertainty
+from hepdata_lib import Table, Variable, Uncertainty, helpers
 from .test_utilities import tmp_directory_name
 
 class TestTable(TestCase):
@@ -61,6 +61,12 @@ class TestTable(TestCase):
         test_table = Table("Some Table")
         test_variable = Variable("Some Variable")
         test_table.add_variable(test_variable)
+        test_table.add_related_doi("10.17182/hepdata.1.v1/t1")
+        test_table.add_data_license(
+            name="data_license",
+            url="test_url"
+        )
+        test_table.keywords = {"name": "keywords", "values": "1"}
         testdir = tmp_directory_name()
         self.addCleanup(shutil.rmtree, testdir)
         try:
@@ -173,14 +179,113 @@ class TestTable(TestCase):
         self.assertTrue(modified_time_main < os.path.getmtime(expected_main_file))
         self.assertTrue(modified_time_thumbnail < os.path.getmtime(expected_thumbnail_file))
 
-
-
-
-
     def test_add_additional_resource(self):
         """Test the add_additional_resource function."""
         test_table = Table("Some Table")
-        test_table.add_additional_resource("some link","www.cern.ch")
+        test_data = [
+            {
+                "description": "SomeLink",
+                "location": "www.cern.ch",
+                "type": None,
+                "license": None
+            },
+            {
+                "description": "SomeLink",
+                "location": "www.cern.ch",
+                "type": "HistFactory",
+                "license": {"name": "licenseName", "url": "www.cern.ch",
+                            "description": "licenseDesc"}
+            }
+        ]
+
+        for test in test_data:
+            test_table.add_additional_resource(
+                test["description"],
+                test["location"],
+                file_type=test["type"],
+                resource_license=test["license"]
+            )
+            resource = test_table.additional_resources[-1]
+
+            # Check resource and mandatory arguments
+            assert resource
+            assert resource["description"] == test["description"]
+            assert resource["location"] == test["location"]
+
+            # Check optional arguments type and license
+            if test["type"]:
+                assert resource["type"] == test["type"]
+
+            if test["license"]:
+                assert resource["license"] == test["license"]
+
+    def test_add_additional_resource_license_check(self):
+        """ Test the license value check in Table.add_additional_resource """
+        # First two pass, last two fail
+        license_data = [
+            {
+                "error": None,
+                "license_data": {
+                    "name": "Name",
+                    "url": "URL"
+                }
+            },
+            {
+                "error": None,
+                "license_data": {
+                    "name": "Name",
+                    "url": "URL",
+                    "description": "Desc"
+                }
+            },
+            {
+                "error": ValueError,
+                "license_data": {
+                    "name": "Name",
+                    "url": "URL",
+                    "shouldnotbehere": "shouldnotbehere"
+                }
+            },
+            {
+                "error": ValueError,
+                "license_data": {
+                    "name": "Name",
+                    "url": "URL",
+                    "description": "Desc",
+                    "toomany": "toomany"
+                }
+            },
+            {
+                "error": ValueError,
+                "license_data": "a string not a dictionary"
+            }]
+
+        # Create test table and get the test pdf
+        test_table = Table("Some Table")
+        some_pdf = f"{os.path.dirname(__file__)}/minimal.pdf"
+
+        # Set default description, location, copy_file and file_type arguments for a resource file
+        resource_args = ["Description", some_pdf, True, "Type"]
+
+        for data in license_data:
+            # If error is expected, we check for the error
+            # Otherwise, just add and check length later
+            if data["error"]:
+                with self.assertRaises(ValueError):
+                    test_table.add_additional_resource(
+                        *resource_args,
+                        resource_license=data["license_data"]
+                    )
+            else:
+                # Check for lack of failure
+                try:
+                    test_table.add_additional_resource(
+                        *resource_args,
+                        resource_license=data["license_data"]
+                    )
+                except ValueError:
+                    self.fail("Table.add_additional_resource raised an unexpected ValueError.")
+
 
     def test_copy_files(self):
         """Test the copy_files function."""
@@ -189,6 +294,23 @@ class TestTable(TestCase):
         testdir = tmp_directory_name()
         self.addCleanup(shutil.rmtree, testdir)
         os.makedirs(testdir)
+        test_table.add_additional_resource("a plot", some_pdf, copy_file=True)
 
-        test_table.add_additional_resource("a plot",some_pdf, copy_file=True)
-        test_table.copy_files(testdir)
+        # Check that the file has been created
+        assert helpers.check_file_existence(some_pdf)
+
+        # Explicitly test for lack of an error
+        try:
+            # No boundaries
+            helpers.check_file_size(some_pdf)
+            # Between boundaries
+            helpers.check_file_size(some_pdf, upper_limit=1, lower_limit=0.001)
+        except RuntimeError:
+            self.fail("Table.check_file_size raised an unexpected RuntimeError.")
+
+        # Check that both boundaries function correctly
+        with self.assertRaises(RuntimeError):
+            helpers.check_file_size(some_pdf, upper_limit=0.001)
+
+        with self.assertRaises(RuntimeError):
+            helpers.check_file_size(some_pdf, lower_limit=1)

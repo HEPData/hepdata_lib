@@ -55,7 +55,8 @@ class AdditionalResourceMixin:
         self.files_to_copy = []
         self.additional_resources = []
 
-    def add_additional_resource(self, description, location, copy_file=False, file_type=None):
+    def add_additional_resource(self, description, location, copy_file=False, file_type=None,
+                                resource_license=None):
         """
         Add any kind of additional resource.
         If copy_file is set to False, the location and description will be added as-is.
@@ -80,7 +81,12 @@ class AdditionalResourceMixin:
 
         :param file_type: Type of the resource file.  Currently, only "HistFactory" has any effect.
         :type file_type: string
+
+        :param resource_license: License information comprising name, url and optional description.
+        :type resource_license: dict
         """
+
+        #pylint: disable=too-many-arguments
 
         resource = {}
         resource["description"] = description
@@ -94,6 +100,28 @@ class AdditionalResourceMixin:
 
         if file_type:
             resource["type"] = file_type
+
+        # Confirm that license does not contain extra keys,
+        # and has the mandatory name and description values
+        if resource_license:
+
+            if not isinstance(resource_license, dict):
+                raise ValueError("resource_license must be a dictionary.")
+
+            # Get the license dict keys as a set
+            license_keys = set(resource_license.keys())
+
+            # Create sets for both possibilities
+            mandatory_keys = {"name", "url"}
+            all_keys = mandatory_keys.union(["description"])
+
+            # If license matches either of the correct values
+            if license_keys in (mandatory_keys, all_keys):
+                resource["license"] = resource_license
+            else:
+                raise ValueError("Incorrect resource_license format: "
+                                 "resource_license must be a dictionary containing a "
+                                 "name, url and optional description.")
 
         self.additional_resources.append(resource)
 
@@ -308,6 +336,7 @@ class Table(AdditionalResourceMixin):
         self.location = "Example location"
         self.keywords = {}
         self.image_files = set()
+        self.data_license = {}
 
     @property
     def name(self):
@@ -364,6 +393,34 @@ class Table(AdditionalResourceMixin):
             self.related_tables.append(to_string)
         else:
             raise ValueError(f"DOI does not match the correct pattern: {pattern}.")
+
+    def add_data_license(self, name, url, description=None):
+        """
+        Verify and store the given license data.
+
+        :param name: The license name
+        :type name: string
+        :param url: The license URL
+        :type url: string
+        :param description: The (optional) license description
+        :type description: string
+        """
+        license_data = {}
+
+        if name:
+            license_data["name"] = name
+        else:
+            raise ValueError("You must insert a value for the license's name.")
+
+        if url:
+            license_data["url"] = url
+        else:
+            raise ValueError("You must insert a value for the license's url.")
+
+        if description:
+            license_data["description"] = description
+
+        self.data_license = license_data
 
     def write_output(self, outdir):
         """
@@ -471,11 +528,14 @@ class Table(AdditionalResourceMixin):
             submission["name"] = self.name
             submission["description"] = self.description
             submission["location"] = self.location
-            submission["related_to_table_dois"] = self.related_tables
+            if self.related_tables:
+                submission["related_to_table_dois"] = self.related_tables
             submission["data_file"] = f'{shortname}.yaml'
             submission["keywords"] = []
             if self.additional_resources:
                 submission["additional_resources"] = self.additional_resources
+            if self.data_license:
+                submission["data_license"] = self.data_license
 
             for name, values in list(self.keywords.items()):
                 submission["keywords"].append({"name": name, "values": values})
@@ -509,11 +569,11 @@ class Submission(AdditionalResourceMixin):
     def get_license():
         """Return the default license."""
         data_license = {}
-        data_license["name"] = "cc-by-4.0"
-        data_license["url"] = "https://creativecommons.org/licenses/by/4.0/"
-        data_license[
-            "description"] = "The content can be shared and adapted but you must\
-             give appropriate credit and cannot restrict access to others."
+        data_license["name"] = "CC0"
+        data_license["url"] = "https://creativecommons.org/publicdomain/zero/1.0/"
+        data_license["description"] = (
+            "CC0 enables reusers to distribute, remix, adapt, and build upon the material "
+            "in any medium or format, with no conditions.")
         return data_license
 
     def add_table(self, table):
@@ -612,7 +672,8 @@ class Submission(AdditionalResourceMixin):
         submission = {}
         submission["data_license"] = self.get_license()
         submission["comment"] = self.comment
-        submission["related_to_hepdata_records"] = self.related_records
+        if self.related_records:
+            submission["related_to_hepdata_records"] = self.related_records
 
         if self.additional_resources:
             submission["additional_resources"] = self.additional_resources
