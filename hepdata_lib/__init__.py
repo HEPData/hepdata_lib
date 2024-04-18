@@ -565,6 +565,17 @@ class Submission(AdditionalResourceMixin):
             "Created with hepdata_lib " + __version__,
             "https://doi.org/10.5281/zenodo.1217998")
 
+    @staticmethod
+    def get_license():
+        """Return the default license."""
+        data_license = {}
+        data_license["name"] = "cc-by-4.0"
+        data_license["url"] = "https://creativecommons.org/licenses/by/4.0/"
+        data_license[
+            "description"] = "The content can be shared and adapted but you must\
+             give appropriate credit and cannot restrict access to others."
+        return data_license
+
     def add_table(self, table):
         """Append table to tables list.
 
@@ -659,6 +670,7 @@ class Submission(AdditionalResourceMixin):
 
         # Write general info about submission
         submission = {}
+        submission["data_license"] = self.get_license()
         submission["comment"] = self.comment
         if self.related_records:
             submission["related_to_hepdata_records"] = self.related_records
