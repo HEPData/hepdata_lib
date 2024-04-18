@@ -569,11 +569,11 @@ class Submission(AdditionalResourceMixin):
     def get_license():
         """Return the default license."""
         data_license = {}
-        data_license["name"] = "cc-by-4.0"
-        data_license["url"] = "https://creativecommons.org/licenses/by/4.0/"
-        data_license[
-            "description"] = "The content can be shared and adapted but you must\
-             give appropriate credit and cannot restrict access to others."
+        data_license["name"] = "CC0"
+        data_license["url"] = "https://creativecommons.org/publicdomain/zero/1.0/"
+        data_license["description"] = (
+            "CC0 enables reusers to distribute, remix, adapt, and build upon the material "
+            "in any medium or format, with no conditions.")
         return data_license
 
     def add_table(self, table):
