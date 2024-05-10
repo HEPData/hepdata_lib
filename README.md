@@ -2,6 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1217998.svg)](https://doi.org/10.5281/zenodo.1217998)
 [![PyPI version](https://badge.fury.io/py/hepdata-lib.svg)](https://badge.fury.io/py/hepdata-lib)
+[![conda-forge version](https://img.shields.io/conda/vn/conda-forge/hepdata-lib.svg)](https://prefix.dev/channels/conda-forge/packages/hepdata-lib)
 [![Actions Status](https://github.com/HEPData/hepdata_lib/workflows/tests/badge.svg)](https://github.com/HEPData/hepdata_lib/actions)
 [![Coverage Status](https://codecov.io/gh/HEPData/hepdata_lib/graph/badge.svg?branch=main)](https://codecov.io/gh/HEPData/hepdata_lib?branch=main)
 [![Documentation Status](https://readthedocs.org/projects/hepdata-lib/badge/)](http://hepdata-lib.readthedocs.io/)
@@ -18,7 +19,13 @@ This code works with Python 3.6, 3.7, 3.8, 3.9, 3.10, 3.11 or 3.12.
 It is highly recommended you install `hepdata_lib` into a [virtual environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/).
 
 ```shell
-pip install hepdata_lib
+python -m pip install hepdata_lib
+```
+
+Alternatively, install from [conda-forge](https://anaconda.org/conda-forge/hepdata-lib) using a `conda` ecosystem package manager:
+
+```console
+conda install --channel conda-forge hepdata-lib
 ```
 
 If you are not sure about your Python environment, please also see below how to use `hepdata_lib` in a Docker or Apptainer container.
