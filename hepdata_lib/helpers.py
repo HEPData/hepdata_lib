@@ -283,6 +283,8 @@ def sanitize_value(value):
         return value
     if isinstance(value,int):
         return value
+    if value is None:
+        return value
     return float(value)
 
 

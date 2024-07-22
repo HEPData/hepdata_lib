@@ -115,3 +115,18 @@ class TestUncertainty(TestCase):
         # Check that 'errors' key is missing only if zero uncertainties
         self.assertTrue(all('errors' in dictionary['values'][i] for i in [0, 1, 3]))
         self.assertTrue('errors' not in dictionary['values'][2])
+
+    def test_inhomogenous_uncertainties(self):
+        '''Test cases where an uncertainty only applies to a subset of the bins'''
+        var = Variable("testvar", is_independent=False, is_binned=False, values=[1,2,3],
+                       zero_uncertainties_warning=False)
+        uncA = Uncertainty('errorA', is_symmetric=True)
+        uncA.values = [ 0.1, 0.2, None ]
+        var.add_uncertainty(uncA)
+        uncB = Uncertainty('errorB', is_symmetric=True)
+        uncB.values = [ 0.1, 0.2, 0.3 ]
+        var.add_uncertainty(uncB)
+        dictionary = var.make_dict()
+        self.assertTrue(len([ errs['label'] for i in [0,1,2] \
+                                            for errs in dictionary['values'][i]['errors'] \
+                                            if errs['label'] == 'errorA'])==2)
