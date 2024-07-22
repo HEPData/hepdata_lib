@@ -277,6 +277,8 @@ class Variable:
             # if at least one of the uncertainties is not zero.
             if nonzero_uncs[i]:
                 for unc in self.uncertainties:
+                    if unc.values[i] is None:
+                        continue
                     if unc.is_symmetric:
                         valuedict['errors'].append({
                             "symerror":
