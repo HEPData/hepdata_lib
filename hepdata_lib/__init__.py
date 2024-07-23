@@ -235,6 +235,7 @@ class Variable:
         self.uncertainties.append(uncertainty)
 
     def make_dict(self):
+        # pylint: disable=too-many-branches
         """
         Return all data in this Variable as a dictionary.
 
