@@ -276,7 +276,7 @@ def sanitize_value(value):
     :param value: User-side input value to sanitize.
     :type value: string, int, or castable to float
 
-    Strings and integers are left alone,
+    Strings, integers and None are left alone,
     everything else is converted to float.
     """
     if isinstance(value,str):
