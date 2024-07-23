@@ -120,12 +120,12 @@ class TestUncertainty(TestCase):
         '''Test cases where an uncertainty only applies to a subset of the bins'''
         var = Variable("testvar", is_independent=False, is_binned=False, values=[1,2,3],
                        zero_uncertainties_warning=False)
-        uncA = Uncertainty('errorA', is_symmetric=True)
-        uncA.values = [ 0.1, 0.2, None ]
-        var.add_uncertainty(uncA)
-        uncB = Uncertainty('errorB', is_symmetric=True)
-        uncB.values = [ 0.1, 0.2, 0.3 ]
-        var.add_uncertainty(uncB)
+        unc_a = Uncertainty('errorA', is_symmetric=True)
+        unc_a.values = [ 0.1, 0.2, None ]
+        var.add_uncertainty(unc_a)
+        unc_b = Uncertainty('errorB', is_symmetric=True)
+        unc_b.values = [ 0.1, 0.2, 0.3 ]
+        var.add_uncertainty(unc_b)
         dictionary = var.make_dict()
         self.assertTrue(len([ errs['label'] for i in [0,1,2] \
                                             for errs in dictionary['values'][i]['errors'] \
