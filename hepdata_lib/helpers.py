@@ -274,7 +274,7 @@ def sanitize_value(value):
     Handle conversion of input types for internal storage.
 
     :param value: User-side input value to sanitize.
-    :type value: string, int, or castable to float
+    :type value: string, int, NoneType, or castable to float
 
     Strings, integers and None are left alone,
     everything else is converted to float.
