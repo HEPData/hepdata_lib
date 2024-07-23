@@ -141,8 +141,12 @@ jobs:
         name: notebooks-${{ matrix.root-version }}-${{ matrix.python-version }}-${{ matrix.os }} py3-${{ matrix.root-version }}-${{ matrix.python-version }}-${{ matrix.os }}
         path: examples/*.html
 
-    - name: Run pylint
+    - name: Run pylint on hepdata_lib
       if: ${{ always() && !startsWith(matrix.python-version, '3.6') && !startsWith(matrix.python-version, '3.7') }}
       run: |
         python -m pylint hepdata_lib/*.py
+
+    - name: Run pylint on tests
+      if: ${{ always() && !startsWith(matrix.python-version, '3.6') && !startsWith(matrix.python-version, '3.7') }}
+      run: |
         python -m pylint tests/*.py
