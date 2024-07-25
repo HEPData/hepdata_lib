@@ -42,9 +42,15 @@ Choose the tag you just created, auto-generate release notes, and click "Publish
 The package will then be automatically uploaded to the Python Package Index (PyPI_) at `this location`_
 and a new container image will be built and tagged.
 
+After making a new release available on `PyPI`_, a `JIRA`_ issue (`example`_) should be opened to request that
+``hepdata_lib`` is upgraded in future `LCG Releases`_ used by `SWAN`_.
+
 .. _bumpversion: https://github.com/peritus/bumpversion
 .. _.bumpversion.cfg: https://github.com/HEPData/hepdata_lib/blob/main/.bumpversion.cfg
 .. _Releases: https://github.com/HEPData/hepdata_lib/releases
 .. _PyPI: https://pypi.org
-.. _PyPI test server: https://test.pypi.org/project/hepdata_lib/
 .. _this location: https://pypi.org/project/hepdata_lib/
+.. _JIRA: https://its.cern.ch/jira/projects/SPI/
+.. _example: https://its.cern.ch/jira/browse/SPI-2507
+.. _LCG Releases: https://lcginfo.cern.ch/pkg/hepdata_lib/
+.. _SWAN: http://swan.cern.ch/
