@@ -33,40 +33,24 @@ The files in which the versions are updated as well as the current version can b
 
 .. _sec-dev-pypi:
 
-Uploading to PyPI
------------------
+Creating a new release
+---------------------------
 
-Once a new version has been tagged, the package should be uploaded to the Python Package Index (PyPI_).
-For the markdown formatting to work, ``twine>=1.11.0`` is required.
-Execute the following commands to create a source distribution and upload it:
+Once a new version has been tagged, a new release has to be created on GitHub.
+Go to `Releases`_ and click on "Draft a new release".
+Choose the tag you just created, auto-generate release notes, and click "Publish release".
+The package will then be automatically uploaded to the Python Package Index (PyPI_) at `this location`_
+and a new container image will be built and tagged.
 
-::
-
-    pip install -U wheel
-    python setup.py sdist bdist_wheel
-    pip install -U twine
-    twine upload --repository-url https://test.pypi.org/legacy/ dist/*
-
-This uploads to the `PyPI test server`_. Mind that you need to have an account for both the test and the production servers.
-
-Install the package for testing:
-
-::
-
-    pip install --index-url https://test.pypi.org/simple/ hepdata_lib
-
-If everything is fine, upload to the production server:
-
-::
-
-    twine upload dist/*
-
-You should then find the new version at `this location`_. You need to be a maintainer of the project for this to work. For more details please see the `python packaging documentation`_.
-
+After making a new release available on `PyPI`_, a `JIRA`_ issue (`example`_) should be opened to request that
+``hepdata_lib`` is upgraded in future `LCG Releases`_ used by `SWAN`_.
 
 .. _bumpversion: https://github.com/peritus/bumpversion
 .. _.bumpversion.cfg: https://github.com/HEPData/hepdata_lib/blob/main/.bumpversion.cfg
+.. _Releases: https://github.com/HEPData/hepdata_lib/releases
 .. _PyPI: https://pypi.org
-.. _PyPI test server: https://test.pypi.org/project/hepdata_lib/
 .. _this location: https://pypi.org/project/hepdata_lib/
-.. _python packaging documentation: https://packaging.python.org/tutorials/packaging-projects/
+.. _JIRA: https://its.cern.ch/jira/projects/SPI/
+.. _example: https://its.cern.ch/jira/browse/SPI-2507
+.. _LCG Releases: https://lcginfo.cern.ch/pkg/hepdata_lib/
+.. _SWAN: http://swan.cern.ch/

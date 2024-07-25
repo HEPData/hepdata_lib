@@ -129,16 +129,3 @@ Analysing the code
 
 These commands are run by GitHub Actions (for Python 3.8 or later),
 so you should first check locally that no issues are flagged.
-
-
-Making a release
-----------------
-
-After making a new release available on `PyPI`_, a `JIRA`_ issue (`example`_) should be opened to request that
-``hepdata_lib`` is upgraded in future `LCG Releases`_ used by `SWAN`_.
-
-.. _PyPI: https://pypi.org/project/hepdata-lib/
-.. _JIRA: https://its.cern.ch/jira/projects/SPI/
-.. _example: https://its.cern.ch/jira/browse/SPI-2507
-.. _LCG Releases: https://lcginfo.cern.ch/pkg/hepdata_lib/
-.. _SWAN: http://swan.cern.ch/
