@@ -370,5 +370,7 @@ multiple dependent variables and a (different) subset of the bins has missing co
 In this case the uncertainties should be set to zero for the missing bins with a non-numeric central value like ``'-'``.
 The warning message can be suppressed by passing an optional argument ``zero_uncertainties_warning=False`` when
 defining an instance of the ``Variable`` class.
+Furthermore, note that `None` can be used to suppress the uncertainty for individual bins in cases where
+the uncertainty components may only apply to a subset of the values.
 
 .. _`Uncertainties`: https://hepdata-submission.readthedocs.io/en/latest/data_yaml.html#uncertainties

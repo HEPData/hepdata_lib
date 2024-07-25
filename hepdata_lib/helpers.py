@@ -258,7 +258,8 @@ def any_uncertainties_nonzero(uncertainties, size):
     for unc in uncertainties:
 
         # Treat one-sided uncertainties as
-        values = np.array(unc.values)
+        tmp = 0 if unc.is_symmetric else (0,0)
+        values = np.array([tmp if v is None else v for v in unc.values])
         values[values.astype(str)==''] = 0
         values = values.astype(float)
 
@@ -273,14 +274,16 @@ def sanitize_value(value):
     Handle conversion of input types for internal storage.
 
     :param value: User-side input value to sanitize.
-    :type value: string, int, or castable to float
+    :type value: string, int, NoneType, or castable to float
 
-    Strings and integers are left alone,
+    Strings, integers and None are left alone,
     everything else is converted to float.
     """
     if isinstance(value,str):
         return value
     if isinstance(value,int):
+        return value
+    if value is None:
         return value
     return float(value)
 
