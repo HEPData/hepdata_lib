@@ -125,6 +125,7 @@ Additional resources, hosted either externally or locally, can be linked with th
     sub.add_additional_resource("Some file", "root_file.root", copy_file=True)
     sub.add_additional_resource("Some file", "root_file.root", copy_file=True, resource_license={"name": "CC BY 4.0", "url": "https://creativecommons.org/licenses/by/4.0/", "description": "This license enables reusers to distribute, remix, adapt, and build upon the material in any medium or format, so long as attribution is given to the creator."})
     sub.add_additional_resource("Archive of full likelihoods in the HistFactory JSON format", "Likelihoods.tar.gz", copy_file=True, file_type="HistFactory")
+    sub.add_additional_resource("Selection and projection function examples", "analysis.cxx", copy_file=True, file_type="ProSelecta")
 
 The first argument is a ``description`` and the second is the ``location`` of the external link or local resource file.
 The optional argument ``copy_file=True`` (default value of ``False``) will copy a local file into the output directory.
@@ -132,6 +133,8 @@ The optional argument ``resource_license`` can be used to define a data license 
 The ``resource_license`` is in the form of a dictionary with mandatory string ``name`` and ``url`` values, and an optional ``description``.
 The optional argument ``file_type="HistFactory"`` (default value of ``None``) can be used to identify statistical models provided in the HistFactory JSON
 format rather than relying on certain trigger words in the ``description`` (see `pyhf section of submission documentation`_).
+The optional argument ``file_type="ProSelecta"`` (default value of ``None``) can be used to identify C++ snippets in the ProSelecta format for use with
+the NUISANCE framework for event generators in neutrino physics (see `NUISANCE section of submission documentation`_).
 
 **Please note:** The default license applied to all data uploaded to HEPData is `CC0`_. You do not
 need to specify a license for a resource file unless it differs from `CC0`_.
@@ -147,6 +150,7 @@ The ``add_link`` function can alternatively be used to add a link to an external
 Again, the first argument is a ``description`` and the second is the ``location`` of the external link.
 
 .. _`pyhf section of submission documentation`: https://hepdata-submission.readthedocs.io/en/latest/analyses.html#pyhf
+.. _`NUISANCE section of submission documentation`: https://hepdata-submission.readthedocs.io/en/latest/analyses.html#nuisance
 
 Adding links to related records
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
