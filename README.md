@@ -29,6 +29,7 @@ conda install --channel conda-forge hepdata-lib
 ```
 
 If you are not sure about your Python environment, please also see below how to use `hepdata_lib` in a Docker or Apptainer container.
+The use of Apptainer is recommended when working on typical HEP computing clusters such as CERN LXPLUS.
 
 ## Getting started
 
@@ -37,7 +38,7 @@ For using `hepdata_lib`, you don't even need to install it, but can use the [bin
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/HEPData/hepdata_lib/main?filepath=examples/Getting_started.ipynb)
 [![SWAN](https://swanserver.web.cern.ch/swanserver/images/badge_swan_white_150.png)](https://cern.ch/swanserver/cgi-bin/go/?projurl=https://github.com/HEPData/hepdata_lib.git)
 
-You can also use the Docker image:
+You can also use the Docker image (recommended when working on local machine):
 
 ```shell
 docker run --rm -it -p 8888:8888 -v ${PWD}:/home/hepdata ghcr.io/hepdata/hepdata_lib:latest
@@ -51,7 +52,16 @@ If you prefer a shell, instead run:
 docker run --rm -it -p 8888:8888 -v ${PWD}:/home/hepdata ghcr.io/hepdata/hepdata_lib:latest bash
 ```
 
-If on CERN LXPLUS or anywhere else where there is Apptainer available but not Docker, you can still use the docker image:
+If on CERN LXPLUS or anywhere else where there is Apptainer available but not Docker, you can still use the docker image.
+
+If CVMFS (specifically `/cvmfs/unpacked.cern.ch/`) is available:
+
+```shell
+export APPTAINER_CACHEDIR="/tmp/$(whoami)/apptainer"
+apptainer shell -B /afs -B /eos /cvmfs/unpacked.cern.ch/ghcr.io/hepdata/hepdata_lib:latest
+```
+
+If CVMFS is not available:
 
 ```shell
 export APPTAINER_CACHEDIR="/tmp/$(whoami)/apptainer"

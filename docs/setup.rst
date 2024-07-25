@@ -33,6 +33,14 @@ On LXPLUS and many other local computing sites with CVMFS and Apptainer (previou
 
 This opens a new shell with ``hepdata_lib``, ROOT, and Python 3 available.
 Your home directory and most other user directories on the machine on which you execute Apptainer will also be accessible from within this shell.
+Additional directories can be made available by using the ``-B`` flag, e.g. ``-B /eos``.
+
+If CVMFS is not available, use the following commands:
+
+::
+
+    export APPTAINER_CACHEDIR="/tmp/$(whoami)/apptainer"
+    apptainer run docker://ghcr.io/hepdata/hepdata_lib:latest /bin/bash
 
 Using SWAN
 ++++++++++
