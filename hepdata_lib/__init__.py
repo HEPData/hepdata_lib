@@ -55,7 +55,7 @@ class AdditionalResourceMixin:
         self.files_to_copy = []
         self.additional_resources = []
 
-    def add_additional_resource(self, description, location, copy_file=False, file_type=None,
+    def add_additional_resource(self, description, location, *, copy_file=False, file_type=None,
                                 resource_license=None):
         """
         Add any kind of additional resource.
@@ -143,7 +143,7 @@ class Variable:
     # pylint: disable=too-many-instance-attributes
     # Eight is reasonable in this case.
 
-    def __init__(self, name, is_independent=True, is_binned=True, units="", values=None,
+    def __init__(self, name, *, is_independent=True, is_binned=True, units="", values=None,
                  zero_uncertainties_warning=True):
         # pylint: disable=too-many-arguments
         self.name = name
