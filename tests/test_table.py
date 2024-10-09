@@ -265,7 +265,10 @@ class TestTable(TestCase):
         some_pdf = f"{os.path.dirname(__file__)}/minimal.pdf"
 
         # Set default description, location, copy_file and file_type arguments for a resource file
-        resource_args = ["Description", some_pdf, True, "Type"]
+        description = "Description"
+        location = some_pdf
+        copy_file = True
+        file_type = "Type"
 
         for data in license_data:
             # If error is expected, we check for the error
@@ -273,14 +276,14 @@ class TestTable(TestCase):
             if data["error"]:
                 with self.assertRaises(ValueError):
                     test_table.add_additional_resource(
-                        *resource_args,
+                        description, location, copy_file=copy_file, file_type=file_type,
                         resource_license=data["license_data"]
                     )
             else:
                 # Check for lack of failure
                 try:
                     test_table.add_additional_resource(
-                        *resource_args,
+                        description, location, copy_file=copy_file, file_type=file_type,
                         resource_license=data["license_data"]
                     )
                 except ValueError:

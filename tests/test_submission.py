@@ -157,7 +157,7 @@ class TestSubmission(TestCase):
         # Add resource to table, add table to Submission
         sub = Submission()
         tab = Table('test')
-        tab.add_additional_resource("a_resource",testfile,True)
+        tab.add_additional_resource("a_resource",testfile, copy_file=True)
         sub.add_table(tab)
 
         # Write outputs
