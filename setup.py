@@ -17,7 +17,7 @@ with codecs.open(path.join(HERE, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='hepdata_lib',
-    version='0.16.0',
+    version='0.17.0',
     description='Library for getting your data into HEPData',
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',
