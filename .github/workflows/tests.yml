@@ -56,7 +56,7 @@ jobs:
 
     - name: Setup Micromamba environment
       if: ${{ matrix.root-version }}
-      uses: mamba-org/setup-micromamba@v1
+      uses: mamba-org/setup-micromamba@v2
       with:
         environment-name: ci
         create-args: >-
@@ -71,7 +71,7 @@ jobs:
 
     - name: Setup Micromamba environment without ROOT
       if: ${{ !matrix.root-version }}
-      uses: mamba-org/setup-micromamba@v1
+      uses: mamba-org/setup-micromamba@v2
       with:
         environment-name: ci
         create-args: >-
