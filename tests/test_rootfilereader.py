@@ -176,6 +176,30 @@ class TestRootFileReader(TestCase):
         # Clean up
         self.doCleanups()
 
+    def test_read_tefficiency(self):
+        name = "teff"
+
+        teff = ROOT.TEfficiency(name, name, 2, 0, 2)
+        teff.Fill(True, 0.5)
+        teff.Fill(False, 0.5)
+        teff.Fill(False, 1.5)
+
+        testfile = make_tmp_root_file(testcase=self)
+        testfile.cd()
+        teff.Write(name)
+        testfile.Close()
+
+        # Read graph back from file
+        reader = RootFileReader(testfile.GetName())
+        data = reader.read_teff(name)
+
+        self.assertEqual(data["x"], [0.5, 1.5])
+        self.assertEqual(data["y"], [0.5, 0.0])
+
+        # Clean up
+        self.doCleanups()
+
+
     def test_read_hist_1d_symmetric_errors(self):
         """Test the read_hist_1d function for a histogram with symmetric errors."""
         name = "test"
