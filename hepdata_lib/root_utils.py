@@ -140,6 +140,21 @@ class RootFileReader:
         graph = self.retrieve_object(path_to_graph)
         return get_graph_points(graph)
 
+    def read_teff(self, path_to_teff):
+        """
+        Extract lists of X and Y values from a TEfficiency via a TGraph
+        
+        :param path_to_teff: Absolute path in the current TFile.
+        :type path_to_teff: str
+
+        :returns: dict -- For a description of the contents,
+            check the documentation of the get_graph_points function.
+        """
+
+        teff = self.retrieve_object(path_to_teff)
+        graph = teff.CreateGraph()
+        return get_graph_points(graph)
+
     def read_hist_2d(self, path_to_hist, **kwargs):
         # pylint: disable=anomalous-backslash-in-string
         r"""Read in a TH2.
