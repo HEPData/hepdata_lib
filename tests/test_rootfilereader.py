@@ -177,6 +177,10 @@ class TestRootFileReader(TestCase):
         self.doCleanups()
 
     def test_read_tefficiency(self):
+        """
+        Test the behavior of the read_teff function
+        when reading a TEfficiency from file.
+        """
         name = "teff"
 
         teff = ROOT.TEfficiency(name, name, 2, 0, 2)
