@@ -12,7 +12,7 @@ Library for getting your data into HEPData
 
 - Documentation: https://hepdata-lib.readthedocs.io
 
-This code works with Python 3.6, 3.7, 3.8, 3.9, 3.10, 3.11 or 3.12.
+This code works with Python 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 3.12 or 3.13.
 
 ## Installation
 
