@@ -2,6 +2,7 @@
 examples/submission.tar.gz
 examples/example_output/
 examples/output/
+examples/plots/
 examples/correlation.root
 
 # test output
