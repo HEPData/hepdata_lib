@@ -3,10 +3,6 @@ from collections import defaultdict
 import ctypes
 from future.utils import raise_from
 import numpy as np
-try:
-    import ROOT as r
-except ImportError as e:  # pragma: no cover
-    print(f'Cannot import ROOT: {str(e)}')
 from hepdata_lib.helpers import check_file_existence
 
 class RootFileReader:
@@ -34,14 +30,16 @@ class RootFileReader:
         Can either be an already open TFile or a path to the file on disk.
         :type tfile: TFile or str
         """
+        from ROOT import TFile  # pylint: disable=import-outside-toplevel, no-name-in-module
+
         if isinstance(tfile, str):
             if not tfile.endswith(".root"):
                 raise RuntimeError(
                     "RootFileReader: Input file is not a ROOT file (name does not end in .root)!"
                     )
             check_file_existence(tfile)
-            self._tfile = r.TFile(tfile)  # pylint: disable=no-member
-        elif isinstance(tfile, r.TFile):  # pylint: disable=no-member
+            self._tfile = TFile(tfile)  # pylint: disable=no-member
+        elif isinstance(tfile, TFile):  # pylint: disable=no-member
             self._tfile = tfile
         else:
             raise ValueError(
@@ -70,6 +68,8 @@ class RootFileReader:
         :type path_to_object: str.
         :returns: TObject -- The object corresponding to the given path.
         """
+        from ROOT import THStack  # pylint: disable=import-outside-toplevel, no-name-in-module
+
         obj = self.tfile.Get(path_to_object)
 
         # If the Get operation was successful, just return
@@ -101,7 +101,7 @@ class RootFileReader:
         try:
             obj = self.tfile.Get(parts[0])
             for part in parts[1:]:
-                if isinstance(obj,r.THStack):  # pylint: disable=no-member
+                if isinstance(obj, THStack):  # pylint: disable=no-member
                     obj = obj.GetHists().FindObject(part)
                 else:
                     obj = obj.GetPrimitive(part)
@@ -222,8 +222,10 @@ class RootFileReader:
         :returns: list -- The values saved in the tree branch.
 
         """
+        from ROOT import TTree  # pylint: disable=import-outside-toplevel, no-name-in-module
+
         tree = self.tfile.Get(path_to_tree)
-        if not tree or not isinstance(tree, r.TTree):  # pylint: disable=no-member
+        if not tree or not isinstance(tree, TTree):  # pylint: disable=no-member
             raise RuntimeError(f"No TTree found for path '{path_to_tree}'.")
         values = []
         for event in tree:
@@ -299,6 +301,8 @@ def get_hist_2d_points(hist, **kwargs):
         Symmetric errors are returned if the histogram error option
         TH1::GetBinErrorOption() returns TH1::kNormal.
     """
+    from ROOT import TH1  # pylint: disable=import-outside-toplevel, no-name-in-module
+
     xlim = kwargs.pop('xlim', (None, None))
     ylim = kwargs.pop('ylim', (None, None))
     force_symmetric_errors = kwargs.pop('force_symmetric_errors', False)
@@ -323,7 +327,7 @@ def get_hist_2d_points(hist, **kwargs):
     ixmax = hist.GetXaxis().FindBin(xlim[1]) if xlim[1] is not None else hist.GetNbinsX() + 1
     iymin = hist.GetYaxis().FindBin(ylim[0]) if ylim[0] is not None else 1
     iymax = hist.GetYaxis().FindBin(ylim[1]) if ylim[1] is not None else hist.GetNbinsY() + 1
-    symmetric = hist.GetBinErrorOption() == r.TH1.kNormal  # pylint: disable=no-member
+    symmetric = hist.GetBinErrorOption() == TH1.kNormal  # pylint: disable=no-member
     if force_symmetric_errors:
         symmetric = True
     for x_bin in range(ixmin, ixmax):
@@ -380,6 +384,8 @@ def get_hist_1d_points(hist, **kwargs):
         Symmetric errors are returned if the histogram error option
         TH1::GetBinErrorOption() returns TH1::kNormal.
     """
+    from ROOT import TH1  # pylint: disable=import-outside-toplevel, no-name-in-module
+
     xlim = kwargs.pop('xlim', (None, None))
     force_symmetric_errors = kwargs.pop('force_symmetric_errors', False)
     if kwargs:
@@ -394,7 +400,7 @@ def get_hist_1d_points(hist, **kwargs):
     for key in ["x", "y", "x_edges", "x_labels", "dy"]:
         points[key] = []
 
-    symmetric = hist.GetBinErrorOption() == r.TH1.kNormal  # pylint: disable=no-member
+    symmetric = hist.GetBinErrorOption() == TH1.kNormal  # pylint: disable=no-member
     if force_symmetric_errors:
         symmetric = True
     ixmin = hist.GetXaxis().FindBin(xlim[0]) if xlim[0] is not None else 1
@@ -434,9 +440,10 @@ def get_graph_points(graph):
         For asymmetric errors, a list of tuples of (down,up) values is given.
 
     """
+    from ROOT import TGraph, TGraphErrors, TGraphAsymmErrors  # pylint: disable=import-outside-toplevel, no-name-in-module
 
     # Check input
-    if not isinstance(graph, (r.TGraph, r.TGraphErrors, r.TGraphAsymmErrors)):  # pylint: disable=no-member
+    if not isinstance(graph, (TGraph, TGraphErrors, TGraphAsymmErrors)):  # pylint: disable=no-member
         raise TypeError(f"Expected to input to be TGraph or similar, instead got '{type(graph)}'")
 
     # Extract points
@@ -448,10 +455,10 @@ def get_graph_points(graph):
         graph.GetPoint(i, x_val, y_val)
         points["x"].append(float(x_val.value))
         points["y"].append(float(y_val.value))
-        if isinstance(graph, r.TGraphErrors):  # pylint: disable=no-member
+        if isinstance(graph, TGraphErrors):  # pylint: disable=no-member
             points["dx"].append(graph.GetErrorX(i))
             points["dy"].append(graph.GetErrorY(i))
-        elif isinstance(graph, r.TGraphAsymmErrors):  # pylint: disable=no-member
+        elif isinstance(graph, TGraphAsymmErrors):  # pylint: disable=no-member
             points["dx"].append((-graph.GetErrorXlow(i),
                                  graph.GetErrorXhigh(i)))
             points["dy"].append((-graph.GetErrorYlow(i),
