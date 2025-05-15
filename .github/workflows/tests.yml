@@ -76,8 +76,8 @@ jobs:
             python-version: "3.8"
         include:
           - os: macos-latest
-            root-version: "6.30"
-            python-version: "3.11"
+            root-version: "6.34"
+            python-version: "3.13"
 
     steps:
     - uses: actions/checkout@v4
