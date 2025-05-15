@@ -1,8 +1,8 @@
 # output from examples
 examples/submission.tar.gz
 examples/example_output/
+examples/example_output_hist/
 examples/output/
-examples/plots/
 examples/correlation.root
 
 # test output
