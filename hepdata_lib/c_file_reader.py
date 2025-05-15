@@ -2,6 +2,10 @@
 import io
 from array import array
 from future.utils import raise_from
+try:
+    from ROOT import TGraph, TGraphErrors  # pylint: disable=no-name-in-module
+except ImportError as e:  # pragma: no cover
+    print(f'Cannot import ROOT: {str(e)}')
 import hepdata_lib.root_utils as ru
 from hepdata_lib.helpers import check_file_existence
 
@@ -133,8 +137,6 @@ class CFileReader:
     def create_tgrapherrors(self, x_value, y_value, dx_value, dy_value):
         """Function to create pyroot TGraphErrors object"""
 
-        from ROOT import TGraphErrors  # pylint: disable=import-outside-toplevel, no-name-in-module
-
         # Creating pyroot TGraphErrors object
         x_values = array('i')
         y_values = array('i')
@@ -169,8 +171,6 @@ class CFileReader:
 
     def create_tgraph(self, x_value, y_value):
         """Function to create pyroot TGraph object"""
-
-        from ROOT import TGraph  # pylint: disable=import-outside-toplevel, no-name-in-module
 
         # Creating pyroot TGraph object
         x_values = array('i')
