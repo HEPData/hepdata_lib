@@ -42,7 +42,7 @@ For documentation on the `loadtxt` function, please refer the `numpy documentati
 Reading from ROOT files
 +++++++++++++++++++++++
 
-In many cases, data in the experiments is available as one of various ROOT data types, such as ``TGraphs``, ``TH1``, ``TH2``, etc, which are saved in ``*.root`` files.
+In many cases, data in the experiments is available as one of various ROOT data types, such as ``TGraphs``, ``TH1``, ``TH2``, ``TEfficiency``, etc, which are saved in ``*.root`` files.
 
 To facilitate reading these objects, the ``RootFileReader`` class is provided.
 The reader is instantiated by passing a path to the ROOT file to read from:
@@ -55,6 +55,7 @@ The reader is instantiated by passing a path to the ROOT file to read from:
 After initialization, individual methods are provided for access to different types of objects stored in the file.
 
 * Reading TGraph, TGraphErrors, TGraphAsymmErrors: ``RootFileReader.read_graph``
+* Reading TEfficiency: ``RootFileReader.read_teff``
 * Reading TH1: ``RootFileReader.read_hist_1d``
 * Reading TH2: ``RootFileReader.read_hist_2d``
 
