@@ -458,8 +458,8 @@ def get_graph_points(graph):
     points = defaultdict(list)
 
     for i in range(graph.GetN()):
-        x_val = ctypes.c_double()
-        y_val = ctypes.c_double()
+        x_val = ctypes.c_double(0.0)
+        y_val = ctypes.c_double(0.0)
         graph.GetPoint(i, x_val, y_val)
         points["x"].append(float(x_val.value))
         points["y"].append(float(y_val.value))
