@@ -183,7 +183,7 @@ class TestRootFileReader(TestCase):
         """
         name = "teff"
 
-        teff = ROOT.TEfficiency(name, name, 2, 0, 2)
+        teff = ROOT.TEfficiency(name, name, 2, 0, 2)  # pylint: disable=no-member
         teff.Fill(True, 0.5)
         teff.Fill(False, 0.5)
         teff.Fill(False, 1.5)
@@ -515,9 +515,9 @@ class TestRootFileReader(TestCase):
         # Look up original bins and compare
         for x, y, z, dz in zip(points["x"], points["y"], points["z"], points["dz"]):
             ibin = backup_hist.Fill(x, y, 0)
-            ibinx = ctypes.c_int()
-            ibiny = ctypes.c_int()
-            ibinz = ctypes.c_int()
+            ibinx = ctypes.c_int(0)
+            ibiny = ctypes.c_int(0)
+            ibinz = ctypes.c_int(0)
             backup_hist.GetBinXYZ(ibin, ibinx, ibiny, ibinz)
             self.assertTrue(float_compare(backup_hist.GetXaxis().GetBinCenter(ibinx.value), x))
             self.assertTrue(float_compare(backup_hist.GetYaxis().GetBinCenter(ibiny.value), y))
@@ -604,9 +604,9 @@ class TestRootFileReader(TestCase):
         # Look up original bins and compare
         for x, y, z, dz in zip(points["x"], points["y"], points["z"], points["dz"]):
             ibin = backup_hist.Fill(x, y, 0)
-            ibinx = ctypes.c_int()
-            ibiny = ctypes.c_int()
-            ibinz = ctypes.c_int()
+            ibinx = ctypes.c_int(0)
+            ibiny = ctypes.c_int(0)
+            ibinz = ctypes.c_int(0)
             backup_hist.GetBinXYZ(ibin, ibinx, ibiny, ibinz)
             self.assertTrue(float_compare(backup_hist.GetXaxis().GetBinCenter(ibinx.value), x))
             self.assertTrue(float_compare(backup_hist.GetYaxis().GetBinCenter(ibiny.value), y))
@@ -656,9 +656,9 @@ class TestRootFileReader(TestCase):
         # Look up original bins and compare
         for x, y, z, dz in zip(points["x"], points["y"], points["z"], points["dz"]):
             ibin = backup_hist.Fill(x, y, 0)
-            ibinx = ctypes.c_int()
-            ibiny = ctypes.c_int()
-            ibinz = ctypes.c_int()
+            ibinx = ctypes.c_int(0)
+            ibiny = ctypes.c_int(0)
+            ibinz = ctypes.c_int(0)
             backup_hist.GetBinXYZ(ibin, ibinx, ibiny, ibinz)
             self.assertTrue(float_compare(backup_hist.GetXaxis().GetBinCenter(ibinx.value), x))
             self.assertTrue(float_compare(backup_hist.GetYaxis().GetBinCenter(ibiny.value), y))
@@ -710,9 +710,9 @@ class TestRootFileReader(TestCase):
         # Look up original bins and compare
         for x, y, z, dz in zip(points["x"], points["y"], points["z"], points["dz"]):
             ibin = backup_hist.Fill(x, y, 0)
-            ibinx = ctypes.c_int()
-            ibiny = ctypes.c_int()
-            ibinz = ctypes.c_int()
+            ibinx = ctypes.c_int(0)
+            ibiny = ctypes.c_int(0)
+            ibinz = ctypes.c_int(0)
             backup_hist.GetBinXYZ(ibin, ibinx, ibiny, ibinz)
             self.assertTrue(float_compare(backup_hist.GetXaxis().GetBinCenter(ibinx.value), x))
             self.assertTrue(float_compare(backup_hist.GetYaxis().GetBinCenter(ibiny.value), y))
