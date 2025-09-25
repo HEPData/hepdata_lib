@@ -9,7 +9,6 @@ from decimal import Decimal
 from re import match as rematch
 import numpy as np
 import yaml
-from future.utils import raise_from
 
 # try to use LibYAML bindings if possible
 try:
@@ -173,7 +172,7 @@ class Variable:
             except (AssertionError, TypeError, ValueError) as err:
                 msg = "For binned Variables, values should be tuples of length two: \
                                  (lower bin edge, upper bin edge)."
-                raise_from(ValueError(msg), err)
+                raise ValueError(msg) from err
 
             # All good
             self._values = [
@@ -187,7 +186,7 @@ class Variable:
             try:
                 parsed_values = [helpers.sanitize_value(x) for x in value_list]
             except (TypeError, ValueError) as err:
-                raise_from(ValueError("Malformed input for unbinned variable: ", value_list),err)
+                raise ValueError("Malformed input for unbinned variable: ", value_list) from err
             self._values = parsed_values
 
     def scale_values(self, factor):

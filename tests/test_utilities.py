@@ -8,7 +8,6 @@ try:
     import ROOT
 except ImportError as e:
     print(f'Cannot import ROOT: {str(e)}')
-from future.utils import raise_from
 
 
 def float_compare(x_val, y_val, precision=1e-6):
@@ -100,8 +99,8 @@ def make_tmp_root_file(path_to_file='tmp_{RANDID}.root', mode="RECREATE",
         try:
             path_to_file = path_to_file.format(RANDID=get_random_id())
         except IndexError as err:
-            raise_from(IOError("String substitution failed. Your input path should not \
-                           have any braces except possibly for the {RANDID} token!"), err)
+            raise IOError("String substitution failed. Your input path should not \
+                           have any braces except possibly for the {RANDID} token!") from err
 
     rfile = ROOT.TFile(path_to_file, mode)  # pylint: disable=no-member
 

@@ -1,7 +1,6 @@
 """.C file reader"""
 import io
 from array import array
-from future.utils import raise_from
 try:
     from ROOT import TGraph, TGraphErrors  # pylint: disable=no-name-in-module
 except ImportError as e:  # pragma: no cover
@@ -164,7 +163,7 @@ class CFileReader:
         try:
             t_object = TGraphErrors(length, x_values, y_values, dx_values, dy_values)
         except TypeError as err:
-            raise_from(TypeError("Invalid value in TGraphErrors constructor!"), err)
+            raise TypeError("Invalid value in TGraphErrors constructor!") from err
         graph = ru.get_graph_points(t_object)
 
         return graph
@@ -189,7 +188,7 @@ class CFileReader:
         try:
             t_object = TGraph(length, x_values, y_values)
         except TypeError as err:
-            raise_from(TypeError("Invalid value in TGraph constructor!"), err)
+            raise TypeError("Invalid value in TGraph constructor!") from err
         graph = ru.get_graph_points(t_object)
 
         return graph
@@ -279,7 +278,7 @@ class CFileReader:
                         tgraph_names.append(line.split('"', 1)[1].split('"')[0])
                     except IndexError as err:
                         tgraph_names = 'null'
-                        raise_from(IndexError("index out of range"), err)
+                        raise IndexError("index out of range") from err
                     start = 0
                     counter = 0
                 if start == 2:
@@ -287,7 +286,7 @@ class CFileReader:
                         tgrapherror_names.append(line.split('"', 1)[1].split('"')[0])
                     except IndexError as err:
                         tgrapherror_names = 'null'
-                        raise_from(IndexError("index out of range"), err)
+                        raise IndexError("index out of range") from err
                     start = 0
                     counter = 0
 
@@ -392,5 +391,5 @@ class CFileReader:
                 except ValueError:
                     values.append(float(i))
             except ValueError as err:
-                raise_from(ValueError("Value is not a number in variable:", graphname), err)
+                raise ValueError("Value is not a number in variable:", graphname) from err
         return values
