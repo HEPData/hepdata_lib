@@ -1,7 +1,6 @@
 """hepdata_lib utilities to interact with ROOT data formats."""
 from collections import defaultdict
 import ctypes
-from future.utils import raise_from
 import numpy as np
 try:
     import ROOT as r
@@ -114,14 +113,14 @@ class RootFileReader:
                 f"Cannot find any object in file {self.tfile} using path {path_to_object} or"
                 + " interpreting it as a TCanvas with TPads."
             )
-            raise_from(IOError(msg), err)
+            raise IOError(msg) from err
 
         except AttributeError as err:
             msg = (
                 f"Cannot find any object in file {self.tfile} using path {path_to_object} or"
                 + " interpreting it as a TCanvas with TPads."
             )
-            raise_from(IOError(msg), err)
+            raise IOError(msg) from err
 
         return None
 
@@ -246,7 +245,7 @@ class RootFileReader:
                 values.append(getattr(event, branch_name))
             except AttributeError as err:
                 msg = f"The TTree does not have a branch with name '{branch_name}'."
-                raise_from(RuntimeError(msg),err)
+                raise RuntimeError(msg) from err
         return values
 
     def read_limit_tree(self,
