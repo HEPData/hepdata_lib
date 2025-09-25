@@ -39,9 +39,9 @@ copyright = '2018-2024, Andreas Albert, Clemens Lange'
 author = 'Andreas Albert, Clemens Lange'
 
 # The short X.Y version
-version = '0.19.0'
+version = '0.20.0'
 # The full version, including alpha/beta/rc tags
-release = '0.19.0'
+release = '0.20.0'
 
 
 # -- General configuration ---------------------------------------------------
