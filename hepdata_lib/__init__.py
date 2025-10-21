@@ -78,7 +78,8 @@ class AdditionalResourceMixin:
         :param copy_file: If set to true, will attempt to copy a local file to the tar ball.
         :type copy_file: bool
 
-        :param file_type: Type of the resource file (None, "HistFactory" or "ProSelecta").
+        :param file_type: Type of the resource file (None, "HistFactory", "HS3",
+                                                    "SimpleAnalysis", "ProSelecta").
         :type file_type: string
 
         :param resource_license: License information comprising name, url and optional description.
