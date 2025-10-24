@@ -164,7 +164,7 @@ jobs:
 
     - name: Upload notebooks
       if: ${{ always() && matrix.root-version }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: notebooks-${{ matrix.root-version }}-${{ matrix.python-version }}-${{ matrix.os }} py3-${{ matrix.root-version }}-${{ matrix.python-version }}-${{ matrix.os }}
         path: examples/*.html
