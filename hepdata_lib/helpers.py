@@ -409,7 +409,6 @@ def round_value_and_multiple_uncertainties_arrs(vals, unclists, sig_digits_unc=2
         # get the list of uncertainty sources for the i'th val
         uncs_ipt = [ul[ipt] for ul in unclists]
         # round each error source independently with their larger component getting the target sd's
-        #uncs_ipt_rnd, uncprecisions = round_multiple(uncs_ipt, sig_digits_unc, True)
         minuncprecision = np.inf #< TODO: there's probably a less pessimistic int starting value!
         for iu, u in enumerate(uncs_ipt):
             u_rnd, uprecisions = round_multiple(u, sig_digits_unc, True)
