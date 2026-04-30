@@ -309,8 +309,9 @@ def round_multiple(uncs, sig_digits=2, no_round_to_zero=True):
     : param no_round_to_zero : if true, ensure always at least one sd per component
     : type  no_round_to_zero : bool
 
-    : returns : float or list[float]) of rounded values and
-                a list of the digit precisions used (even for scalar ``uncs``)
+    : returns : float or list/tuple[float]) of rounded values and a list of the digit
+                precisions used for each component (this is a list even for scalar
+                ``uncs``; note that it can contain NaNs due to zero-valued components)
     """
     try: #< if this fails, uncs isn't iterable -> fall back to scalar
         # get orders of magnitude of each component
@@ -321,6 +322,9 @@ def round_multiple(uncs, sig_digits=2, no_round_to_zero=True):
         ptargets = [(max(ptarget, -uo+1) if no_round_to_zero else ptarget) for uo in unc_orders]
         # do the (maybe custom) rounding
         newuncs = [round(u, ptargets[i]) for (i, u) in enumerate(uncs)]
+        # return as a tuple if the input was a tuple (for ROOT use-case & test consistency)
+        if type(uncs) is tuple:
+            newuncs = tuple(newuncs)
         return newuncs, ptargets if no_round_to_zero else ptarget
     except TypeError:
         unc_order = get_number_size(uncs)

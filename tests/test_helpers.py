@@ -13,6 +13,7 @@ from hepdata_lib.helpers import file_is_outdated
 
 class TestHelpers(TestCase):
     """Test the helper functions."""
+
     def test_relative_round(self):
         '''Test behavior of Variable.scale_values function'''
         # Some values are mapped onto themselves
