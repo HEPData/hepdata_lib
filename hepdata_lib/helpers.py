@@ -406,13 +406,17 @@ def round_value_and_multiple_uncertainties_arrs(vals, unclists, sig_digits_unc=2
     for ipt, val in enumerate(vals):
         # the value precision will match that of the largest error, but start with this upper bound
         valprecision = max(-get_number_size(val)+sig_digits_unc, sig_digits_unc)
-        # round each error source independently with their larger component getting the target sd's
+        # get the list of uncertainty sources for the i'th val
         uncs_ipt = [ul[ipt] for ul in unclists]
-        uncs_ipt_rnd, uncprecisions = round_multiple(uncs_ipt, sig_digits_unc, True)
-        valprecision = min(int(np.nanmin(uncprecisions)), valprecision)
-        for iu, unc in enumerate(uncs_ipt_rnd):
-            unclists[iu][ipt] = unc
+        # round each error source independently with their larger component getting the target sd's
+        #uncs_ipt_rnd, uncprecisions = round_multiple(uncs_ipt, sig_digits_unc, True)
+        minuncprecision = np.inf #< TODO: there's probably a less pessimistic int starting value!
+        for iu, u in enumerate(uncs_ipt):
+            u_rnd, uprecisions = round_multiple(u, sig_digits_unc, True)
+            unclists[iu][ipt] = u_rnd
+            minuncprecision = int(np.nanmin(np.hstack((uprecisions, minuncprecision))))
         # round the value to match the precision of the largest error component
+        valprecision = min(minuncprecision, valprecision)
         vals[ipt] = round(val, valprecision)
 
     return vals, unclists
