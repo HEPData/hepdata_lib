@@ -322,7 +322,7 @@ def round_multiple(uncs, sig_digits=2, no_round_to_zero=True):
         # do the (maybe custom) rounding
         newuncs = [round(u, ptargets[i]) for (i, u) in enumerate(uncs)]
         return newuncs, ptargets if no_round_to_zero else ptarget
-    except:
+    except TypeError:
         unc_order = get_number_size(uncs)
         newunc = relative_round(uncs, sig_digits)
         return newunc, [-unc_order+sig_digits]
@@ -400,7 +400,7 @@ def round_value_and_multiple_uncertainties_arrs(vals, unclists, sig_digits_unc=2
     sig_digits_unc = int(sig_digits_unc)
 
     for ipt, val in enumerate(vals):
-        # the eventual precision of the value will match that of the largest error, but start with this upper bound
+        # the value precision will match that of the largest error, but start with this upper bound
         valprecision = max(-get_number_size(val)+sig_digits_unc, sig_digits_unc)
         # round each error source independently with their larger component getting the target sd's
         uncs_ipt = [ul[ipt] for ul in unclists]
@@ -437,7 +437,7 @@ def round_value_and_uncertainty(cont, val_key="y", unc_key="dy", sig_digits_unc=
     : param sig_digits_unc: how many significant digits used to round the uncertainty
     : type  sig_digits_unc: integer
     """
-    assert(isinstance(cont, dict))
+    #assert isinstance(cont, dict)
     round_value_and_uncertainty_arrs(cont[val_key], cont[unc_key], sig_digits_unc)
 
 
