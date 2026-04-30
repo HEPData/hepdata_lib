@@ -362,7 +362,23 @@ need to specify a license for a data table unless it differs from `CC0`_.
 Uncertainties
 +++++++++++++
 
-In many cases, you will want to give uncertainties on the central values provided in the Variable objects. Uncertainties can be *symmetric* or *asymmetric* (up and down variations of the central value either have the same or different magnitudes). For symmetric uncertainties, the values of the uncertainties are simply stored as a one-dimensional list. For asymmetric uncertainties, the up- and downward variations are stored as a list of two-component tuples:
+In many cases, you will want to give uncertainties on the central
+values provided in the Variable objects. Uncertainties can be
+*symmetric* or *asymmetric*. For symmetric
+uncertainties, the values of the uncertainties are stored as a
+one-dimensional list of positive values, which are applied as
+equal-magnitude positive and negative changes to the value.
+
+For asymmetric uncertainties, the uncertainties are expressed as a
+*signed* two-component iterable (e.g. tuple or list): in general, this
+pair represents the value changes in response to downward and upward
+moves of a nuisance parameter, and so it is possible for both the "up"
+and "down" variations to have the same sign (if the effect of the
+nuisance is one-sided). Therefore both components should be computed
+as ``variation_value - nominal_value`` such that negative variations
+correctly acquire a minus sign; asymmetric statistical errors are
+represented using the same scheme and should also ensure that the
+"down" uncertainty has a negative sign.
 
 ::
 
