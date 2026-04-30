@@ -323,7 +323,7 @@ def round_multiple(uncs, sig_digits=2, no_round_to_zero=True):
         # do the (maybe custom) rounding
         newuncs = [round(u, ptargets[i]) for (i, u) in enumerate(uncs)]
         # return as a tuple if the input was a tuple (for ROOT use-case & test consistency)
-        if type(uncs) is tuple:
+        if isinstance(uncs, tuple):
             newuncs = tuple(newuncs)
         return newuncs, ptargets if no_round_to_zero else ptarget
     except TypeError:
