@@ -278,7 +278,7 @@ One common use case with more than one independent Variable is that of correlati
 
 Adding a plot thumb nail to a table
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-HEPData supports the addition of thumb nail images to each table. This makes it easier for the consumer of your entry to find what they are looking for, since they can simply look for the table that has the thumb nail of the plot they are interested in.
+HEPData supports the addition of thumbnail images to each table. This makes it easier for the consumer of your entry to find what they are looking for, since they can simply look for the table that has the thumb nail of the plot they are interested in.
 If you have the full-size plot available on your drive, you can add it to your entry very easily:
 
 ::
@@ -388,6 +388,19 @@ represented using the same scheme and should also ensure that the
 
     unc2 = Uncertainty("An asymmetric uncertainty", is_symmetric=False)
     unc2.values = [ (-0.08, +0.15), (-0.13, +0.20), (-0.18,+0.27) ]
+
+Note that the sizes of the uncertainties define a natural scale for
+the precision to which the central value should be represented (and in
+an asymmetric pair, the larger component may naturally set the precision
+of reporting for the smaller). In HEPData, any numerical values will be
+displayed at full floating-point precision, so it is often desirable to
+manually round the values and uncertainties in the submission, to achieve
+a more readable final display. The ``hepdata_lib.helpers`` functions
+``relative_round``, ``round_multiple``, ``round_value_and_uncertainty_arrs``,
+``round_value_and_multiple_uncertainties_arrs`` ``round_value_and_uncertainty``,
+``round_value_to_decimals`` and ``round_value_and_uncertainty_to_decimals``
+can be used to manipulate arrays and dicts of numerical data before
+attachment to the Variable and Uncertainty objects.
 
 After creating the Uncertainty objects, the only additional step is to attach them to the Variable:
 
