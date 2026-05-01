@@ -201,17 +201,17 @@ def get_number_size(value, rtn_for_zero=float("nan")):
     value is NaN, but e.g. None or -float("inf") might sometimes be
     more appropriate.
 
-    : param value : number to evaluate
-    : type  value : float or tuple[float]
+    :param value: number to evaluate
+    :type  value: float or tuple[float]
 
-    : returns : order of magnitude (rounded-up power of 10) of ``value``,
+    :returns: order of magnitude (rounded-up power of 10) of ``value``,
                 normally integer except in the zero-value failure mode
 
     """
 
     # handle tuples like get_number_precision does
     if isinstance(value, tuple):
-        return tuple(get_number_size(x) for x in value)
+        return tuple(get_number_size(x, rtn_for_zero) for x in value)
 
     if value == 0:
         return rtn_for_zero
@@ -226,11 +226,11 @@ def get_value_precision_wrt_reference(value, reference):
     ``value`` and ``reference`` are both float and/or int
     ``value`` can be float when reference is an int and vice-versa
 
-    : param value: first value
-    : type  value: float, int
+    :param value: first value
+    :type  value: float, int
 
-    : param reference: reference value (usually the uncertainty on value)
-    : type  reference: float, int
+    :param reference: reference value (usually the uncertainty on value)
+    :type  reference: float, int
     """
 
     this_function = "get_value_precision_wrt_reference()"
@@ -249,19 +249,19 @@ def get_value_size_wrt_reference(value, reference, size_for_zero=float("nan")):
     """
     Like the get_value_precision_wrt_reference but calling get_number_size
     rather than get_number_precision, and with the optional zero-return
-    option of the former.
+    option of the former passed to the size-assessing function calls.
 
     ``value`` and ``reference`` are both float and/or int
     ``value`` can be float when reference is an int and vice-versa
 
-    : param value: first value
-    : type  value: float, int
+    :param value: first value
+    :type  value: float, int
 
-    : param reference: reference value (usually the uncertainty on value)
-    : type  reference: float, int
+    :param reference: reference value (usually the uncertainty on value)
+    :type  reference: float, int
 
-    : param size_for_zero: the size value to be used for zero-valued ``value`` or ``reference``
-    : type  size_for_zero: float, int
+    :param size_for_zero: the size value to be used for zero-valued ``value`` or ``reference``
+    :type  size_for_zero: float, int
     """
 
     this_function = "get_value_size_wrt_reference()"
@@ -300,23 +300,25 @@ def round_multiple(uncs, sig_digits=2, no_round_to_zero=True):
     but written to be more generally usable. A passed single number will be handled
     transparently, without wrapping in an iterable.
 
-    : param uncs : iterable of values (primarily uncertainties)
-    : type  uncs : float or iterable[float]
+    :param uncs: iterable of values (primarily uncertainties)
+    :type  uncs: float or iterable[float]
 
-    : param sig_digits : how many significant digits on the leading component
-    : type  sig_digits : integer
+    :param sig_digits: how many significant digits on the leading component
+    :type  sig_digits: integer
 
-    : param no_round_to_zero : if true, ensure always at least one sd per component
-    : type  no_round_to_zero : bool
+    :param no_round_to_zero: if true, ensure always at least one sd per component
+    :type  no_round_to_zero: bool
 
-    : returns : float or list/tuple[float]) of rounded values and a list of the digit
-                precisions used for each component (this is a list even for scalar
-                ``uncs``; note that it can contain NaNs due to zero-valued components)
+    :returns: float or list/tuple[float]) of rounded values and a list of the digit
+              precisions used for each component (this is a list even for scalar
+              ``uncs``; note that it can contain NaNs due to zero-valued components)
     """
     try: #< if this fails, uncs isn't iterable -> fall back to scalar
         # get orders of magnitude of each component
         unc_orders = [get_number_size(u) for u in uncs]
         # base the nominal precision on the target number of sd's on the largest component
+        if np.all(np.isnan(unc_orders)):
+            return uncs, [0 for u in uncs]
         ptarget = -int(np.nanmax(unc_orders)) + sig_digits
         # customise the precisions for each component (if instructed to prevent rounding to zero)
         ptargets = [(max(ptarget, -uo+1) if no_round_to_zero else ptarget) for uo in unc_orders]
@@ -325,8 +327,10 @@ def round_multiple(uncs, sig_digits=2, no_round_to_zero=True):
         # return as a tuple if the input was a tuple (for ROOT use-case & test consistency)
         if isinstance(uncs, tuple):
             newuncs = tuple(newuncs)
-        return newuncs, ptargets if no_round_to_zero else ptarget
+        return newuncs, ptargets
     except TypeError:
+        if uncs == 0:
+            return unc, [0]
         unc_order = get_number_size(uncs)
         newunc = relative_round(uncs, sig_digits)
         return newunc, [-unc_order+sig_digits]
@@ -351,16 +355,16 @@ def round_value_and_uncertainty_arrs(vals, uncs, sig_digits_unc=2):
     e.g. 26.5345 +/- 1.3456 --> 26.5 +/- 1.3 . At least one sd of the value
     will always be reported, though 100% errors are not commonly published.
 
-    : param vals : y values
-    : type  vals : iterable of float
+    :param vals: y values
+    :type  vals: iterable of float
 
-    : param uncs : y uncertainty values
-    : type  uncs : iterable of float or tuple[float]
+    :param uncs: y uncertainty values
+    :type  uncs: iterable of float or tuple[float]
 
-    : param sig_digits_unc: how many significant digits used to round the uncertainty
-    : type  sig_digits_unc: integer
+    :param sig_digits_unc: how many significant digits used to round the uncertainty
+    :type  sig_digits_unc: integer
 
-    : returns : modified (vals, uncs). Note that arguments are also modified in-place.
+    :returns: modified (vals, uncs). Note that arguments are also modified in-place.
     """
 
     sig_digits_unc = int(sig_digits_unc)
@@ -392,13 +396,16 @@ def round_value_and_multiple_uncertainties_arrs(vals, unclists, sig_digits_unc=2
     rounding. At least one sd of the value will always be reported, though 100% errors
     are not commonly published.
 
-    : param cont : dictionary as returned e.g. by ``RootFileReader::read_hist_1d()``
-    : type  cont : dictionary
+    :param vals: y values
+    :type  vals: iterable of float
 
-    : param sig_digits_unc: how many significant digits used to round the uncertainty
-    : type  sig_digits_unc: integer
+    :param uncs: y uncertainty values
+    :type  uncs: iterable of float or tuple[float]
 
-    : returns : modified (vals, unclists). Note that arguments are also modified in-place.
+    :param sig_digits_unc: how many significant digits used to round the uncertainty
+    :type  sig_digits_unc: integer
+
+    :returns: modified (vals, unclists). Note that arguments are also modified in-place.
     """
 
     sig_digits_unc = int(sig_digits_unc)
@@ -438,11 +445,11 @@ def round_value_and_uncertainty(cont, val_key="y", unc_key="dy", sig_digits_unc=
     e.g. 26.5345 +/- 1.3456 --> 26.5 +/- 1.3 . At least one sd of the value
     will always be reported, though 100% errors are not commonly published.
 
-    : param cont : dictionary as returned e.g. by ``RootFileReader::read_hist_1d()``
-    : type  cont : dictionary
+    :param cont: dictionary as returned e.g. by ``RootFileReader::read_hist_1d()``
+    :type  cont: dictionary
 
-    : param sig_digits_unc: how many significant digits used to round the uncertainty
-    : type  sig_digits_unc: integer
+    :param sig_digits_unc: how many significant digits used to round the uncertainty
+    :type  sig_digits_unc: integer
     """
     #assert isinstance(cont, dict)
     round_value_and_uncertainty_arrs(cont[val_key], cont[unc_key], sig_digits_unc)
@@ -455,11 +462,11 @@ def round_value_to_decimals(cont, key="y", decimals=3):
     The default is to round to 3 digits after the period.
     Possible use case: correlations where typical values are within -1,1
 
-    : param cont : dictionary as returned e.g. by RootFileReader::read_hist_1d()
-    : type  cont : dictionary
+    :param cont: dictionary as returned e.g. by RootFileReader::read_hist_1d()
+    :type  cont: dictionary
 
-    : param decimals: how many decimals for the rounding
-    : type  decimals: integer
+    :param decimals: how many decimals for the rounding
+    :type  decimals: integer
     """
 
     decimals = int(decimals)
@@ -478,11 +485,11 @@ def round_value_and_uncertainty_to_decimals(cont, val_key="y", unc_key="dy", dec
     The default is to round to 3 digits after the period.
     Possible use case: correlations where typical values are within -1,1
 
-    : param cont : dictionary as returned e.g. by RootFileReader::read_hist_1d()
-    : type  cont : dictionary
+    :param cont: dictionary as returned e.g. by RootFileReader::read_hist_1d()
+    :type  cont: dictionary
 
-    : param decimals: how many decimals for the rounding
-    : type  decimals: integer
+    :param decimals: how many decimals for the rounding
+    :type  decimals: integer
     """
 
     decimals = int(decimals)

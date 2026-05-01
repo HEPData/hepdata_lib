@@ -9,6 +9,7 @@ from hepdata_lib.helpers import round_multiple
 from hepdata_lib.helpers import get_number_precision
 from hepdata_lib.helpers import get_number_size
 from hepdata_lib.helpers import get_value_precision_wrt_reference
+from hepdata_lib.helpers import get_value_size_wrt_reference
 from hepdata_lib.helpers import round_value_and_uncertainty_arrs
 from hepdata_lib.helpers import round_value_and_multiple_uncertainties_arrs
 from hepdata_lib.helpers import round_value_and_uncertainty
@@ -139,6 +140,31 @@ class TestHelpers(TestCase):
             get_value_precision_wrt_reference(1.23, (1.2, 3.4))
         with self.assertRaises(ValueError):
             get_value_precision_wrt_reference("bad", (1.2, 3.4))
+
+
+    def test_get_value_size_wrt_reference(self):
+        '''Test behavior of get_value_size_wrt_reference function'''
+
+        self.assertTrue(np.isnan(get_value_size_wrt_reference(0.0, 0.1)))
+        self.assertTrue(get_value_size_wrt_reference(0.01, 0, -np.inf) == np.inf)
+
+        # test format is (value, reference, relative precision)
+        values = [
+            (12.5, 0.08, 3),
+            (1.25, 102.4, -2),
+            (10.0, 9, 0)
+        ]
+        for val, ref, prec in values:
+            precision = get_value_size_wrt_reference(val, ref)
+            self.assertTrue(precision == prec)
+
+        # test wrong input type
+        with self.assertRaises(ValueError):
+            get_value_size_wrt_reference(1.23, "bad")
+        with self.assertRaises(ValueError):
+            get_value_size_wrt_reference(1.23, (1.2, 3.4))
+        with self.assertRaises(ValueError):
+            get_value_size_wrt_reference("bad", (1.2, 3.4))
 
 
     def test_round_value_and_uncertainty_arrs(self):
