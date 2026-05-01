@@ -330,7 +330,7 @@ def round_multiple(uncs, sig_digits=2, no_round_to_zero=True):
         return newuncs, ptargets
     except TypeError:
         if uncs == 0:
-            return unc, [0]
+            return uncs, [0]
         unc_order = get_number_size(uncs)
         newunc = relative_round(uncs, sig_digits)
         return newunc, [-unc_order+sig_digits]
@@ -399,8 +399,8 @@ def round_value_and_multiple_uncertainties_arrs(vals, unclists, sig_digits_unc=2
     :param vals: y values
     :type  vals: iterable of float
 
-    :param uncs: y uncertainty values
-    :type  uncs: iterable of float or tuple[float]
+    :param unclists: iterable of y uncertainty values separated by source
+    :type  unclists: iterable of iterable of float or tuple[float]
 
     :param sig_digits_unc: how many significant digits used to round the uncertainty
     :type  sig_digits_unc: integer
