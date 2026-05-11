@@ -318,7 +318,7 @@ def round_multiple(uncs, sig_digits=2, no_round_to_zero=True):
         unc_orders = [get_number_size(u) for u in uncs]
         # base the nominal precision on the target number of sd's on the largest component
         if np.all(np.isnan(unc_orders)):
-            return uncs, [0 for u in uncs]
+            return uncs, unc_orders
         ptarget = -int(np.nanmax(unc_orders)) + sig_digits
         # customise the precisions for each component (if instructed to prevent rounding to zero)
         ptargets = [(max(ptarget, -uo+1) if no_round_to_zero else ptarget) for uo in unc_orders]
@@ -330,13 +330,14 @@ def round_multiple(uncs, sig_digits=2, no_round_to_zero=True):
         return newuncs, ptargets
     except TypeError:
         if uncs == 0:
-            return uncs, [0]
+            return uncs, [np.nan]
         unc_order = get_number_size(uncs)
         newunc = relative_round(uncs, sig_digits)
         return newunc, [-unc_order+sig_digits]
 
 
-def round_value_and_uncertainty_arrs(vals, uncs, sig_digits_unc=2):
+def round_value_and_uncertainty_arrs(vals, uncs,
+                                     sig_digits_unc=2, sig_digits_val_zero_unc=None):
     """
     Round arrays of values and a single uncertainty source according to
     the precision of the uncertainty, row by row, and also round the
@@ -364,24 +365,34 @@ def round_value_and_uncertainty_arrs(vals, uncs, sig_digits_unc=2):
     :param sig_digits_unc: how many significant digits used to round the uncertainty
     :type  sig_digits_unc: integer
 
+    :param sig_digits_val_zero_unc: how many significant digits used to round a value
+                                    if its uncertainty is zero. None -> no rounding
+    :type  sig_digits_val_zero_unc: integer or None
+
     :returns: modified (vals, uncs). Note that arguments are also modified in-place.
     """
 
     sig_digits_unc = int(sig_digits_unc)
 
+    # loop over the bins, rounding each independently
     for i, (val, unc) in enumerate(zip(vals, uncs)):
         # Two possible types for unc:
         # - standard case for TH1 or TGraphErrors: uncertainty is a single value
         # - case for TGraphAsymmErrors: uncertainty is a tuple(elow, ehigh)
         # round_multiple handles both scalar and tuple in a transparent way
         uncs[i], uncprecisions = round_multiple(unc, sig_digits_unc, True)
-        valprecision = -get_number_size(val)+1
-        vals[i] = round(val, max(int(np.nanmin(uncprecisions)), valprecision))
+        if not np.all(np.isnan(uncprecisions)):
+            valprecision = -get_number_size(val)+1
+            vals[i] = round(val, max(int(np.nanmin(uncprecisions)), valprecision))
+        elif sig_digits_val_zero_unc is not None:
+            vals[i] = relative_round(val, sig_digits_val_zero_unc)
+        # else do nothing: keep full precision
 
     return vals, uncs
 
 
-def round_value_and_multiple_uncertainties_arrs(vals, unclists, sig_digits_unc=2):
+def round_value_and_multiple_uncertainties_arrs(vals, unclists,
+                                                sig_digits_unc=2, sig_digits_val_zero_unc=None):
     """
     Round values and multiple uncertainty sources according to the precision of the
     largest uncertainty, and also round each (asymm) uncertainty to a given number
@@ -405,30 +416,41 @@ def round_value_and_multiple_uncertainties_arrs(vals, unclists, sig_digits_unc=2
     :param sig_digits_unc: how many significant digits used to round the uncertainty
     :type  sig_digits_unc: integer
 
+    :param sig_digits_val_zero_unc: how many significant digits used to round a value
+                                    if its uncertainty is zero. None -> no rounding
+    :type  sig_digits_val_zero_unc: integer or None
+
     :returns: modified (vals, unclists). Note that arguments are also modified in-place.
     """
 
     sig_digits_unc = int(sig_digits_unc)
 
+    # loop over the bins, rounding each independently
     for ipt, val in enumerate(vals):
         # the value precision will match that of the largest error, but start with this upper bound
-        valprecision = max(-get_number_size(val)+sig_digits_unc, sig_digits_unc)
+        #valprecision = max(-get_number_size(val)+sig_digits_unc, sig_digits_unc)
         # get the list of uncertainty sources for the i'th val
         uncs_ipt = [ul[ipt] for ul in unclists]
         # round each error source independently with their larger component getting the target sd's
-        minuncprecision = np.inf #< TODO: there's probably a less pessimistic int starting value!
+        minuncprecision = np.inf #< note float type: inf/nan -/-> int
         for iu, u in enumerate(uncs_ipt):
             u_rnd, uprecisions = round_multiple(u, sig_digits_unc, True)
             unclists[iu][ipt] = u_rnd
-            minuncprecision = int(np.nanmin(np.hstack((uprecisions, minuncprecision))))
+            if not np.all(np.isnan(uprecisions)):
+                minuncprecision = np.nanmin(np.hstack((uprecisions, minuncprecision))) #< float!
         # round the value to match the precision of the largest error component
-        valprecision = min(minuncprecision, valprecision)
-        vals[ipt] = round(val, valprecision)
-
+        #valprecision = min(minuncprecision, valprecision)
+        #vals[ipt] = round(val, valprecision)
+        if not np.isinf(minuncprecision):
+            vals[ipt] = round(val, int(minuncprecision))
+        elif sig_digits_val_zero_unc is not None:
+            vals[ipt] = relative_round(val, sig_digits_val_zero_unc)
+        # else do nothing: keep full precision
     return vals, unclists
 
 
-def round_value_and_uncertainty(cont, val_key="y", unc_key="dy", sig_digits_unc=2):
+def round_value_and_uncertainty(cont, val_key="y", unc_key="dy",
+                                sig_digits_unc=2, sig_digits_val_zero_unc=None):
     """
     Round values and uncertainty according to the precision of the uncertainty,
     and also round uncertainty to a given number of significant digits, on a
@@ -450,9 +472,14 @@ def round_value_and_uncertainty(cont, val_key="y", unc_key="dy", sig_digits_unc=
 
     :param sig_digits_unc: how many significant digits used to round the uncertainty
     :type  sig_digits_unc: integer
+
+    :param sig_digits_val_zero_unc: how many significant digits used to round a value
+                                    if its uncertainty is zero. None -> no rounding
+    :type  sig_digits_val_zero_unc: integer or None
     """
     #assert isinstance(cont, dict)
-    round_value_and_uncertainty_arrs(cont[val_key], cont[unc_key], sig_digits_unc)
+    round_value_and_uncertainty_arrs(cont[val_key], cont[unc_key],
+                                     sig_digits_unc, sig_digits_val_zero_unc)
 
 
 def round_value_to_decimals(cont, key="y", decimals=3):
@@ -471,6 +498,7 @@ def round_value_to_decimals(cont, key="y", decimals=3):
 
     decimals = int(decimals)
 
+    # loop over the bins, rounding each independently
     for i, val in enumerate(cont[key]):
         if isinstance(val, tuple):
             cont[key][i] = (round(val[0], decimals), round(val[1], decimals))

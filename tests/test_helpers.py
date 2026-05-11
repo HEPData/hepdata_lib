@@ -198,9 +198,9 @@ class TestHelpers(TestCase):
         # (container, key_for_values, key_for_uncertainties, significant_digits)
         # uncertainty has a single value
         cont = {"val": [1.23456, 1234.56, 0.0012345, 0.123],
-                "unc": [0.00123, 1.23, 0.012, 0.12],
-                "val_round": [1.2346, 1234.6, 0.001, 0.12],
-                "unc_round": [0.0012, 1.2, 0.012, 0.12]}
+                "unc": [0.00123, 1.23, 0.012, 0.0],
+                "val_round": [1.2346, 1234.6, 0.001, 0.123],
+                "unc_round": [0.0012, 1.2, 0.012, 0.0]}
         # round to two significant digits
         round_value_and_uncertainty(cont, "val", "unc", 2)
         self.assertTrue(cont["val"] == cont["val_round"])
@@ -223,14 +223,17 @@ class TestHelpers(TestCase):
         '''Test behavior of round_value_and_multiple_uncertainty_arrs function'''
 
         # Test for single-valued uncertainties
-        val = [1.23456, 1234.56, 0.0012345, 0.123]
-        unc = [[-0.00123, 1.23, 0.012, -0.12], [-0.123, -40.2124, 0.0000643, 0.03]]
-        val_round = [1.23, 1235.0, 0.001, 0.12]
-        unc_round = [[-0.0012, 1.2, 0.012, -0.12], [-0.12, -40.0, 6.4e-05, 0.03]]
+        val = [1.23456, 1234.56, 0.0012345, 0.123, 4.567]
+        unc = [[-0.00123, 1.23, 0.012, -0.12, 0.0], [-0.123, -40.2124, 0.0, 0.03, 0.0]]
+        val_round = [1.23, 1235.0, 0.001, 0.12, 4.567]
+        unc_round = [[-0.0012, 1.2, 0.012, -0.12, 0.0], [-0.12, -40.0, 0.0, 0.03, 0.0]]
         # round to two significant digits
         round_value_and_multiple_uncertainties_arrs(val, unc, 2)
         self.assertTrue(val == val_round)
         self.assertTrue(unc == unc_round)
+        round_value_and_multiple_uncertainties_arrs(val, unc, 2, 2)
+        val_round[-1] = 4.6
+        self.assertTrue(val == val_round)
 
         # Test for pair-valued uncertainties
         val = [1.23456, 0.123]
