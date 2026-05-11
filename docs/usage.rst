@@ -278,7 +278,7 @@ One common use case with more than one independent Variable is that of correlati
 
 Adding a plot thumb nail to a table
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-HEPData supports the addition of thumb nail images to each table. This makes it easier for the consumer of your entry to find what they are looking for, since they can simply look for the table that has the thumb nail of the plot they are interested in.
+HEPData supports the addition of thumbnail images to each table. This makes it easier for the consumer of your entry to find what they are looking for, since they can simply look for the table that has the thumb nail of the plot they are interested in.
 If you have the full-size plot available on your drive, you can add it to your entry very easily:
 
 ::
@@ -362,7 +362,23 @@ need to specify a license for a data table unless it differs from `CC0`_.
 Uncertainties
 +++++++++++++
 
-In many cases, you will want to give uncertainties on the central values provided in the Variable objects. Uncertainties can be *symmetric* or *asymmetric* (up and down variations of the central value either have the same or different magnitudes). For symmetric uncertainties, the values of the uncertainties are simply stored as a one-dimensional list. For asymmetric uncertainties, the up- and downward variations are stored as a list of two-component tuples:
+In many cases, you will want to give uncertainties on the central
+values provided in the Variable objects. Uncertainties can be
+*symmetric* or *asymmetric*. For symmetric
+uncertainties, the values of the uncertainties are stored as a
+one-dimensional list of positive values, which are applied as
+equal-magnitude positive and negative changes to the value.
+
+For asymmetric uncertainties, the uncertainties are expressed as a
+*signed* two-component iterable (e.g. tuple or list): in general, this
+pair represents the value changes in response to downward and upward
+moves of a nuisance parameter, and so it is possible for both the "up"
+and "down" variations to have the same sign (if the effect of the
+nuisance is one-sided). Therefore both components should be computed
+as ``variation_value - nominal_value`` such that negative variations
+correctly acquire a minus sign; asymmetric statistical errors are
+represented using the same scheme and should also ensure that the
+"down" uncertainty has a negative sign.
 
 ::
 
@@ -372,6 +388,19 @@ In many cases, you will want to give uncertainties on the central values provide
 
     unc2 = Uncertainty("An asymmetric uncertainty", is_symmetric=False)
     unc2.values = [ (-0.08, +0.15), (-0.13, +0.20), (-0.18,+0.27) ]
+
+Note that the sizes of the uncertainties define a natural scale for
+the precision to which the central value should be represented (and in
+an asymmetric pair, the larger component may naturally set the precision
+of reporting for the smaller). In HEPData, any numerical values will be
+displayed at full floating-point precision, so it is often desirable to
+manually round the values and uncertainties in the submission, to achieve
+a more readable final display. The ``hepdata_lib.helpers`` functions
+``relative_round``, ``round_multiple``, ``round_value_and_uncertainty_arrs``,
+``round_value_and_multiple_uncertainties_arrs`` ``round_value_and_uncertainty``,
+``round_value_to_decimals`` and ``round_value_and_uncertainty_to_decimals``
+can be used to manipulate arrays and dicts of numerical data before
+attachment to the Variable and Uncertainty objects.
 
 After creating the Uncertainty objects, the only additional step is to attach them to the Variable:
 
