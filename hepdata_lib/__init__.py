@@ -630,17 +630,23 @@ class Submission(AdditionalResourceMixin):
         else:
             raise ValueError("Please enter a valid integer above 0.")
 
-    def read_abstract(self, filepath):
+    def read_abstract(self, filepath, strip_newlines=False):
         """
-        Read in the abstracts file.
+        Read in the abstract from a text file and assign it to ``self.comment``.
 
         :param filepath: Path to text file containing abstract.
         :type filepath: string.
+        :param strip_newlines: If True, strip newline characters (legacy behavior).
+            By default (False), newlines are preserved and CRLF is normalized to LF.
+        :type strip_newlines: bool.
         """
         with open(filepath, encoding='utf-8') as afile:
             raw = str(afile.read())
-        raw = raw.replace("\r\n", "")
-        raw = raw.replace("\n", "")
+        if strip_newlines:
+            raw = raw.replace("\r\n", "")
+            raw = raw.replace("\n", "")
+        else:
+            raw = raw.replace("\r\n", "\n")
 
         self.comment = raw
 

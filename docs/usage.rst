@@ -113,6 +113,17 @@ The ``create_files`` function writes all the YAML output files you need and pack
 
 **Please note**: creating the output files also creates a ``submission`` folder containing the individual files going into the tarball. This folder exists merely for convenience, in order to make it easy to inspect each individual file. It is not recommended to attempt to manually manage or edit the files in the folder, and there is no guarantee that ``hepdata_lib`` will handle any of the changes you make in a graceful manner. As far as we are aware, there is no use case where manual editing of the files is necessary. If you have such a use case, please report it in a Github issue.
 
+Adding an abstract or comment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A submission-level description or paper abstract can be set directly on the ``Submission`` object via its ``comment`` attribute, or loaded from a plain-text file with ``read_abstract``::
+
+    sub.comment = "Analysis of $H \\to \\tau^+\\tau^-$ decays at $\\sqrt{s} = 13$ TeV."
+    # Or read from a text file (newlines and paragraph breaks are preserved by default):
+    sub.read_abstract("abstract.txt")
+
+By default, ``read_abstract`` preserves newlines so line-wrapped text is not merged without whitespace and intentional paragraph breaks are kept (pass ``strip_newlines=True`` for the legacy stripping behavior). Both LaTeX math delimited by ``$`` symbols and a limited set of simple HTML tags are supported in ``comment``; see the `HEPData submission tips <https://hepdata-submission.readthedocs.io/en/latest/tips.html>`_ for formatting details.
+
 .. _sec-usage-resource:
 
 Adding resource links or files
