@@ -26,7 +26,7 @@ class Mock(MagicMock):
         return MagicMock()
 
 try:
-    import ROOT  # pylint: disable=W0611
+    import ROOT  # pylint: disable=unused-import
 except ImportError:
     MOCK_MODULES = ['ROOT']
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)

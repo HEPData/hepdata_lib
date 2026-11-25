@@ -3,7 +3,7 @@ import codecs
 from os import path
 from setuptools import setup, find_packages
 try:
-    import ROOT  # pylint: disable=W0611
+    import ROOT  # pylint: unused-import
 except ImportError:
     print("ROOT is required by this library.")
 
