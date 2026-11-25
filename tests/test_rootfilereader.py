@@ -17,7 +17,7 @@ from .test_utilities import float_compare, tuple_compare, histogram_compare_1d, 
 
 @pytest.mark.needs_root
 class TestRootFileReader(TestCase):
-    # pylint: disable=R0904
+    # pylint: disable=too-many-public-methods
     """Test the RootFileReader class."""
 
     def test_tfile_setter(self):
@@ -54,10 +54,8 @@ class TestRootFileReader(TestCase):
         try:
             _reader = RootFileReader(path_to_file)
             _reader = RootFileReader(tfile)
-        # pylint: disable=W0702
-        except:
+        except:  # pylint: disable=bare-except
             self.fail("RootFileReader raised an unexpected exception.")
-        # pylint: enable=W0702
         # Clean up
         self.doCleanups()
 

@@ -49,19 +49,15 @@ class TestCFileReader(TestCase):
         # Use file name for opening
         try:
             _reader = CFileReader(_cfile)
-        # pylint: disable=W0702
-        except:
+        except:  # pylint: disable=bare-except
             self.fail("CFileReader raised an unexpected exception.")
-        # pylint: enable=W0702
 
         # Use opened file (io.TextIOBase)
         try:
             with open(_cfile, encoding="utf-8") as testfile:
                 _reader = CFileReader(testfile)
-        # pylint: disable=W0702
-        except:
+        except:  # pylint: disable=bare-except
             self.fail("CFileReader raised an unexpected exception.")
-        # pylint: enable=W0702
 
         # Clean up
         self.doCleanups()
