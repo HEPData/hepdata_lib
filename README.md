@@ -12,7 +12,7 @@ Library for getting your data into HEPData
 
 - Documentation: https://hepdata-lib.readthedocs.io
 
-This code works with Python 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 3.12 or 3.13.
+This code works with Python 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 3.12, 3.13 or 3.14.
 
 ## Installation
 
@@ -97,6 +97,7 @@ There are a few more examples available that can directly be run using the [bind
 
 - [ROOT](https://root.cern.ch)
 - [ImageMagick](https://www.imagemagick.org)
+- [Ghostscript](https://ghostscript.com)
 
 Make sure that you have `ROOT` in your `$PYTHONPATH` and that the `convert` command is available by adding its location to your `$PATH` if needed.
 
