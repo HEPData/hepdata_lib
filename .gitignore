@@ -4,6 +4,7 @@ examples/example_output/
 examples/example_output_hist/
 examples/output/
 examples/correlation.root
+examples/plots/
 
 # test output
 submission.tar.gz

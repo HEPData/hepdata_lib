@@ -3,7 +3,7 @@ import codecs
 from os import path
 from setuptools import setup, find_packages
 try:
-    import ROOT  # pylint: disable=W0611
+    import ROOT  # pylint: unused-import
 except ImportError:
     print("ROOT is required by this library.")
 
@@ -36,6 +36,7 @@ setup(
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
         'Programming Language :: Python :: 3.13',
+        'Programming Language :: Python :: 3.14',
     ],
     keywords='HEPData physics OpenData',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
