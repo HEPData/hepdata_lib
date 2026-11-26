@@ -141,6 +141,35 @@ class TestSubmission(TestCase):
 
         self.doCleanups()
 
+    def test_read_abstract_newlines(self):
+        """Test that read_abstract preserves newlines by default and strips when requested."""
+        multiline_text = "First line of abstract\nsecond line.\n\nSecond paragraph."
+        crlf_text = "First line\r\nsecond line."
+
+        testfile = "testfile_newlines.txt"
+        self.addCleanup(os.remove, testfile)
+
+        with open(testfile, "w", encoding="utf-8", newline="") as file_handle:
+            file_handle.write(multiline_text)
+
+        test_submission = Submission()
+        test_submission.read_abstract(testfile)
+        self.assertEqual(test_submission.comment, multiline_text)
+
+        test_submission.read_abstract(testfile, strip_newlines=True)
+        self.assertEqual(
+            test_submission.comment,
+            "First line of abstractsecond line.Second paragraph."
+        )
+
+        with open(testfile, "w", encoding="utf-8", newline="") as file_handle:
+            file_handle.write(crlf_text)
+
+        test_submission.read_abstract(testfile)
+        self.assertEqual(test_submission.comment, "First line\nsecond line.")
+
+        self.doCleanups()
+
     def test_nested_files_to_copy(self):
         """Test that file copying works when tables have files."""
         # Create random test file
