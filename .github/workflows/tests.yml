@@ -30,19 +30,27 @@ jobs:
         include:
           - os: macos-latest
             python-version: "3.14"
-          - python-version: "3.14"
+            root-version: "6.40"
+          - os: ubuntu-latest
+            python-version: "3.14"
             root-version: ""
-          - python-version: "3.13"
+          - os: ubuntu-latest
+            python-version: "3.13"
             root-version: "6.38"
-          - python-version: "3.10"
+          - os: ubuntu-latest
+            python-version: "3.10"
             root-version: "6.34"
-          - python-version: "3.9"
+          - os: ubuntu-latest
+            python-version: "3.9"
             root-version: "6.34"
-          - python-version: "3.8"
+          - os: ubuntu-latest
+            python-version: "3.8"
             root-version: "6.30"
-          - python-version: "3.7"
+          - os: ubuntu-latest
+            python-version: "3.7"
             root-version: "6.24"
-          - python-version: "3.6"
+          - os: ubuntu-latest
+            python-version: "3.6"
             root-version: "6.24"
 
     steps:
