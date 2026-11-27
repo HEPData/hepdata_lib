@@ -1,6 +1,4 @@
-FROM rootproject/root:6.22.06-fedora33
-
-ENV MAGICK_HOME=/usr
+FROM rootproject/root:6.38.00-ubuntu25.10
 
 LABEL maintainer="Clemens Lange clemens.lange@cern.ch"
 
@@ -19,19 +17,22 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
 
 USER root
 
-RUN dnf check-update -q || true \
+RUN apt-get update \
     && ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
-    && dnf -y install \
+    && apt-get install -y --no-install-recommends \
         which \
         python3-numpy \
         python3-pip \
-        ImageMagick \
-    && dnf clean all \
-    && sed -i '/MVG/d' /etc/ImageMagick-6/policy.xml \
-    && sed -i '/PDF/{s/none/read|write/g}' /etc/ImageMagick-6/policy.xml \
-    && sed -i '/PDF/ a <policy domain="coder" rights="read|write" pattern="LABEL" />' /etc/ImageMagick-6/policy.xml \
-    && cat /etc/ImageMagick-6/policy.xml \
-    && python -m pip install --no-cache-dir \
+        imagemagick \
+        ghostscript \
+        python3-venv \
+    && rm -rf /var/lib/apt/lists/* \
+    && policy_file=/etc/ImageMagick-7/policy.xml \
+    && test -f "${policy_file}" \
+    && sed -i '/<\/policymap>/i\  <policy domain="coder" rights="read" pattern="PDF" />' "${policy_file}" \
+    && grep -q '<policy domain="coder" rights="read" pattern="PDF" />' "${policy_file}" \
+    && python3 -m venv --system-site-packages /opt/venv \
+    && /opt/venv/bin/python -m pip install --no-cache-dir \
         pylint \
         ipython \
         ipykernel \
@@ -41,21 +42,24 @@ RUN dnf check-update -q || true \
         notebook \
         hepdata_lib
 
-ENV PYTHONPATH /usr/local/lib/:/usr/local/lib/root/
+ENV PATH="/opt/venv/bin:${PATH}"
 
-ENV NB_USER hepdata
-ENV NB_UID 1000
-RUN useradd --create-home --home-dir /home/${NB_USER} \
-    --uid ${NB_UID} ${NB_USER} \
-     && sudo usermod -aG wheel ${NB_USER}
-ENV HOME /home/${NB_USER}
+ENV NB_USER=hepdata
+ENV NB_UID=1000
+RUN if ! getent passwd "${NB_UID}" >/dev/null; then \
+        useradd --create-home --home-dir "/home/${NB_USER}" \
+            --uid "${NB_UID}" "${NB_USER}"; \
+    fi \
+    && mkdir -p "/home/${NB_USER}" \
+    && chown -R "${NB_UID}" "/home/${NB_USER}"
+ENV HOME=/home/${NB_USER}
 WORKDIR /home/${NB_USER}
-USER ${NB_USER}
+USER ${NB_UID}
 
 COPY . ${HOME}
 USER root
 RUN chown -R ${NB_UID} ${HOME}
-USER ${NB_USER}
+USER ${NB_UID}
 
 # Allow incoming connections on port 8888
 EXPOSE 8888
