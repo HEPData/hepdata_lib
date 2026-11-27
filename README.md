@@ -44,7 +44,7 @@ You can also use the Docker image (recommended when working on local machine):
 docker run --rm -it -p 8888:8888 -v ${PWD}:/home/hepdata ghcr.io/hepdata/hepdata_lib:latest
 ```
 
-And then point your browser to [http://localhost:8888](http://localhost:8888) and use the token that is printed out. The output will end up in your current working directory (`${PWD}`).
+And then point your browser to [http://localhost:8888](http://localhost:8888) and use the token that is printed out. The output will end up in your current working directory (`${PWD}`). On macOS, if cells in a Jupyter notebook fail to execute, you may need to switch off the option "Use Rosetta for x86_64/amd64 emulation on Apple Silicon" for the Apple Virtualization framework or alternatively switch to the Docker Virtual Machine Manager (VMM) in the Settings of Docker Desktop.
 
 If you prefer a shell, instead run:
 
